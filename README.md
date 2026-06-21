@@ -1,33 +1,34 @@
-# Lotargo Profile Landing
+# Lotargo Portfolio
 
-Static brutalist portfolio landing for GitHub Pages.
-
-Public URL after GitHub Pages is enabled:
+Static brutalist portfolio for GitHub Pages.
 
 ```text
 https://lotargo.github.io
 ```
 
-## Files
+The site is intentionally static: no build step, no package install, and no backend. It uses dark theme and English language by default, with light theme and Russian language available through toggles.
+
+## Structure
 
 ```text
 index.html
 assets/css/styles.css
 assets/js/projects.js
 assets/js/main.js
+assets/img/
 PROFILE_README_SNIPPET.md
 v0_PROMPT.md
 ```
 
-## How to edit projects
+## Edit Projects
 
-Open:
+Project data lives in:
 
 ```text
 assets/js/projects.js
 ```
 
-For every project you can edit:
+Each project can define:
 
 ```js
 title
@@ -43,32 +44,44 @@ demoUrl
 docsUrl
 ```
 
-To add screenshots later, put images into:
+Images live in:
 
 ```text
 assets/img/
 ```
 
-Then set:
+Use project image paths like:
 
 ```js
 image: "./assets/img/project-name.png"
 ```
 
-The card will automatically use the monochrome-to-color hover reveal.
+## Local Preview
 
-## Deploy through GitHub Pages
+You can open `index.html` directly, or run a static server:
 
-1. Go to repository Settings → Pages.
+```powershell
+python -m http.server 4173
+```
+
+Then open:
+
+```text
+http://127.0.0.1:4173
+```
+
+## Deploy Through GitHub Pages
+
+1. Go to repository Settings -> Pages.
 2. Select `Deploy from a branch`.
 3. Select `main` and `/ root`.
 4. Save.
 5. Open `https://lotargo.github.io` after the first build finishes.
 
-## v0 / Vercel direction
+## v0 / Vercel
 
-Use `v0_PROMPT.md` as a rebuild prompt if this static version later becomes a Next.js/Vercel project.
+`v0_PROMPT.md` is kept as a future migration guide. Use it if this static site later needs to be rebuilt as a Next.js/Vercel project.
 
-## Profile README button
+## Profile README Button
 
 Use `PROFILE_README_SNIPPET.md` in the `Lotargo/Lotargo` profile README.

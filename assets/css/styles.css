@@ -10,6 +10,9 @@
   --panel-2: #101010;
   --panel-soft: rgba(255, 255, 255, 0.035);
   --accent: #ffffff;
+  --accent-red: #ff7676;
+  --landing-fill: #ef7676;
+  --landing-text: #000000;
   --max: 1440px;
   --pad: clamp(22px, 4vw, 68px);
   --mono: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
@@ -28,6 +31,9 @@ html[data-theme="light"] {
   --panel-2: #ded8ca;
   --panel-soft: rgba(0, 0, 0, 0.045);
   --accent: #000000;
+  --accent-red: #d32f2f;
+  --landing-fill: #dc5f5f;
+  --landing-text: #f4f1e8;
 }
 
 * {
@@ -56,7 +62,7 @@ body::before {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 10;
+  z-index: -1;
   opacity: 0.1;
   background-image:
     linear-gradient(currentColor 1px, transparent 1px),
@@ -136,6 +142,7 @@ code {
 .brand,
 .nav,
 .theme-toggle,
+.lang-toggle,
 .hero-kicker,
 .hero-footer,
 .section-label,
@@ -214,7 +221,8 @@ code {
   transform: scaleX(1);
 }
 
-.theme-toggle {
+.theme-toggle,
+.lang-toggle {
   min-height: 38px;
   padding: 10px 13px;
   border: 1px solid var(--line-strong);
@@ -225,7 +233,8 @@ code {
   transition: background 220ms ease, color 220ms ease, transform 220ms ease;
 }
 
-.theme-toggle:hover {
+.theme-toggle:hover,
+.lang-toggle:hover {
   background: var(--fg);
   color: var(--bg);
   transform: translateY(-1px);
@@ -399,15 +408,88 @@ code {
 .section h2 {
   margin: 0 0 28px;
   max-width: 1040px;
-  font-size: clamp(42px, 7vw, 104px);
+  font-size: clamp(38px, 5.8vw, 92px);
   line-height: 0.92;
-  letter-spacing: -0.073em;
+  letter-spacing: -0.06em;
   text-transform: uppercase;
+  overflow-wrap: break-word;
 }
 
 .lead.compact {
   max-width: 820px;
   font-size: clamp(17px, 1.6vw, 20px);
+}
+
+.recommended-path {
+  margin: 32px 0 42px;
+  padding: 20px 24px;
+  border: 1px solid var(--line);
+  background: var(--panel-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.path-label {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.path-flow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-family: var(--mono);
+  font-size: 14px;
+}
+
+.path-node {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--line-strong);
+  color: var(--fg);
+  transition: background 220ms ease, color 220ms ease, border-color 220ms ease, transform 220ms ease;
+}
+
+.path-node:hover {
+  background: var(--fg);
+  color: var(--bg);
+  border-color: var(--fg);
+  transform: translateY(-1px);
+}
+
+.node-index {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.path-node:hover .node-index {
+  color: color-mix(in srgb, var(--bg) 60%, transparent);
+}
+
+.path-divider {
+  color: var(--muted);
+  font-weight: bold;
+}
+
+@media (max-width: 768px) {
+  .path-flow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .path-divider {
+    text-align: center;
+    transform: rotate(90deg);
+    display: block;
+    margin: 4px 0;
+  }
 }
 
 .capabilities {
@@ -422,7 +504,7 @@ code {
 .capabilities article {
   min-height: 320px;
   padding: clamp(28px, 2.5vw, 38px);
-  background: var(--bg);
+  background: var(--panel);
   transition: background 220ms ease, transform 220ms ease;
 }
 
@@ -487,7 +569,7 @@ code {
   position: relative;
   min-height: 660px;
   overflow: hidden;
-  background: var(--bg);
+  background: var(--panel);
   display: grid;
   grid-template-rows: auto 1fr;
   border-bottom: 1px solid var(--line);
@@ -527,7 +609,8 @@ code {
 }
 
 .project-visual.has-image {
-  background-size: cover;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
   background-position: center;
   filter: grayscale(1) contrast(1.18);
   transition: filter 560ms ease, transform 560ms ease;
@@ -611,6 +694,18 @@ code {
   min-height: 40px;
   padding: 11px 14px;
   font-size: 11px;
+}
+
+.card-links a.btn-landing {
+  background: var(--landing-fill);
+  color: var(--landing-text);
+  border-color: var(--landing-fill);
+}
+
+.card-links a.btn-landing:hover {
+  background: var(--landing-text);
+  color: var(--landing-fill);
+  border-color: var(--landing-fill);
 }
 
 .evidence-grid {
@@ -714,7 +809,8 @@ code {
     display: none;
   }
 
-  .theme-toggle {
+  .theme-toggle,
+  .lang-toggle {
     min-height: 34px;
     padding: 8px 10px;
     font-size: 10px;
@@ -755,6 +851,20 @@ code {
 
   .panel-line {
     grid-template-columns: 1fr;
+  }
+}
+
+html[lang="ru"] .hero-line {
+  font-size: clamp(58px, 10.8vw, 160px);
+  line-height: 0.88;
+  letter-spacing: 0;
+}
+
+@media (max-width: 760px) {
+  html[lang="ru"] .hero-line {
+    font-size: clamp(42px, 14vw, 70px);
+    line-height: 0.92;
+    letter-spacing: 0;
   }
 }
 

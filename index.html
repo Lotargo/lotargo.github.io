@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Oleg Boyko / Lotargo — AI systems, RAG architecture, low-level runtime experiments, verification-friendly prototypes." />
+  <meta name="description" content="Oleg Boyko / Lotargo – AI systems, RAG architecture, low-level runtime experiments, verification-friendly prototypes." />
   <meta name="theme-color" content="#000000" />
-  <meta property="og:title" content="Oleg Boyko / Lotargo — AI Systems Portfolio" />
+  <meta property="og:title" content="Oleg Boyko / Lotargo – AI Systems Portfolio" />
   <meta property="og:description" content="Brutalist technical portfolio: AI systems, RAG architecture, runtime experiments, verification labs, and local-first tools." />
   <meta property="og:type" content="website" />
-  <title>Oleg Boyko / Lotargo — AI Systems Portfolio</title>
+  <title>Oleg Boyko / Lotargo – AI Systems Portfolio</title>
   <link rel="icon" type="image/svg+xml" href="./assets/img/favicon.svg" />
   <link rel="stylesheet" href="./assets/css/styles.css" />
   <script>
@@ -25,7 +25,7 @@
   </script>
 </head>
 <body>
-  <a class="skip-link" href="#projects">Skip to projects</a>
+  <a class="skip-link" href="#projects" data-i18n="skip-link">Skip to projects</a>
 
   <header class="site-header" data-js="header">
     <a class="brand" href="#top" aria-label="Back to top">
@@ -40,14 +40,17 @@
         </svg>
         <span>GitHub</span>
       </a>
-      <nav class="nav" aria-label="Main navigation">
-        <a href="#systems">Systems</a>
-        <a href="#projects">Projects</a>
-        <a href="#evidence">Evidence</a>
-        <a href="#contact">Contact</a>
+      <nav class="nav" aria-label="Main navigation" data-i18n-aria="nav-aria">
+        <a href="#systems" data-i18n="nav-systems">Systems</a>
+        <a href="#projects" data-i18n="nav-projects">Projects</a>
+        <a href="#evidence" data-i18n="nav-evidence">Evidence</a>
+        <a href="#contact" data-i18n="nav-contact">Contact</a>
       </nav>
       <button class="theme-toggle" type="button" data-js="theme-toggle" aria-label="Switch color theme">
         <span data-js="theme-label">Theme</span>
+      </button>
+      <button class="lang-toggle" type="button" data-js="lang-toggle" aria-label="Switch language">
+        <span data-js="lang-label">EN</span>
       </button>
     </div>
   </header>
@@ -56,79 +59,98 @@
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero-kicker">
         <span>00</span>
-        <span>AI / RAG / Runtime / Verification</span>
+        <span data-i18n="hero-kicker-text">AI / RAG / Runtime / Verification</span>
       </div>
 
-      <h1 id="hero-title" class="hero-title" aria-label="AI systems built outside the template">
-        <span class="hero-line fill">AI SYSTEMS</span>
-        <span class="hero-line outline">BUILT OUTSIDE</span>
-        <span class="hero-line fill">THE TEMPLATE</span>
+      <h1 id="hero-title" class="hero-title" aria-label="AI systems built outside the template" data-i18n-aria="hero-title-aria">
+        <span class="hero-line fill" data-i18n="hero-line-1">AI SYSTEMS</span>
+        <span class="hero-line outline" data-i18n="hero-line-2">BUILT OUTSIDE</span>
+        <span class="hero-line fill" data-i18n="hero-line-3">THE TEMPLATE</span>
       </h1>
 
       <div class="hero-meta">
-        <p>
-          Personal technical portfolio of <strong>Oleg Boyko / Lotargo</strong> — experimental AI systems,
+        <p data-i18n-html="hero-meta-desc">
+          Personal technical portfolio of <strong>Oleg Boyko / Lotargo</strong> – experimental AI systems,
           RAG/vector architecture, low-level runtime work, agentic tooling, and proof-oriented prototypes.
         </p>
-        <div class="hero-actions" aria-label="Primary actions">
-          <a class="button primary" href="#projects">View systems</a>
-          <a class="button" href="https://github.com/Lotargo" target="_blank" rel="noreferrer">GitHub profile</a>
+        <div class="hero-actions" aria-label="Primary actions" data-i18n-aria="hero-actions-aria">
+          <a class="button primary" href="#projects" data-i18n="hero-action-view">View systems</a>
+          <a class="button" href="https://github.com/Lotargo" target="_blank" rel="noreferrer" data-i18n="hero-action-github">GitHub profile</a>
         </div>
       </div>
 
       <div class="hero-footer" aria-hidden="true">
-        <span>Private core / public evidence</span>
-        <span>Static-first portfolio</span>
+        <span data-i18n="hero-footer-evidence">Private core / public evidence</span>
+        <span data-i18n="hero-footer-static">Static-first portfolio</span>
         <span>2026</span>
       </div>
     </section>
 
     <section id="systems" class="section split-section" aria-labelledby="systems-title">
-      <div class="section-label">01 / positioning</div>
+      <div class="section-label" data-i18n="systems-label">01 / positioning</div>
       <div class="section-body">
-        <h2 id="systems-title">Not a template portfolio. A map of working systems.</h2>
-        <p class="lead">
-          The goal is to show architecture, interfaces, demos, limits, and evidence without exposing every private core.
-          Each project card is designed to accept screenshots later: add an image path in <code>assets/js/projects.js</code>,
-          and the monochrome-to-color hover reveal will activate automatically.
+        <h2 id="systems-title" data-i18n="systems-title">Not a template portfolio. A map of working systems.</h2>
+        <p class="lead" data-i18n-html="systems-lead">
+          The goal is to show architecture, interfaces, live demos, and technical constraints without exposing private core logic. Visual cards display system details, tech stacks, and active proof layers.
         </p>
 
-        <div class="capabilities" aria-label="Capabilities">
+        <div class="recommended-path" aria-label="Recommended path" data-i18n-aria="path-aria">
+          <span class="path-label" data-i18n="path-label">Recommended Path:</span>
+          <div class="path-flow">
+            <a href="https://lotargo.github.io/public_sonata_ai_landing/" target="_blank" rel="noreferrer" class="path-node">
+              <span class="node-index">01</span> Sonata AI
+            </a>
+            <span class="path-divider">→</span>
+            <a href="https://lotargo.github.io/Nexus_API_Balancer/" target="_blank" rel="noreferrer" class="path-node">
+              <span class="node-index">02</span> Nexus Balancer
+            </a>
+            <span class="path-divider">→</span>
+            <a href="https://lotargo.github.io/Academic-Pipeline-Engine/" target="_blank" rel="noreferrer" class="path-node">
+              <span class="node-index">03</span> Academic Pipeline
+            </a>
+            <span class="path-divider">→</span>
+            <a href="https://lotargo.github.io/Necromancer/" target="_blank" rel="noreferrer" class="path-node">
+              <span class="node-index">04</span> Necromancer
+            </a>
+          </div>
+        </div>
+
+        <div class="capabilities" aria-label="Capabilities" data-i18n-aria="capabilities-aria">
           <article>
-            <span>RAG</span>
-            <h3>Semantic systems</h3>
-            <p>Retrieval, indexing, metadata flow, source-aware workflows, vector search, and document pipelines.</p>
+            <span data-i18n="cap-rag-span">RAG</span>
+            <h3 data-i18n="cap-rag-title">Semantic systems</h3>
+            <p data-i18n="cap-rag-desc">Retrieval, indexing, metadata flow, source-aware workflows, vector search, and document pipelines.</p>
           </article>
           <article>
-            <span>AI</span>
-            <h3>Runtime experiments</h3>
-            <p>Custom AI-oriented runtimes, provider routing, low-level constraints, and non-standard execution paths.</p>
+            <span data-i18n="cap-ai-span">AI</span>
+            <h3 data-i18n="cap-ai-title">Runtime experiments</h3>
+            <p data-i18n="cap-ai-desc">Custom AI-oriented runtimes, provider routing, low-level constraints, and non-standard execution paths.</p>
           </article>
           <article>
-            <span>LAB</span>
-            <h3>Verification mindset</h3>
-            <p>Reports, reproducibility packs, explicit boundaries, failure modes, and honest public evidence.</p>
+            <span data-i18n="cap-lab-span">LAB</span>
+            <h3 data-i18n="cap-lab-title">Verification mindset</h3>
+            <p data-i18n="cap-lab-desc">Reports, reproducibility packs, explicit boundaries, failure modes, and honest public evidence.</p>
           </article>
           <article>
-            <span>UI</span>
-            <h3>Interfaces that prove</h3>
-            <p>Landing pages, dashboards, local tools, demos, galleries, and inspection-first product shells.</p>
+            <span data-i18n="cap-ui-span">UI</span>
+            <h3 data-i18n="cap-ui-title">Interfaces that prove</h3>
+            <p data-i18n="cap-ui-desc">Landing pages, dashboards, local tools, demos, galleries, and inspection-first product shells.</p>
           </article>
         </div>
       </div>
     </section>
 
     <section id="projects" class="section projects-section" aria-labelledby="projects-title">
-      <div class="section-label">02 / selected systems</div>
+      <div class="section-label" data-i18n="projects-label">02 / selected systems</div>
       <div class="section-body">
         <div class="section-heading-row">
           <div>
-            <h2 id="projects-title">Featured project links</h2>
-            <p class="lead compact">
-              Screenshots are intentionally empty for now. Replace placeholder paths in the project data file when the galleries are ready.
+            <h2 id="projects-title" data-i18n="projects-title">Featured project links</h2>
+            <p class="lead compact" data-i18n="projects-lead">
+              Core systems, APIs, runtimes, and local toolsets with active repository links and live interfaces.
             </p>
           </div>
-          <div class="filter-bar" role="list" aria-label="Project filters" data-js="filters"></div>
+          <div class="filter-bar" role="list" aria-label="Project filters" data-js="filters" data-i18n-aria="filters-aria"></div>
         </div>
 
         <div class="project-grid" data-js="project-grid"></div>
@@ -136,11 +158,11 @@
     </section>
 
     <section id="evidence" class="section evidence-section" aria-labelledby="evidence-title">
-      <div class="section-label">03 / public boundary</div>
+      <div class="section-label" data-i18n="evidence-label">03 / public boundary</div>
       <div class="section-body evidence-grid">
         <div>
-          <h2 id="evidence-title">Closed source is fine. Empty claims are not.</h2>
-          <p class="lead">
+          <h2 id="evidence-title" data-i18n="evidence-title">Closed source is fine. Empty claims are not.</h2>
+          <p class="lead" data-i18n="evidence-lead">
             This portfolio is built around a simple split: private implementation can stay private, while public pages should show enough
             architecture, demos, screenshots, reports, and limits to make each project inspectable.
           </p>
@@ -149,31 +171,30 @@
         <div class="evidence-panel">
           <div class="panel-line">
             <span>01</span>
-            <p>Public landing or dossier for each serious project.</p>
+            <p data-i18n="evidence-p1">Public landing or dossier for each serious project.</p>
           </div>
           <div class="panel-line">
             <span>02</span>
-            <p>Repo/demo/report links visible even before screenshots exist.</p>
+            <p data-i18n="evidence-p2">Direct links to source repositories, live demos, and technical papers.</p>
           </div>
           <div class="panel-line">
             <span>03</span>
-            <p>Claim boundaries and status labels: public, prototype, closed-core, evidence archive.</p>
+            <p data-i18n="evidence-p3">Claim boundaries and status labels: public, prototype, closed-core, evidence archive.</p>
           </div>
           <div class="panel-line">
             <span>04</span>
-            <p>Gallery slots ready for future screenshots, videos, and proof artifacts.</p>
+            <p data-i18n="evidence-p4">Visual proof layer with interactive screenshots and interface inspection.</p>
           </div>
         </div>
       </div>
     </section>
 
     <section id="contact" class="section contact-section" aria-labelledby="contact-title">
-      <div class="section-label">04 / contact</div>
+      <div class="section-label" data-i18n="contact-label">04 / contact</div>
       <div class="section-body contact-body">
-        <h2 id="contact-title">Open the lab.</h2>
-        <p class="lead compact">
-          For now this is a static brutalist landing that can live on GitHub Pages or be reworked in v0/Vercel.
-          The heavy parts can stay elsewhere; this page is the face, map, and public proof layer.
+        <h2 id="contact-title" data-i18n="contact-title">Open the lab.</h2>
+        <p class="lead compact" data-i18n="contact-lead">
+          This page serves as the public entry point, map, and verification layer for the entire system suite.
         </p>
         <div class="contact-links">
           <a href="https://github.com/Lotargo" target="_blank" rel="noreferrer">GitHub</a>
@@ -187,7 +208,7 @@
 
   <footer class="site-footer">
     <span>Oleg Boyko / Lotargo</span>
-    <span>AI systems · RAG · runtimes · verification</span>
+    <span data-i18n="footer-title">AI systems · RAG · runtimes · verification</span>
   </footer>
 
   <script src="./assets/js/projects.js"></script>

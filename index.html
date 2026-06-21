@@ -15,8 +15,7 @@
     (function () {
       try {
         var savedTheme = localStorage.getItem('lotargo-theme');
-        var systemLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
-        var theme = savedTheme || (systemLight ? 'light' : 'dark');
+        var theme = savedTheme || 'dark';
         document.documentElement.dataset.theme = theme;
       } catch (error) {
         document.documentElement.dataset.theme = 'dark';

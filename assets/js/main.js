@@ -157,11 +157,6 @@
       if (savedLang === 'en' || savedLang === 'ru') return savedLang;
     } catch (error) {}
 
-    try {
-      const sysLang = (navigator.language || navigator.userLanguage || '').toLowerCase();
-      if (sysLang.startsWith('ru')) return 'ru';
-    } catch (error) {}
-
     return 'en';
   }
 
@@ -172,7 +167,7 @@
       if (savedTheme === 'light' || savedTheme === 'dark') return savedTheme;
     } catch (error) {}
 
-    return root.dataset.theme === 'light' ? 'light' : 'dark';
+    return 'dark';
   }
 
   function updateThemeLabel() {

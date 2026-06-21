@@ -646,6 +646,14 @@ code {
   opacity: 1;
 }
 
+html[data-theme="light"] .project-visual::after {
+  background: linear-gradient(to top, rgba(8, 8, 8, 0.2), transparent 56%);
+}
+
+html[data-theme="light"] .project-card:hover .project-visual::after {
+  opacity: 0.55;
+}
+
 .card-body {
   padding: clamp(28px, 2.5vw, 40px);
   display: grid;

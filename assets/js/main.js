@@ -1,4 +1,37 @@
 (function () {
+  const root = document.documentElement;
+  const themeToggle = document.querySelector('[data-js="theme-toggle"]');
+  const themeLabel = document.querySelector('[data-js="theme-label"]');
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+
+  function getInitialTheme() {
+    try {
+      const savedTheme = localStorage.getItem('lotargo-theme');
+      if (savedTheme === 'light' || savedTheme === 'dark') return savedTheme;
+    } catch (error) {}
+
+    return root.dataset.theme === 'light' ? 'light' : 'dark';
+  }
+
+  function setTheme(theme) {
+    root.dataset.theme = theme;
+    if (themeMeta) themeMeta.setAttribute('content', theme === 'light' ? '#f4f1e8' : '#000000');
+    if (themeLabel) themeLabel.textContent = theme === 'light' ? 'Dark' : 'Light';
+    if (themeToggle) themeToggle.setAttribute('aria-label', `Switch to ${theme === 'light' ? 'dark' : 'light'} theme`);
+
+    try {
+      localStorage.setItem('lotargo-theme', theme);
+    } catch (error) {}
+  }
+
+  setTheme(getInitialTheme());
+
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      setTheme(root.dataset.theme === 'light' ? 'dark' : 'light');
+    });
+  }
+
   const projects = Array.isArray(window.PORTFOLIO_PROJECTS) ? window.PORTFOLIO_PROJECTS : [];
   const grid = document.querySelector('[data-js="project-grid"]');
   const filters = document.querySelector('[data-js="filters"]');

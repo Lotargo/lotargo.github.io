@@ -294,9 +294,9 @@ code {
 
 .hero-line {
   display: block;
-  font-size: clamp(62px, 12vw, 178px);
-  line-height: 0.83;
-  letter-spacing: -0.085em;
+  font-size: clamp(60px, 11.2vw, 166px);
+  line-height: 0.86;
+  letter-spacing: -0.025em;
   font-weight: 950;
   text-transform: uppercase;
   transition: color 360ms ease, -webkit-text-stroke-color 360ms ease, transform 360ms ease, letter-spacing 360ms ease;
@@ -520,11 +520,13 @@ code {
 
 .capabilities h3 {
   margin: 68px 0 18px;
-  font-size: clamp(24px, 2.05vw, 34px);
-  line-height: 1.03;
-  letter-spacing: -0.045em;
+  font-size: clamp(24px, 1.85vw, 31px);
+  line-height: 1.08;
+  letter-spacing: -0.012em;
   text-transform: uppercase;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
+  word-break: normal;
+  text-wrap: balance;
 }
 
 .capabilities p {
@@ -677,9 +679,10 @@ html[data-theme="light"] .project-card:hover .project-visual::after {
 .project-card h3 {
   margin: 0;
   font-size: clamp(36px, 4vw, 64px);
-  line-height: 0.92;
-  letter-spacing: -0.06em;
+  line-height: 0.96;
+  letter-spacing: -0.018em;
   text-transform: uppercase;
+  text-wrap: balance;
 }
 
 .project-card p {
@@ -844,8 +847,8 @@ html[data-theme="light"] .project-card:hover .project-visual::after {
   }
 
   .hero-line {
-    font-size: clamp(54px, 19vw, 90px);
-    letter-spacing: -0.095em;
+    font-size: clamp(48px, 16.5vw, 78px);
+    letter-spacing: -0.02em;
   }
 
   .hero-kicker,

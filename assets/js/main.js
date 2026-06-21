@@ -69,18 +69,26 @@
       : projects.filter((project) => project.category === activeCategory);
 
     grid.innerHTML = visibleProjects.map((project) => {
-      const imageStyle = project.image ? `style="background-image: url('${safeText(project.image)}')"` : '';
-      const imageClass = project.image ? 'project-visual has-image' : 'project-visual';
+      const hasImage = !!project.image;
+      const cardClass = hasImage ? 'project-card' : 'project-card no-visual';
+      const visualHtml = hasImage
+        ? `<a href="${safeText(project.landingUrl || project.repoUrl || '#')}" target="_blank" rel="noreferrer" class="project-visual has-image" style="background-image: url('${safeText(project.image)}')" aria-label="Visit ${safeText(project.title)} project website"></a>`
+        : '';
+
+      const showLanding = project.landingUrl &&
+        (project.landingUrl !== project.repoUrl) &&
+        !project.landingUrl.includes('github.com');
+
       const links = [
-        link('Landing', project.landingUrl),
+        showLanding ? link('Landing', project.landingUrl) : null,
         link('Repository', project.repoUrl),
         link('Demo', project.demoUrl),
         link('Docs', project.docsUrl)
       ].filter(Boolean).join('');
 
       return `
-        <article class="project-card" data-category="${safeText(project.category)}">
-          <div class="${imageClass}" ${imageStyle} data-placeholder="Screenshot slot / add image later"></div>
+        <article class="${cardClass}" data-category="${safeText(project.category)}">
+          ${visualHtml}
           <div class="card-body">
             <div class="card-top">
               <div class="card-meta">

@@ -231,6 +231,31 @@ code {
   transform: translateY(-1px);
 }
 
+.github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--muted-2);
+  transition: color 220ms ease;
+}
+
+.github-link:hover {
+  color: var(--fg);
+}
+
+.github-link svg {
+  display: block;
+  transition: transform 220ms ease;
+}
+
+.github-link:hover svg {
+  transform: scale(1.1);
+}
+
 .hero {
   width: min(100%, var(--max));
   min-height: calc(100vh - 78px);
@@ -452,9 +477,10 @@ code {
 .project-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1px;
-  background: var(--line);
-  border: 1px solid var(--line);
+  gap: 0;
+  background: transparent;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
 }
 
 .project-card {
@@ -463,12 +489,21 @@ code {
   overflow: hidden;
   background: var(--bg);
   display: grid;
-  grid-template-rows: 330px 1fr;
+  grid-template-rows: auto 1fr;
+  border-bottom: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+}
+
+.project-card.no-visual {
+  min-height: auto;
+  grid-template-rows: 1fr;
 }
 
 .project-visual {
+  display: block;
   position: relative;
   overflow: hidden;
+  aspect-ratio: 16 / 9;
   border-bottom: 1px solid var(--line);
   background:
     linear-gradient(135deg, var(--panel-soft), transparent 30%),
@@ -711,7 +746,7 @@ code {
 
   .project-card {
     min-height: auto;
-    grid-template-rows: 235px 1fr;
+    grid-template-rows: auto 1fr;
   }
 
   .capabilities article {

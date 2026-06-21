@@ -16,7 +16,7 @@ window.PORTFOLIO_PROJECTS = [
     description: "Custom low-level AI research platform presented through a public evidence archive: runtime notes, benchmarks, limitations, and claim boundaries.",
     proof: "Evidence dossier, technical notes, benchmark-oriented public page",
     stack: "Free Pascal, x86-64 Assembly, CUDA C++, custom runtime",
-    image: "",
+    image: "./assets/img/sonata.png",
     landingUrl: "https://lotargo.github.io/public_sonata_ai_landing/",
     repoUrl: "https://github.com/Lotargo/public_sonata_ai_landing"
   },
@@ -28,7 +28,7 @@ window.PORTFOLIO_PROJECTS = [
     description: "AI provider gateway and key balancer with routing, isolation, OpenAI-compatible behavior, and service architecture boundaries.",
     proof: "Live landing, repository, infrastructure-oriented documentation",
     stack: "Rust, Tokio, Axum, SQLx, SQLite, JWT, Scalar",
-    image: "",
+    image: "./assets/img/nexus.png",
     landingUrl: "https://lotargo.github.io/Nexus_API_Balancer/",
     repoUrl: "https://github.com/Lotargo/Nexus_API_Balancer"
   },
@@ -40,7 +40,7 @@ window.PORTFOLIO_PROJECTS = [
     description: "Structured document generation workspace with artifact routing, reviewer loops, OCR/web research flow, exports, and reproducible pipelines.",
     proof: "Live landing, repository, workflow documentation",
     stack: "Python, FastAPI, Next.js, React, TypeScript, SQLite, Docker",
-    image: "",
+    image: "./assets/img/academic_pipeline.png",
     landingUrl: "https://lotargo.github.io/Academic-Pipeline-Engine/",
     repoUrl: "https://github.com/Lotargo/Academic-Pipeline-Engine"
   },
@@ -52,7 +52,7 @@ window.PORTFOLIO_PROJECTS = [
     description: "Boundary test for static browser computation: DOM-as-memory, CSS evaluation layer, calculator proof module, and static runtime shell.",
     proof: "Live landing, repository, browser-runtime proof module",
     stack: "Rust, Tauri, HTML, CSS, SCSS, JavaScript, SQLite",
-    image: "",
+    image: "./assets/img/css_server.png",
     landingUrl: "https://lotargo.github.io/css-server/",
     repoUrl: "https://github.com/Lotargo/css-server"
   },
@@ -64,7 +64,7 @@ window.PORTFOLIO_PROJECTS = [
     description: "Local gallery and metadata manager for generated images, prompt extraction, workflow graph inspection, search, and persistent cache.",
     proof: "Live landing, repository, gallery interface",
     stack: "Python, Flask, SQLite, Pydantic, Pillow, Vanilla JS, Fuse.js",
-    image: "",
+    image: "./assets/img/comfyui_meta_viewer.png",
     landingUrl: "https://lotargo.github.io/ComfyUI-Meta-Viewer/",
     repoUrl: "https://github.com/Lotargo/ComfyUI-Meta-Viewer"
   },
@@ -76,7 +76,7 @@ window.PORTFOLIO_PROJECTS = [
     description: "Cyber-occult local AI chat system with retro CRT interface, PostgreSQL history, provider balancer, RAG/search tools, and atmospheric UI.",
     proof: "Live landing, repository, stylized working interface",
     stack: "Free Pascal, PHP, Lua/LuaJIT, PostgreSQL, Docker, JS, Canvas",
-    image: "",
+    image: "./assets/img/necromancer.png",
     landingUrl: "https://lotargo.github.io/Necromancer/",
     repoUrl: "https://github.com/Lotargo/Necromancer"
   },

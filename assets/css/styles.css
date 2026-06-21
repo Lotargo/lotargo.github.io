@@ -613,7 +613,7 @@ code {
   background-repeat: no-repeat;
   background-position: center;
   filter: grayscale(1) contrast(1.18);
-  transition: filter 560ms ease, transform 560ms ease;
+  transition: filter 560ms ease;
 }
 
 .project-visual.has-image::before {
@@ -622,7 +622,6 @@ code {
 
 .project-card:hover .project-visual.has-image {
   filter: grayscale(0) contrast(1);
-  transform: scale(1.025);
 }
 
 .project-visual::after {

@@ -9,23 +9,41 @@
   <meta property="og:description" content="Brutalist technical portfolio: AI systems, RAG architecture, runtime experiments, verification labs, and local-first tools." />
   <meta property="og:type" content="website" />
   <title>Oleg Boyko / Lotargo — AI Systems Portfolio</title>
+  <link rel="icon" type="image/svg+xml" href="./assets/img/favicon.svg" />
   <link rel="stylesheet" href="./assets/css/styles.css" />
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem('lotargo-theme');
+        var systemLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+        var theme = savedTheme || (systemLight ? 'light' : 'dark');
+        document.documentElement.dataset.theme = theme;
+      } catch (error) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    })();
+  </script>
 </head>
 <body>
   <a class="skip-link" href="#projects">Skip to projects</a>
 
   <header class="site-header" data-js="header">
     <a class="brand" href="#top" aria-label="Back to top">
-      <span class="brand-mark">LØ</span>
+      <span class="brand-mark" aria-hidden="true">LØ</span>
       <span class="brand-text">Lotargo</span>
     </a>
 
-    <nav class="nav" aria-label="Main navigation">
-      <a href="#systems">Systems</a>
-      <a href="#projects">Projects</a>
-      <a href="#evidence">Evidence</a>
-      <a href="#contact">Contact</a>
-    </nav>
+    <div class="header-controls">
+      <nav class="nav" aria-label="Main navigation">
+        <a href="#systems">Systems</a>
+        <a href="#projects">Projects</a>
+        <a href="#evidence">Evidence</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <button class="theme-toggle" type="button" data-js="theme-toggle" aria-label="Switch color theme">
+        <span data-js="theme-label">Theme</span>
+      </button>
+    </div>
   </header>
 
   <main id="top">

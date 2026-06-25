@@ -254,7 +254,12 @@
 
     grid.innerHTML = visibleProjects.map((project) => {
       const hasImage = !!project.image;
-      const cardClass = hasImage ? 'project-card' : 'project-card no-visual';
+      const hasLongSingleWordTitle = project.title.length > 10 && !/\s/.test(project.title);
+      const cardClass = [
+        'project-card',
+        hasImage ? '' : 'no-visual',
+        hasLongSingleWordTitle ? 'long-title' : ''
+      ].filter(Boolean).join(' ');
       const visualHtml = hasImage
         ? `<a href="${safeText(project.landingUrl || project.repoUrl || '#')}" target="_blank" rel="noreferrer" class="project-visual has-image" style="background-image: url('${safeText(project.image)}')" aria-label="Visit ${safeText(project.title)} project website"></a>`
         : '';

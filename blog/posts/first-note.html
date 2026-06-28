@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Starting the Lotargo development log." />
+  <meta name="theme-color" content="#000000" />
+  <title>Starting the development log · Lotargo Blog</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem('lotargo-theme');
+        document.documentElement.dataset.theme = savedTheme || 'dark';
+      } catch (error) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    })();
+  </script>
+</head>
+<body data-title-i18n="post-first-page-title">
+  <header class="site-header" data-js="header">
+    <a class="brand" href="../../" aria-label="Back to landing">
+      <span class="brand-mark" aria-hidden="true">LØ</span>
+      <span class="brand-text">Lotargo</span>
+    </a>
+
+    <div class="header-controls">
+      <nav class="nav" aria-label="Post navigation">
+        <a href="../../" data-i18n="blog-nav-home">Home</a>
+        <a href="../" data-i18n="nav-blog">Blog</a>
+        <a href="../../#projects" data-i18n="nav-projects">Projects</a>
+      </nav>
+      <button class="theme-toggle" type="button" data-js="theme-toggle" aria-label="Switch color theme">
+        <span data-js="theme-label">Theme</span>
+      </button>
+      <button class="lang-toggle" type="button" data-js="lang-toggle" aria-label="Switch language">
+        <span data-js="lang-label">EN</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top" class="post-shell">
+    <article class="post-article">
+      <a class="post-back" href="../" data-i18n="post-back-blog">Back to blog</a>
+      <div class="post-meta">
+        <span>2026-06-28</span>
+        <span data-i18n="post-type-site">Site architecture</span>
+      </div>
+      <h1 data-i18n="post-first-title">Starting the development log</h1>
+      <p class="post-lead" data-i18n="post-first-lead">
+        A static portfolio can still feel alive when it has a place for small, dated updates and engineering notes.
+      </p>
+
+      <p data-i18n="post-first-p1">
+        This blog starts as a simple layer beside the landing page. The immediate goal is not a publishing platform with a heavy build pipeline. The goal is a quiet archive for decisions: what changed, why a project is shaped a certain way, what tradeoffs were accepted, and what should be inspected next.
+      </p>
+
+      <p data-i18n-html="post-first-p2">
+        Markdown source files live in <code>blog/content/</code>, rendered post pages live in <code>blog/posts/</code>, and images for future notes can live in <code>blog/assets/</code>. That keeps the public site easy to host on GitHub Pages while leaving room for a generator later.
+      </p>
+
+      <p data-i18n="post-first-p3">
+        The notification center on the landing page is part of the same idea: static data, but presented like a living product surface.
+      </p>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <span>Oleg Boyko / Lotargo</span>
+    <span>Development log</span>
+  </footer>
+
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>

@@ -12,6 +12,7 @@
       "skip-link": "Skip to projects",
       "nav-systems": "Systems",
       "nav-projects": "Projects",
+      "nav-blog": "Blog",
       "nav-evidence": "Evidence",
       "nav-contact": "Contact",
       "hero-kicker-text": "AI / RAG / Runtime / Verification",
@@ -20,6 +21,7 @@
       "hero-line-3": "THE TEMPLATE",
       "hero-meta-desc": "Personal technical portfolio of <strong>Oleg Boyko / Lotargo</strong> – experimental AI systems, RAG/vector architecture, low-level runtime work, agentic tooling, and proof-oriented prototypes.",
       "hero-action-view": "View systems",
+      "hero-action-blog": "Read blog",
       "hero-action-github": "GitHub profile",
       "hero-footer-evidence": "Private core / public evidence",
       "hero-footer-static": "Static-first portfolio",
@@ -70,12 +72,38 @@
       "hero-actions-aria": "Primary actions",
       "path-aria": "Recommended path",
       "capabilities-aria": "Capabilities",
-      "filters-aria": "Project filters"
+      "filters-aria": "Project filters",
+      "notifications-title": "Updates",
+      "notifications-empty": "No updates yet.",
+      "notifications-open": "Open updates",
+      "notifications-close": "Close updates",
+      "notifications-count": "active",
+      "blog-nav-home": "Home",
+      "blog-nav-posts": "Posts",
+      "blog-page-title": "Lotargo Blog",
+      "blog-kicker": "Development notes / architecture / releases",
+      "blog-title": "Lotargo Blog",
+      "blog-intro": "Notes about AI systems, RAG architecture, runtime experiments, verification work, and the decisions behind public project pages.",
+      "blog-posts-label": "01 / posts",
+      "blog-posts-title": "Latest notes",
+      "blog-posts-lead": "A static archive that can later grow from markdown sources into generated pages.",
+      "blog-back-home": "Back home",
+      "post-type-site": "Site architecture",
+      "post-first-title": "Starting the development log",
+      "post-first-page-title": "Starting the development log · Lotargo Blog",
+      "post-first-desc": "A short note on why the portfolio now has a blog layer and how static pages can still feel alive.",
+      "post-read-note": "Read note",
+      "post-back-blog": "Back to blog",
+      "post-first-lead": "A static portfolio can still feel alive when it has a place for small, dated updates and engineering notes.",
+      "post-first-p1": "This blog starts as a simple layer beside the landing page. The immediate goal is not a publishing platform with a heavy build pipeline. The goal is a quiet archive for decisions: what changed, why a project is shaped a certain way, what tradeoffs were accepted, and what should be inspected next.",
+      "post-first-p2": "Markdown source files live in <code>blog/content/</code>, rendered post pages live in <code>blog/posts/</code>, and images for future notes can live in <code>blog/assets/</code>. That keeps the public site easy to host on GitHub Pages while leaving room for a generator later.",
+      "post-first-p3": "The notification center on the landing page is part of the same idea: static data, but presented like a living product surface."
     },
     ru: {
       "skip-link": "Перейти к проектам",
       "nav-systems": "Системы",
       "nav-projects": "Проекты",
+      "nav-blog": "Блог",
       "nav-evidence": "Подтверждения",
       "nav-contact": "Контакты",
       "hero-kicker-text": "ИИ / RAG / Среды исполнения / Верификация",
@@ -84,6 +112,7 @@
       "hero-line-3": "ШАБЛОНОВ",
       "hero-meta-desc": "Персональное техническое портфолио <strong>Олега Бойко / Lotargo</strong> – экспериментальные ИИ-системы, RAG/векторная архитектура, низкоуровневая работа со средами исполнения, агентные инструменты и прототипы, ориентированные на верификацию.",
       "hero-action-view": "Смотреть системы",
+      "hero-action-blog": "Читать блог",
       "hero-action-github": "Профиль GitHub",
       "hero-footer-evidence": "Приватное ядро / публичные доказательства",
       "hero-footer-static": "Статическое портфолио",
@@ -134,7 +163,32 @@
       "hero-actions-aria": "Основные действия",
       "path-aria": "Рекомендуемый маршрут",
       "capabilities-aria": "Направления",
-      "filters-aria": "Фильтры проектов"
+      "filters-aria": "Фильтры проектов",
+      "notifications-title": "Обновления",
+      "notifications-empty": "Пока нет обновлений.",
+      "notifications-open": "Открыть обновления",
+      "notifications-close": "Закрыть обновления",
+      "notifications-count": "активных",
+      "blog-nav-home": "Главная",
+      "blog-nav-posts": "Посты",
+      "blog-page-title": "Блог Lotargo",
+      "blog-kicker": "Заметки о разработке / архитектура / релизы",
+      "blog-title": "Блог Lotargo",
+      "blog-intro": "Заметки об ИИ-системах, RAG-архитектуре, экспериментах со средами исполнения, верификации и решениях за публичными страницами проектов.",
+      "blog-posts-label": "01 / посты",
+      "blog-posts-title": "Последние заметки",
+      "blog-posts-lead": "Статический архив, который позже можно вырастить из markdown-исходников в генерируемые страницы.",
+      "blog-back-home": "На главную",
+      "post-type-site": "Архитектура сайта",
+      "post-first-title": "Запуск журнала разработки",
+      "post-first-page-title": "Запуск журнала разработки · Блог Lotargo",
+      "post-first-desc": "Короткая заметка о том, зачем портфолио нужен блоговый слой и как статические страницы могут ощущаться живыми.",
+      "post-read-note": "Читать заметку",
+      "post-back-blog": "Назад в блог",
+      "post-first-lead": "Статическое портфолио может ощущаться живым, если в нём есть место для небольших датированных обновлений и инженерных заметок.",
+      "post-first-p1": "Этот блог начинается как простой слой рядом с лендингом. Ближайшая цель — не тяжёлая публикационная платформа, а спокойный архив решений: что изменилось, почему проект устроен именно так, какие компромиссы приняты и что стоит проверить дальше.",
+      "post-first-p2": "Markdown-исходники живут в <code>blog/content/</code>, готовые страницы постов — в <code>blog/posts/</code>, а изображения для будущих заметок могут лежать в <code>blog/assets/</code>. Так сайт остаётся простым для GitHub Pages, но сохраняет место для генератора в будущем.",
+      "post-first-p3": "Центр уведомлений на лендинге работает в той же логике: статические данные, но поданные как живая поверхность продукта."
     }
   };
 
@@ -202,16 +256,6 @@
     });
   }
 
-  // 4. Projects Core Rendering & Filters
-  const projects = Array.isArray(window.PORTFOLIO_PROJECTS) ? window.PORTFOLIO_PROJECTS : [];
-  const grid = document.querySelector('[data-js="project-grid"]');
-  const filters = document.querySelector('[data-js="filters"]');
-
-  if (!grid || !filters) return;
-
-  const categories = ['ALL', ...Array.from(new Set(projects.map((project) => project.category))).sort()];
-  let activeCategory = 'ALL';
-
   function safeText(value) {
     return String(value ?? '').replace(/[&<>"]/g, (match) => ({
       '&': '&amp;',
@@ -229,7 +273,124 @@
     return val || '';
   }
 
+  // 4. Static notification center
+  const notifications = Array.isArray(window.PORTFOLIO_NOTIFICATIONS) ? window.PORTFOLIO_NOTIFICATIONS : [];
+  const notificationRoot = document.querySelector('[data-js="notifications"]');
+  const notificationToggle = document.querySelector('[data-js="notification-toggle"]');
+  const notificationPanel = document.querySelector('[data-js="notification-panel"]');
+  const notificationBadge = document.querySelector('[data-js="notification-badge"]');
+  const notificationCount = document.querySelector('[data-js="notification-count"]');
+  const notificationList = document.querySelector('[data-js="notification-list"]');
+  const seenNotificationKey = 'lotargo-seen-notifications';
+
+  function getSeenNotificationIds() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(seenNotificationKey) || '[]');
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+      return [];
+    }
+  }
+
+  function setSeenNotificationIds(ids) {
+    try {
+      localStorage.setItem(seenNotificationKey, JSON.stringify(Array.from(new Set(ids))));
+    } catch (error) {}
+  }
+
+  function getUnseenNotifications() {
+    const seenIds = new Set(getSeenNotificationIds());
+    return notifications.filter((item) => !seenIds.has(item.id));
+  }
+
+  function updateNotificationBadge() {
+    if (!notificationBadge || !notificationCount || !notificationToggle) return;
+    const unseenCount = getUnseenNotifications().length;
+    notificationBadge.textContent = String(unseenCount);
+    notificationBadge.hidden = unseenCount === 0;
+    notificationCount.textContent = `${unseenCount} ${TRANSLATIONS[currentLang]["notifications-count"]}`;
+    notificationToggle.setAttribute(
+      'aria-label',
+      notificationPanel && !notificationPanel.hidden
+        ? TRANSLATIONS[currentLang]["notifications-close"]
+        : TRANSLATIONS[currentLang]["notifications-open"]
+    );
+    notificationToggle.setAttribute('aria-expanded', notificationPanel && !notificationPanel.hidden ? 'true' : 'false');
+  }
+
+  function renderNotifications() {
+    if (!notificationList) return;
+
+    if (!notifications.length) {
+      notificationList.innerHTML = `<p class="notification-empty">${safeText(TRANSLATIONS[currentLang]["notifications-empty"])}</p>`;
+      updateNotificationBadge();
+      return;
+    }
+
+    notificationList.innerHTML = notifications.map((item) => {
+      const type = getProp(item, 'type', currentLang);
+      const title = getProp(item, 'title', currentLang);
+      const text = getProp(item, 'text', currentLang);
+      const url = item.url || '#';
+
+      return `
+        <a class="notification-item" href="${safeText(url)}">
+          <span class="notification-meta">${safeText(item.date)} / ${safeText(type)}</span>
+          <strong>${safeText(title)}</strong>
+          <span>${safeText(text)}</span>
+        </a>
+      `;
+    }).join('');
+
+    updateNotificationBadge();
+  }
+
+  function openNotificationPanel() {
+    if (!notificationPanel) return;
+    notificationPanel.hidden = false;
+    setSeenNotificationIds([
+      ...getSeenNotificationIds(),
+      ...notifications.map((item) => item.id)
+    ]);
+    updateNotificationBadge();
+  }
+
+  function closeNotificationPanel() {
+    if (!notificationPanel) return;
+    notificationPanel.hidden = true;
+    updateNotificationBadge();
+  }
+
+  if (notificationToggle && notificationPanel) {
+    notificationToggle.addEventListener('click', (event) => {
+      event.stopPropagation();
+      if (notificationPanel.hidden) {
+        openNotificationPanel();
+      } else {
+        closeNotificationPanel();
+      }
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!notificationRoot || notificationRoot.contains(event.target)) return;
+      closeNotificationPanel();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') closeNotificationPanel();
+    });
+  }
+
+  // 5. Projects Core Rendering & Filters
+  const projects = Array.isArray(window.PORTFOLIO_PROJECTS) ? window.PORTFOLIO_PROJECTS : [];
+  const grid = document.querySelector('[data-js="project-grid"]');
+  const filters = document.querySelector('[data-js="filters"]');
+
+  const categories = ['ALL', ...Array.from(new Set(projects.map((project) => project.category))).sort()];
+  let activeCategory = 'ALL';
+
   function renderFilters() {
+    if (!filters) return;
     filters.innerHTML = categories.map((category) => {
       const labelObj = CATEGORY_LABELS[category] || { en: category, ru: category };
       const displayLabel = labelObj[currentLang] || labelObj['en'];
@@ -248,6 +409,7 @@
   }
 
   function renderProjects() {
+    if (!grid) return;
     const visibleProjects = activeCategory === 'ALL'
       ? projects
       : projects.filter((project) => project.category === activeCategory);
@@ -310,27 +472,41 @@
     }).join('');
   }
 
-  filters.addEventListener('click', (event) => {
-    const button = event.target.closest('button[data-category]');
-    if (!button) return;
-    activeCategory = button.dataset.category;
-    renderFilters();
-    renderProjects();
-  });
+  if (filters) {
+    filters.addEventListener('click', (event) => {
+      const button = event.target.closest('button[data-category]');
+      if (!button) return;
+      activeCategory = button.dataset.category;
+      renderFilters();
+      renderProjects();
+    });
+  }
 
-  // 5. DOM Translation Engine
+  // 6. DOM Translation Engine
   function translatePage() {
+    const hasPageTranslations = !!document.querySelector('[data-i18n], [data-i18n-html], [data-i18n-aria]');
+    const isLandingPage = !!document.querySelector('[data-js="project-grid"]');
+
     // 1. Set HTML lang attribute
-    document.documentElement.setAttribute('lang', currentLang);
+    if (hasPageTranslations) {
+      document.documentElement.setAttribute('lang', currentLang);
+    }
 
     // 2. Set metadata
-    document.title = TRANSLATIONS[currentLang]["title"];
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) metaDesc.setAttribute('content', TRANSLATIONS[currentLang]["meta-desc"]);
-    const ogTitle = document.querySelector('meta[property="og:title"]');
-    if (ogTitle) ogTitle.setAttribute('content', TRANSLATIONS[currentLang]["og-title"]);
-    const ogDesc = document.querySelector('meta[property="og:description"]');
-    if (ogDesc) ogDesc.setAttribute('content', TRANSLATIONS[currentLang]["og-desc"]);
+    if (hasPageTranslations && isLandingPage) {
+      document.title = TRANSLATIONS[currentLang]["title"];
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) metaDesc.setAttribute('content', TRANSLATIONS[currentLang]["meta-desc"]);
+      const ogTitle = document.querySelector('meta[property="og:title"]');
+      if (ogTitle) ogTitle.setAttribute('content', TRANSLATIONS[currentLang]["og-title"]);
+      const ogDesc = document.querySelector('meta[property="og:description"]');
+      if (ogDesc) ogDesc.setAttribute('content', TRANSLATIONS[currentLang]["og-desc"]);
+    }
+
+    const pageTitleKey = document.body?.dataset.titleI18n;
+    if (!isLandingPage && pageTitleKey && TRANSLATIONS[currentLang][pageTitleKey]) {
+      document.title = TRANSLATIONS[currentLang][pageTitleKey];
+    }
 
     // 3. Elements with data-i18n
     document.querySelectorAll('[data-i18n]').forEach((el) => {
@@ -363,12 +539,13 @@
     if (langLabel) langLabel.textContent = TRANSLATIONS[currentLang]["lang-btn"];
     if (langToggle) langToggle.setAttribute('aria-label', TRANSLATIONS[currentLang]["lang-aria"]);
 
-    // 8. Re-render projects and filters to apply translated content
+    // 8. Re-render dynamic content to apply translated content
+    renderNotifications();
     renderFilters();
     renderProjects();
   }
 
-  // 6. Language Toggle Setup
+  // 7. Language Toggle Setup
   if (langToggle) {
     langToggle.addEventListener('click', () => {
       currentLang = currentLang === 'en' ? 'ru' : 'en';
@@ -379,7 +556,7 @@
     });
   }
 
-  // 7. Bootstrap i18n
+  // 8. Bootstrap i18n
   currentLang = getInitialLanguage();
   translatePage();
 })();

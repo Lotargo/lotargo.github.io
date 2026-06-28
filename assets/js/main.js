@@ -89,15 +89,30 @@
       "blog-posts-lead": "A static archive that can later grow from markdown sources into generated pages.",
       "blog-back-home": "Back home",
       "post-type-site": "Site architecture",
-      "post-first-title": "Starting the development log",
-      "post-first-page-title": "Starting the development log · Lotargo Blog",
-      "post-first-desc": "A short note on why the portfolio now has a blog layer and how static pages can still feel alive.",
+      "post-first-title": "How we added the blog and living updates",
+      "post-first-page-title": "How we added the blog and living updates · Lotargo Blog",
+      "post-first-desc": "A practical sample post with screenshots, markdown structure, Mermaid, and LaTeX for future technical notes.",
       "post-read-note": "Read note",
       "post-back-blog": "Back to blog",
-      "post-first-lead": "A static portfolio can still feel alive when it has a place for small, dated updates and engineering notes.",
-      "post-first-p1": "This blog starts as a simple layer beside the landing page. The immediate goal is not a publishing platform with a heavy build pipeline. The goal is a quiet archive for decisions: what changed, why a project is shaped a certain way, what tradeoffs were accepted, and what should be inspected next.",
-      "post-first-p2": "Markdown source files live in <code>blog/content/</code>, rendered post pages live in <code>blog/posts/</code>, and images for future notes can live in <code>blog/assets/</code>. That keeps the public site easy to host on GitHub Pages while leaving room for a generator later.",
-      "post-first-p3": "The notification center on the landing page is part of the same idea: static data, but presented like a living product surface."
+      "post-first-lead": "This first article is both an update note and a reusable sample for future technical posts.",
+      "post-first-p1": "We added a notification center to the landing page and a dedicated blog section with markdown sources, rendered HTML pages, and a place for post assets.",
+      "post-img-notifications-alt": "Landing page with the notification panel open",
+      "post-img-notifications-caption": "The landing page now has a static update feed that remembers viewed notifications.",
+      "post-section-workflow": "Publishing workflow",
+      "post-first-p2": "Instead of adding a protected admin panel, the blog uses a local publishing workflow: write markdown, preview locally, commit the finished version, and let GitHub Pages update the site.",
+      "post-section-structure": "Blog structure",
+      "post-first-p3": "Markdown source files live in <code>blog/content/</code>, rendered post pages live in <code>blog/posts/</code>, and images for future notes can live in <code>blog/assets/</code>.",
+      "post-img-blog-alt": "Blog index page",
+      "post-img-blog-caption": "The blog entry point keeps the same visual language as the landing page.",
+      "post-section-latex": "LaTeX example",
+      "post-first-p4": "Technical articles often need formulas. For example, the publishing cost can be described as:",
+      "post-section-template": "What to copy next",
+      "post-first-p5": "For a new post, create RU and EN markdown files, put images into the asset folder, preview the page locally, and commit the finished version.",
+      "post-pagination-aria": "Post navigation",
+      "post-prev": "Previous",
+      "post-next": "Next",
+      "post-prev-none": "No earlier post",
+      "post-next-none": "No later post"
     },
     ru: {
       "skip-link": "Перейти к проектам",
@@ -180,15 +195,30 @@
       "blog-posts-lead": "Статический архив, который позже можно вырастить из markdown-исходников в генерируемые страницы.",
       "blog-back-home": "На главную",
       "post-type-site": "Архитектура сайта",
-      "post-first-title": "Запуск журнала разработки",
-      "post-first-page-title": "Запуск журнала разработки · Блог Lotargo",
-      "post-first-desc": "Короткая заметка о том, зачем портфолио нужен блоговый слой и как статические страницы могут ощущаться живыми.",
+      "post-first-title": "Как мы добавили блог и живые уведомления",
+      "post-first-page-title": "Как мы добавили блог и живые уведомления · Блог Lotargo",
+      "post-first-desc": "Практический образец поста со скриншотами, markdown-структурой, Mermaid и LaTeX для будущих технических заметок.",
       "post-read-note": "Читать заметку",
       "post-back-blog": "Назад в блог",
-      "post-first-lead": "Статическое портфолио может ощущаться живым, если в нём есть место для небольших датированных обновлений и инженерных заметок.",
-      "post-first-p1": "Этот блог начинается как простой слой рядом с лендингом. Ближайшая цель — не тяжёлая публикационная платформа, а спокойный архив решений: что изменилось, почему проект устроен именно так, какие компромиссы приняты и что стоит проверить дальше.",
-      "post-first-p2": "Markdown-исходники живут в <code>blog/content/</code>, готовые страницы постов — в <code>blog/posts/</code>, а изображения для будущих заметок могут лежать в <code>blog/assets/</code>. Так сайт остаётся простым для GitHub Pages, но сохраняет место для генератора в будущем.",
-      "post-first-p3": "Центр уведомлений на лендинге работает в той же логике: статические данные, но поданные как живая поверхность продукта."
+      "post-first-lead": "Эта первая статья одновременно рассказывает об обновлении и служит шаблоном для будущих технических постов.",
+      "post-first-p1": "Мы добавили центр уведомлений на главную страницу и отдельный раздел блога с markdown-исходниками, готовыми HTML-страницами и местом для ассетов постов.",
+      "post-img-notifications-alt": "Лендинг с раскрытой панелью уведомлений",
+      "post-img-notifications-caption": "На лендинге появился статический поток обновлений, который запоминает просмотренные уведомления.",
+      "post-section-workflow": "Процесс публикации",
+      "post-first-p2": "Вместо защищённой админки блог использует локальный процесс публикации: пишем markdown, смотрим локальный предпросмотр, коммитим готовую версию, а GitHub Pages обновляет сайт.",
+      "post-section-structure": "Структура блога",
+      "post-first-p3": "Markdown-исходники живут в <code>blog/content/</code>, готовые страницы постов — в <code>blog/posts/</code>, а изображения для будущих заметок могут лежать в <code>blog/assets/</code>.",
+      "post-img-blog-alt": "Страница блога",
+      "post-img-blog-caption": "Входная страница блога сохраняет тот же визуальный язык, что и лендинг.",
+      "post-section-latex": "Пример LaTeX",
+      "post-first-p4": "Техническим статьям часто нужны формулы. Например, стоимость публикации можно описать так:",
+      "post-section-template": "Что копировать дальше",
+      "post-first-p5": "Для нового поста создаём RU и EN markdown-файлы, кладём изображения в папку ассетов, проверяем страницу локально и коммитим готовую версию.",
+      "post-pagination-aria": "Навигация по статьям",
+      "post-prev": "Предыдущая",
+      "post-next": "Следующая",
+      "post-prev-none": "Нет более ранней статьи",
+      "post-next-none": "Нет более поздней статьи"
     }
   };
 
@@ -484,7 +514,7 @@
 
   // 6. DOM Translation Engine
   function translatePage() {
-    const hasPageTranslations = !!document.querySelector('[data-i18n], [data-i18n-html], [data-i18n-aria]');
+    const hasPageTranslations = !!document.querySelector('[data-i18n], [data-i18n-html], [data-i18n-aria], [data-i18n-attr-alt]');
     const isLandingPage = !!document.querySelector('[data-js="project-grid"]');
 
     // 1. Set HTML lang attribute
@@ -529,6 +559,13 @@
       const key = el.getAttribute('data-i18n-aria');
       if (TRANSLATIONS[currentLang][key]) {
         el.setAttribute('aria-label', TRANSLATIONS[currentLang][key]);
+      }
+    });
+
+    document.querySelectorAll('[data-i18n-attr-alt]').forEach((el) => {
+      const key = el.getAttribute('data-i18n-attr-alt');
+      if (TRANSLATIONS[currentLang][key]) {
+        el.setAttribute('alt', TRANSLATIONS[currentLang][key]);
       }
     });
 

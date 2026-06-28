@@ -1,3 +1,13 @@
 # Blog assets
 
-Put images and other post-specific media here. Reference them from markdown with relative paths such as `../assets/example.png`, then mirror the same path from the rendered HTML page when needed.
+Put images and other post-specific media here.
+
+Current sample assets:
+
+- `landing-notifications.png` — landing page with the notification panel open.
+- `blog-index.png` — blog index page.
+
+Use paths like this:
+
+- From markdown in `blog/content/`: `../assets/example.png`
+- From rendered posts in `blog/posts/`: `../assets/example.png`

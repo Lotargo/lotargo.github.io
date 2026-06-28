@@ -956,10 +956,21 @@ html[data-theme="light"] .project-card:hover .project-visual::after {
 
 .post-meta,
 .post-back,
-.post-link {
+.post-link,
+.post-page-link {
   font-family: var(--mono);
   letter-spacing: 0.13em;
   text-transform: uppercase;
+}
+
+.post-toolbar {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: end;
+  gap: 18px 28px;
+  margin-bottom: clamp(28px, 4vw, 48px);
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line);
 }
 
 .post-meta {
@@ -996,6 +1007,56 @@ html[data-theme="light"] .project-card:hover .project-visual::after {
   text-underline-offset: 6px;
 }
 
+.post-back {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+}
+
+.post-pagination {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  margin-top: clamp(48px, 7vw, 88px);
+  border: 1px solid var(--line);
+  background: var(--line);
+}
+
+.post-page-link {
+  min-height: 132px;
+  padding: clamp(22px, 3vw, 34px);
+  background: var(--panel);
+  display: grid;
+  align-content: space-between;
+  gap: 18px;
+  color: var(--fg);
+  font-size: 12px;
+  transition: background 220ms ease, color 220ms ease;
+}
+
+a.post-page-link:hover,
+a.post-page-link:focus-visible {
+  background: var(--fg);
+  color: var(--bg);
+}
+
+.post-page-link > span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.post-page-link strong {
+  font-size: clamp(18px, 2vw, 24px);
+  line-height: 1.1;
+  letter-spacing: 0;
+}
+
+.post-page-link.is-disabled {
+  color: var(--muted);
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .post-article {
   width: min(100%, 920px);
   margin: 0 auto;
@@ -1010,6 +1071,14 @@ html[data-theme="light"] .project-card:hover .project-visual::after {
   text-transform: uppercase;
 }
 
+.post-article h2 {
+  margin: clamp(42px, 6vw, 72px) 0 18px;
+  font-size: clamp(28px, 3.4vw, 48px);
+  line-height: 1;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+}
+
 .post-lead,
 .post-article p {
   color: var(--muted-2);
@@ -1019,6 +1088,66 @@ html[data-theme="light"] .project-card:hover .project-visual::after {
 
 .post-lead {
   color: var(--fg);
+}
+
+.post-figure {
+  margin: clamp(34px, 5vw, 58px) 0;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.post-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-bottom: 1px solid var(--line);
+}
+
+.post-figure figcaption {
+  padding: 16px 18px;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.post-code,
+.post-diagram,
+.post-formula {
+  margin: clamp(28px, 4vw, 44px) 0;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.post-code {
+  overflow-x: auto;
+  padding: 22px;
+}
+
+.post-code code {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--muted-2);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.post-diagram {
+  padding: 24px;
+}
+
+.post-formula {
+  overflow-x: auto;
+  padding: 24px;
+  color: var(--fg);
+  text-align: center;
+}
+
+.post-formula .katex-display {
+  margin: 0;
 }
 
 @media (max-width: 1180px) {
@@ -1132,6 +1261,15 @@ html[data-theme="light"] .project-card:hover .project-visual::after {
   .post-card h3,
   .post-article h1 {
     letter-spacing: -0.02em;
+  }
+
+  .post-toolbar,
+  .post-pagination {
+    grid-template-columns: 1fr;
+  }
+
+  .post-page-link {
+    min-height: 112px;
   }
 }
 

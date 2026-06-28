@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="A technical article about overfitting a tiny Mamba model on arithmetic, state-space stability, GPU overflows, and plateau analysis." />
+  <meta name="description" content="A technical article about overfitting a 380k parameter Mamba model on two-digit addition, GPU overflow failure modes, state-space stability, and why the final plateau mattered." />
   <meta name="theme-color" content="#000000" />
   <title>When a Tiny Mamba Learns Arithmetic · Lotargo Blog</title>
   <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg" />
@@ -19,13 +19,12 @@
     })();
   </script>
 </head>
-<body data-title-i18n="post-arith-page-title">
+<body data-title-en="When a Tiny Mamba Learns Arithmetic · Lotargo Blog" data-title-ru="Когда маленькая Mamba учится арифметике · Блог Lotargo">
   <header class="site-header" data-js="header">
     <a class="brand" href="../../" aria-label="Back to landing">
       <span class="brand-mark" aria-hidden="true">LØ</span>
       <span class="brand-text">Lotargo</span>
     </a>
-
     <div class="header-controls">
       <nav class="nav" aria-label="Post navigation">
         <a href="../../" data-i18n="blog-nav-home">Home</a>
@@ -40,198 +39,121 @@
       </button>
     </div>
   </header>
-
   <main id="top" class="post-shell">
     <article class="post-article">
       <div class="post-toolbar">
         <a class="post-back" href="../" data-i18n="post-back-blog">Back to blog</a>
         <div class="post-meta">
           <span>2026-06-28</span>
-          <span data-i18n="post-type-ai">AI stability</span>
+          <span data-lang-content="en">AI stability</span>
+          <span data-lang-content="ru">Стабильность ИИ</span>
         </div>
       </div>
+      <div data-lang-content="en"><h1>When a Tiny Mamba Learns Arithmetic</h1>
 
-      <h1 data-i18n="post-arith-title">When a Tiny Mamba Learns Arithmetic</h1>
-      <p class="post-lead" data-i18n="post-arith-lead">
-        A small arithmetic overfit test became a useful probe for recurrent stability, GPU overflows, and optimizer plateaus.
-      </p>
+<p>The experiment looked small on purpose: train a 380k parameter, 6-layer Mamba-style model on 1,000 examples of two-digit addition without carry. The point was not to solve arithmetic in general. The point was to ask a sharper engineering question: can the model overfit a tiny deterministic task without losing numerical stability?</p>
 
-      <div class="metric-strip" aria-label="Experiment summary">
-        <div>
-          <span>380k</span>
-          <strong data-i18n="metric-params">parameters</strong>
-        </div>
-        <div>
-          <span>1000</span>
-          <strong data-i18n="metric-samples">samples</strong>
-        </div>
-        <div>
-          <span>0.2261</span>
-          <strong data-i18n="metric-loss">final loss</strong>
-        </div>
-        <div>
-          <span>2.5%</span>
-          <strong data-i18n="metric-val-em">validation EM</strong>
-        </div>
-      </div>
+<p>The answer was mixed in the most useful way. The fourth run stayed stable for 1,000 epochs and produced the target sanity-check answer <code>21+48=69</code>, but exact-match accuracy stayed low: 1.9% on train and 2.5% on validation. That gap is the story.</p>
 
-      <p data-i18n="post-arith-p1">
-        The target task was intentionally narrow: train a 6-layer Mamba-style model to overfit 1,000 no-carry two-digit addition examples. The model stayed stable in the final run and answered the sanity check 21+48=69, but exact-match accuracy exposed a deeper protocol problem.
-      </p>
+<h2>Four runs, one stable path</h2>
 
-      <h2 data-i18n="post-arith-runs-title">Four runs, one stable path</h2>
-      <p data-i18n="post-arith-runs-p">
-        Each run isolated a different failure mode: underutilization, recurrent expansion, optimizer overflow, and finally a stable but plateaued configuration.
-      </p>
+<p>The first attempts showed two separate failure modes. Increasing batch size improved GPU utilization but exposed unstable state-space dynamics. Adding parameter clamping stabilized the recurrent matrix, but a high learning rate still pushed the optimizer into overflow. The successful configuration was more conservative: batch size 256, learning rate <code>3e-4</code>, and post-step clamping.</p>
 
-      <div class="post-table-wrap">
-        <table class="post-table">
-          <thead>
-            <tr>
-              <th data-i18n="table-run">Run</th>
-              <th>Batch</th>
-              <th>LR</th>
-              <th>Clamp</th>
-              <th data-i18n="table-outcome">Outcome</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>01</td>
-              <td>128</td>
-              <td>1e-3</td>
-              <td data-i18n="table-no">No</td>
-              <td data-i18n="run1-outcome">Manually stopped</td>
-            </tr>
-            <tr>
-              <td>02</td>
-              <td>256</td>
-              <td>1e-3</td>
-              <td data-i18n="table-no">No</td>
-              <td data-i18n="run2-outcome">FPU overflow at epoch 400</td>
-            </tr>
-            <tr>
-              <td>03</td>
-              <td>512</td>
-              <td>1e-3</td>
-              <td data-i18n="table-yes">Yes</td>
-              <td data-i18n="run3-outcome">NaN / FPU overflow</td>
-            </tr>
-            <tr>
-              <td>04</td>
-              <td>256</td>
-              <td>3e-4</td>
-              <td data-i18n="table-yes">Yes</td>
-              <td data-i18n="run4-outcome">Stable to epoch 1000</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+<div class="post-table-wrap"><table class="post-table"><thead><tr><th>Run</th><th>Batch</th><th>LR</th><th>Clamp</th><th>Outcome</th></tr></thead><tbody><tr><td>1</td><td>128</td><td><code>1e-3</code></td><td>no</td><td>manually stopped</td></tr><tr><td>2</td><td>256</td><td><code>1e-3</code></td><td>no</td><td>FPU overflow at epoch 400</td></tr><tr><td>3</td><td>512</td><td><code>1e-3</code></td><td>yes</td><td>NaN / FPU overflow</td></tr><tr><td>4</td><td>256</td><td><code>3e-4</code></td><td>yes</td><td>stable to epoch 1000</td></tr></tbody></table></div>
 
-      <h2 data-i18n="post-arith-stability-title">What stability meant</h2>
-      <p data-i18n-html="post-arith-stability-p">
-        The diagonal state transition had to remain contracting. Without projection, the recurrent parameter drifted above zero and the scan became expanding. Clamping kept the state-space core stable, but it did not remove the need for a calmer optimizer.
-      </p>
+<h2>What stability actually meant</h2>
 
-      <div class="post-formula" aria-label="A less than or equal to minus ten to the minus four implies a contracting scan">
-        <span class="math-formula">
-          <i>A</i> <= -10<sup>-4</sup>
-          <span class="math-arrow">=></span>
-          <span>contracting scan</span>
-        </span>
-      </div>
+<p>The key stability principle was simple: the diagonal state transition must remain contracting. If the recurrent state parameter drifts above zero, the scan turns from a decaying system into an expanding one. On GPU, that showed up as invalid floating point operations.</p>
 
-      <h2 data-i18n="post-arith-plateau-title">The plateau</h2>
-      <p data-i18n="post-arith-plateau-p">
-        Most of the learning happened early. From epoch 200 to epoch 1000, the loss moved by only 0.0261 points.
-      </p>
+<p>Clamping the state parameter to a negative range kept the recurrence stable. It did not solve optimization by itself, but it separated architectural instability from optimizer instability.</p>
 
-      <figure class="chart-card">
-        <figcaption data-i18n="chart-loss-title">Training loss by epoch</figcaption>
-        <svg class="line-chart" viewBox="0 0 720 320" role="img" aria-label="Training loss curve">
-          <line x1="58" y1="268" x2="680" y2="268" />
-          <line x1="58" y1="24" x2="58" y2="268" />
-          <polyline points="58,36 120,202 182,248 430,250 680,252" />
-          <g>
-            <circle cx="58" cy="36" r="5" />
-            <circle cx="120" cy="202" r="5" />
-            <circle cx="182" cy="248" r="5" />
-            <circle cx="430" cy="250" r="5" />
-            <circle cx="680" cy="252" r="5" />
-          </g>
-          <text x="58" y="292">1</text>
-          <text x="112" y="292">100</text>
-          <text x="172" y="292">200</text>
-          <text x="418" y="292">600</text>
-          <text x="655" y="292">1000</text>
-          <text x="72" y="34">3.0245</text>
-          <text x="132" y="198">0.8238</text>
-          <text x="194" y="244">0.2522</text>
-          <text x="442" y="246">0.2299</text>
-          <text x="600" y="242">0.2261</text>
-        </svg>
-      </figure>
+<h2>The plateau</h2>
 
-      <h2 data-i18n="post-arith-eval-title">Why exact match stayed low</h2>
-      <p data-i18n="post-arith-eval-p">
-        The model was not random. It often learned the shape of the answer, but exact match punished digit-level approximations and generation truncation as complete failures.
-      </p>
+<p>The loss curve tells the second half of the story:</p>
 
-      <div class="chart-grid">
-        <figure class="chart-card">
-          <figcaption data-i18n="chart-em-title">Exact match accuracy</figcaption>
-          <div class="bar-chart">
-            <div class="bar-row">
-              <span>Train</span>
-              <div><i style="width: 1.9%"></i></div>
-              <strong>1.9%</strong>
-            </div>
-            <div class="bar-row">
-              <span>Val</span>
-              <div><i style="width: 2.5%"></i></div>
-              <strong>2.5%</strong>
-            </div>
-          </div>
-        </figure>
+<div class="post-table-wrap"><table class="post-table"><thead><tr><th>Epoch</th><th>Loss</th></tr></thead><tbody><tr><td>1</td><td>3.0245</td></tr><tr><td>100</td><td>0.8238</td></tr><tr><td>200</td><td>0.2522</td></tr><tr><td>600</td><td>0.2299</td></tr><tr><td>1000</td><td>0.2261</td></tr></tbody></table></div>
 
-        <figure class="chart-card">
-          <figcaption data-i18n="chart-errors-title">Observed error classes</figcaption>
-          <div class="error-pills">
-            <span data-i18n="error-offbyone">Off-by-one digit errors</span>
-            <span data-i18n="error-truncation">Generation truncation</span>
-            <span data-i18n="error-noise">Separator / token noise</span>
-          </div>
-        </figure>
-      </div>
+<figure class="chart-card"><figcaption>Training loss by epoch</figcaption><svg class="line-chart" viewBox="0 0 720 320" role="img" aria-label="Training loss by epoch"><line x1="58" y1="268" x2="680" y2="268" /><line x1="58" y1="24" x2="58" y2="268" /><polyline points="58.0,24.0 119.6,215.9 181.9,265.7 431.0,267.7 680.0,268.0" /><g><circle cx="58.0" cy="24.0" r="5" /><circle cx="119.6" cy="215.9" r="5" /><circle cx="181.9" cy="265.7" r="5" /><circle cx="431.0" cy="267.7" r="5" /><circle cx="680.0" cy="268.0" r="5" /></g><text x="58.0" y="302">1</text><text x="68.0" y="16.0">3.0245</text><text x="119.6" y="302">100</text><text x="129.6" y="207.9">0.8238</text><text x="181.9" y="302">200</text><text x="191.9" y="257.7">0.2522</text><text x="431.0" y="302">600</text><text x="441.0" y="259.7">0.2299</text><text x="680.0" y="302">1000</text><text x="690.0" y="260.0">0.2261</text></svg></figure>
 
-      <pre class="post-code"><code>41+41=  expected 82  generated 84
-27+40=  expected 67  generated 68
-14+40=  expected 54  generated 6=
-65+23=  expected 88  generated 6</code></pre>
+<p>Most of the learning happened early. From epoch 200 to 1000, the model only improved by 0.0261 loss points. That plateau suggests the fixed learning rate was too coarse for the final stage, and the large batch size removed the stochastic noise that can help escape shallow traps.</p>
 
-      <h2 data-i18n="post-arith-next-title">What changes next</h2>
-      <p data-i18n="post-arith-next-p">
-        The next experiment should add scratchpad tokens, learning-rate decay on plateaus, a safer generation budget, and separate metrics for off-by-one and truncation errors.
-      </p>
+<h2>Why exact match stayed low</h2>
 
+<p>The model was not random. It often learned the magnitude and partial structure of the answer, but it failed in ways that matter for exact-match evaluation.</p>
+
+<p>Two error classes dominated:</p>
+
+<ul><li>off-by-one or digit-level approximations, such as <code>41+41 -&gt; 84</code> instead of <code>82</code>;</li><li>generation truncation, where the two-token decode budget was too strict after an unwanted token.</li></ul>
+
+<figure class="chart-card"><figcaption>Bar chart</figcaption><div class="bar-chart"><div class="bar-row"><span>Train EM</span><div><i style="width: 76.00%"></i></div><strong>1.9%</strong></div><div class="bar-row"><span>Val EM</span><div><i style="width: 100.00%"></i></div><strong>2.5%</strong></div></div></figure>
+
+<p>This is why the model could pass the sanity check <code>21+48=69</code> while still failing the broader exact-match metric.</p>
+
+<h2>What this changes next</h2>
+
+<p>The next experiment should not only train longer. It should change the task interface and the optimizer loop:</p>
+
+<ul><li>add explicit scratchpad tokens so intermediate arithmetic can be represented in the sequence;</li><li>add learning-rate decay when the loss window flattens;</li><li>evaluate with a generation budget that can tolerate a stray separator token;</li><li>track off-by-one and truncation errors separately from total exact match.</li></ul>
+
+<p>The lesson is useful precisely because the model did not reach 100%. The run proved that the state-space core can be made stable, and it exposed the next bottleneck: not recurrence explosion, but the training protocol around a fragile symbolic task.</p></div>
+      <div data-lang-content="ru"><h1>Когда маленькая Mamba учится арифметике</h1>
+
+<p>Эксперимент специально был маленьким: обучить 380k-параметровую 6-слойную Mamba-подобную модель на 1000 примерах сложения двухзначных чисел без переноса. Цель была не в том, чтобы “решить арифметику вообще”. Вопрос был инженерный: сможет ли модель переобучиться на маленькой детерминированной задаче и при этом не потерять численную стабильность?</p>
+
+<p>Ответ получился смешанным, и именно поэтому полезным. Четвёртый запуск стабильно дошёл до 1000 эпох и правильно выдал sanity-check <code>21+48=69</code>, но exact match остался низким: 1.9% на train и 2.5% на validation. В этом разрыве и находится главная история.</p>
+
+<h2>Четыре запуска и один стабильный путь</h2>
+
+<p>Первые попытки показали два разных режима отказа. Увеличение batch size лучше нагружало GPU, но проявило нестабильность state-space динамики. Clamping параметров стабилизировал рекуррентную матрицу, но слишком высокий learning rate всё ещё уводил оптимизатор в overflow. Рабочая конфигурация оказалась более осторожной: batch size 256, learning rate <code>3e-4</code> и clamping после шага оптимизатора.</p>
+
+<div class="post-table-wrap"><table class="post-table"><thead><tr><th>Run</th><th>Batch</th><th>LR</th><th>Clamp</th><th>Outcome</th></tr></thead><tbody><tr><td>1</td><td>128</td><td><code>1e-3</code></td><td>no</td><td>остановлен вручную</td></tr><tr><td>2</td><td>256</td><td><code>1e-3</code></td><td>no</td><td>FPU overflow на эпохе 400</td></tr><tr><td>3</td><td>512</td><td><code>1e-3</code></td><td>yes</td><td>NaN / FPU overflow</td></tr><tr><td>4</td><td>256</td><td><code>3e-4</code></td><td>yes</td><td>стабильно до эпохи 1000</td></tr></tbody></table></div>
+
+<h2>Что на самом деле значила стабильность</h2>
+
+<p>Ключевой принцип был простым: диагональный state transition должен оставаться сжимающим. Если рекуррентный параметр уходит выше нуля, scan превращается из затухающей системы в расширяющуюся. На GPU это проявилось как invalid floating point operation.</p>
+
+<p>Clamping удержал параметр в отрицательной области и стабилизировал рекуррентную часть. Он не решил оптимизацию сам по себе, но отделил архитектурную нестабильность от нестабильности оптимизатора.</p>
+
+<h2>Плато</h2>
+
+<p>Кривая loss показывает вторую половину истории:</p>
+
+<div class="post-table-wrap"><table class="post-table"><thead><tr><th>Epoch</th><th>Loss</th></tr></thead><tbody><tr><td>1</td><td>3.0245</td></tr><tr><td>100</td><td>0.8238</td></tr><tr><td>200</td><td>0.2522</td></tr><tr><td>600</td><td>0.2299</td></tr><tr><td>1000</td><td>0.2261</td></tr></tbody></table></div>
+
+<figure class="chart-card"><figcaption>Training loss by epoch</figcaption><svg class="line-chart" viewBox="0 0 720 320" role="img" aria-label="Training loss by epoch"><line x1="58" y1="268" x2="680" y2="268" /><line x1="58" y1="24" x2="58" y2="268" /><polyline points="58.0,24.0 119.6,215.9 181.9,265.7 431.0,267.7 680.0,268.0" /><g><circle cx="58.0" cy="24.0" r="5" /><circle cx="119.6" cy="215.9" r="5" /><circle cx="181.9" cy="265.7" r="5" /><circle cx="431.0" cy="267.7" r="5" /><circle cx="680.0" cy="268.0" r="5" /></g><text x="58.0" y="302">1</text><text x="68.0" y="16.0">3.0245</text><text x="119.6" y="302">100</text><text x="129.6" y="207.9">0.8238</text><text x="181.9" y="302">200</text><text x="191.9" y="257.7">0.2522</text><text x="431.0" y="302">600</text><text x="441.0" y="259.7">0.2299</text><text x="680.0" y="302">1000</text><text x="690.0" y="260.0">0.2261</text></svg></figure>
+
+<p>Основное обучение произошло рано. С 200 по 1000 эпоху модель улучшилась всего на 0.0261 loss-пункта. Это плато намекает, что фиксированный learning rate стал слишком грубым для финальной стадии, а большой batch size убрал стохастический шум, который иногда помогает выходить из мелких ловушек.</p>
+
+<h2>Почему exact match остался низким</h2>
+
+<p>Модель не отвечала случайно. Часто она схватывала порядок величины и часть структуры ответа, но ошибалась так, что exact-match метрика считала это полным промахом.</p>
+
+<p>Доминировали два класса ошибок:</p>
+
+<ul><li>off-by-one или digit-level approximation, например <code>41+41 -&gt; 84</code> вместо <code>82</code>;</li><li>truncation при генерации, когда двух токенов не хватало после лишнего разделителя или шумового токена.</li></ul>
+
+<figure class="chart-card"><figcaption>Bar chart</figcaption><div class="bar-chart"><div class="bar-row"><span>Train EM</span><div><i style="width: 76.00%"></i></div><strong>1.9%</strong></div><div class="bar-row"><span>Val EM</span><div><i style="width: 100.00%"></i></div><strong>2.5%</strong></div></div></figure>
+
+<p>Поэтому модель могла проходить sanity-check <code>21+48=69</code>, но всё ещё проваливать широкий exact-match.</p>
+
+<h2>Что это меняет дальше</h2>
+
+<p>Следующий эксперимент должен не просто обучаться дольше. Нужно менять интерфейс задачи и контур оптимизации:</p>
+
+<ul><li>добавить scratchpad-токены, чтобы промежуточная арифметика жила в последовательности;</li><li>включать decay learning rate, когда окно loss становится плоским;</li><li>оценивать генерацию с запасом по длине, чтобы переживать случайный separator-токен;</li><li>отдельно считать off-by-one и truncation ошибки, а не только общий exact match.</li></ul>
+
+<p>Ценность эксперимента именно в том, что он не дошёл до 100%. Запуск показал, что state-space ядро можно стабилизировать, и вывел наружу следующий bottleneck: уже не explosion рекурренса, а протокол обучения вокруг хрупкой символической задачи.</p></div>
       <nav class="post-pagination" aria-label="Post navigation" data-i18n-aria="post-pagination-aria">
-        <a class="post-page-link" href="./first-note.html">
-          <span data-i18n="post-prev">Previous</span>
-          <strong data-i18n="post-first-title">How we added the blog and living updates</strong>
-        </a>
-        <span class="post-page-link is-disabled" aria-disabled="true">
-          <span data-i18n="post-next">Next</span>
-          <strong data-i18n="post-next-none">No later post</strong>
-        </span>
+        <a class="post-page-link" href="./blog-launch.html"><span data-i18n="post-prev">Previous</span><strong data-lang-content="en">How we added the blog and living updates</strong><strong data-lang-content="ru">Как мы добавили блог и живые уведомления</strong></a>
+        <span class="post-page-link is-disabled" aria-disabled="true"><span data-i18n="post-next">Next</span><strong data-i18n="post-next-none">No later post</strong></span>
       </nav>
     </article>
   </main>
-
   <footer class="site-footer">
     <span>Oleg Boyko / Lotargo</span>
-    <span>AI stability report</span>
+    <span>Blog · AI systems · verification</span>
   </footer>
-
   <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/blog-post.js"></script>
 </body>
 </html>

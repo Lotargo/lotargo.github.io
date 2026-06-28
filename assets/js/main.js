@@ -582,7 +582,7 @@
 
   // 6. DOM Translation Engine
   function translatePage() {
-    const hasPageTranslations = !!document.querySelector('[data-i18n], [data-i18n-html], [data-i18n-aria], [data-i18n-attr-alt]');
+    const hasPageTranslations = !!document.querySelector('[data-i18n], [data-i18n-html], [data-i18n-aria], [data-i18n-attr-alt], [data-lang-content]');
     const isLandingPage = !!document.querySelector('[data-js="project-grid"]');
 
     // 1. Set HTML lang attribute
@@ -604,6 +604,11 @@
     const pageTitleKey = document.body?.dataset.titleI18n;
     if (!isLandingPage && pageTitleKey && TRANSLATIONS[currentLang][pageTitleKey]) {
       document.title = TRANSLATIONS[currentLang][pageTitleKey];
+    }
+
+    if (!isLandingPage && !pageTitleKey) {
+      const localizedTitle = currentLang === 'ru' ? document.body?.dataset.titleRu : document.body?.dataset.titleEn;
+      if (localizedTitle) document.title = localizedTitle;
     }
 
     // 3. Elements with data-i18n
@@ -635,6 +640,10 @@
       if (TRANSLATIONS[currentLang][key]) {
         el.setAttribute('alt', TRANSLATIONS[currentLang][key]);
       }
+    });
+
+    document.querySelectorAll('[data-lang-content]').forEach((el) => {
+      el.hidden = el.getAttribute('data-lang-content') !== currentLang;
     });
 
     // 6. Update theme toggle labels

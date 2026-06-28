@@ -43,6 +43,14 @@ The loss curve tells the second half of the story:
 | 600 | 0.2299 |
 | 1000 | 0.2261 |
 
+```chart:loss
+1,3.0245
+100,0.8238
+200,0.2522
+600,0.2299
+1000,0.2261
+```
+
 Most of the learning happened early. From epoch 200 to 1000, the model only improved by 0.0261 loss points. That plateau suggests the fixed learning rate was too coarse for the final stage, and the large batch size removed the stochastic noise that can help escape shallow traps.
 
 ## Why exact match stayed low
@@ -53,6 +61,11 @@ Two error classes dominated:
 
 - off-by-one or digit-level approximations, such as `41+41 -> 84` instead of `82`;
 - generation truncation, where the two-token decode budget was too strict after an unwanted token.
+
+```chart:bars
+Train EM,1.9
+Val EM,2.5
+```
 
 This is why the model could pass the sanity check `21+48=69` while still failing the broader exact-match metric.
 

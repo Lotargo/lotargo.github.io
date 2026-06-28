@@ -21,13 +21,11 @@
 </head>
 <body data-title-i18n="blog-page-title">
   <a class="skip-link" href="#posts">Skip to posts</a>
-
   <header class="site-header" data-js="header">
     <a class="brand" href="../" aria-label="Back to landing">
       <span class="brand-mark" aria-hidden="true">LØ</span>
       <span class="brand-text">Lotargo</span>
     </a>
-
     <div class="header-controls">
       <a class="github-link" href="https://github.com/Lotargo" target="_blank" rel="noreferrer" aria-label="GitHub Profile">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
@@ -48,20 +46,15 @@
       </button>
     </div>
   </header>
-
   <main id="top" class="blog-shell">
     <section class="blog-hero" aria-labelledby="blog-title">
       <div class="hero-kicker">
         <span>05</span>
         <span data-i18n="blog-kicker">Development notes / architecture / releases</span>
       </div>
-
       <h1 id="blog-title" class="blog-title" data-i18n="blog-title">Lotargo Blog</h1>
-      <p class="blog-intro" data-i18n="blog-intro">
-        Notes about AI systems, RAG architecture, runtime experiments, verification work, and the decisions behind public project pages.
-      </p>
+      <p class="blog-intro" data-i18n="blog-intro">Notes about AI systems, RAG architecture, runtime experiments, verification work, and the decisions behind public project pages.</p>
     </section>
-
     <section id="posts" class="section blog-section" aria-labelledby="posts-title">
       <div class="section-label" data-i18n="blog-posts-label">01 / posts</div>
       <div class="section-body">
@@ -72,41 +65,38 @@
           </div>
           <a class="button" href="../" data-i18n="blog-back-home">Back home</a>
         </div>
-
         <div class="post-list">
           <article class="post-card">
             <div class="post-meta">
               <span>2026-06-28</span>
-              <span data-i18n="post-type-ai">AI stability</span>
+              <span data-lang-content="en">AI stability</span>
+              <span data-lang-content="ru">Стабильность ИИ</span>
             </div>
-            <h3><a href="./posts/arithmetic-overfitting.html" data-i18n="post-arith-title">When a Tiny Mamba Learns Arithmetic</a></h3>
-            <p data-i18n="post-arith-desc">
-              Stability, FPU overflows, plateaus, and exact-match failure modes in a small arithmetic overfit experiment.
-            </p>
+            <h3><a href="./posts/arithmetic-overfitting.html"><span data-lang-content="en">When a Tiny Mamba Learns Arithmetic</span><span data-lang-content="ru">Когда маленькая Mamba учится арифметике</span></a></h3>
+            <p data-lang-content="en">A technical article about overfitting a 380k parameter Mamba model on two-digit addition, GPU overflow failure modes, state-space stability, and why the final plateau mattered.</p>
+            <p data-lang-content="ru">Техническая статья об overfit-эксперименте: 380k-параметровая Mamba на сложении двухзначных чисел, GPU overflow, стабильность state-space динамики и плато обучения.</p>
             <a class="post-link" href="./posts/arithmetic-overfitting.html" data-i18n="post-read-note">Read note</a>
           </article>
 
-          <article class="post-card">
+<article class="post-card">
             <div class="post-meta">
               <span>2026-06-28</span>
-              <span data-i18n="post-type-site">Site architecture</span>
+              <span data-lang-content="en">Site architecture</span>
+              <span data-lang-content="ru">Архитектура сайта</span>
             </div>
-            <h3><a href="./posts/first-note.html" data-i18n="post-first-title">How we added the blog and living updates</a></h3>
-            <p data-i18n="post-first-desc">
-              A practical sample post with screenshots, markdown structure, Mermaid, and LaTeX for future technical notes.
-            </p>
-            <a class="post-link" href="./posts/first-note.html" data-i18n="post-read-note">Read note</a>
+            <h3><a href="./posts/blog-launch.html"><span data-lang-content="en">How we added the blog and living updates</span><span data-lang-content="ru">Как мы добавили блог и живые уведомления</span></a></h3>
+            <p data-lang-content="en">The first sample post: blog structure, static notifications, assets, Mermaid, and LaTeX for future technical notes.</p>
+            <p data-lang-content="ru">Первый образец поста: структура блога, статические уведомления, ассеты, Mermaid и LaTeX для будущих технических заметок.</p>
+            <a class="post-link" href="./posts/blog-launch.html" data-i18n="post-read-note">Read note</a>
           </article>
         </div>
       </div>
     </section>
   </main>
-
   <footer class="site-footer">
     <span>Oleg Boyko / Lotargo</span>
     <span>Blog · AI systems · verification</span>
   </footer>
-
   <script src="../assets/js/main.js"></script>
 </body>
 </html>

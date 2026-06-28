@@ -47,7 +47,7 @@ flowchart LR
 blog/
   index.html
   posts/
-    first-note.html
+    blog-launch.html
   content/
     blog-launch.ru.md
     blog-launch.en.md

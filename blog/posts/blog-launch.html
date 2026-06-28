@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="The first sample post: blog structure, static notifications, assets, Mermaid, and LaTeX for future technical notes." />
+  <meta name="theme-color" content="#000000" />
+  <title>How we added the blog and living updates · Lotargo Blog</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem('lotargo-theme');
+        document.documentElement.dataset.theme = savedTheme || 'dark';
+      } catch (error) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    })();
+  </script>
+</head>
+<body data-title-en="How we added the blog and living updates · Lotargo Blog" data-title-ru="Как мы добавили блог и живые уведомления · Блог Lotargo">
+  <header class="site-header" data-js="header">
+    <a class="brand" href="../../" aria-label="Back to landing">
+      <span class="brand-mark" aria-hidden="true">LØ</span>
+      <span class="brand-text">Lotargo</span>
+    </a>
+    <div class="header-controls">
+      <nav class="nav" aria-label="Post navigation">
+        <a href="../../" data-i18n="blog-nav-home">Home</a>
+        <a href="../" data-i18n="nav-blog">Blog</a>
+        <a href="../../#projects" data-i18n="nav-projects">Projects</a>
+      </nav>
+      <button class="theme-toggle" type="button" data-js="theme-toggle" aria-label="Switch color theme">
+        <span data-js="theme-label">Theme</span>
+      </button>
+      <button class="lang-toggle" type="button" data-js="lang-toggle" aria-label="Switch language">
+        <span data-js="lang-label">EN</span>
+      </button>
+    </div>
+  </header>
+  <main id="top" class="post-shell">
+    <article class="post-article">
+      <div class="post-toolbar">
+        <a class="post-back" href="../" data-i18n="post-back-blog">Back to blog</a>
+        <div class="post-meta">
+          <span>2026-06-28</span>
+          <span data-lang-content="en">Site architecture</span>
+          <span data-lang-content="ru">Архитектура сайта</span>
+        </div>
+      </div>
+      <div data-lang-content="en"><h1>How we added the blog and living updates</h1>
+
+<p>This post is more than an update note. It is a working sample for future publications: frontmatter, illustrations, a Mermaid diagram, a LaTeX formula, and a reusable structure.</p>
+
+<h2>What changed</h2>
+
+<p>We added two layers on top of the static portfolio:</p>
+
+<ul><li>a notification center on the landing page;</li><li>a dedicated blog section with markdown sources and an asset directory.</li></ul>
+
+<figure class="post-figure"><img src="../assets/landing-notifications.png" alt="Landing page with the notification panel open" /><figcaption>Landing page with the notification panel open</figcaption></figure>
+
+<p>The notifications are still static, but they feel like a living part of the site. The data lives in <code>assets/js/notifications.js</code>, and viewed items are remembered with <code>localStorage</code>.</p>
+
+<h2>Why no admin panel</h2>
+
+<p>A protected admin panel for GitHub Pages would require authentication, file uploads, repository writes, and separate deployment logic. For this site, a local publishing workflow is simpler and more reliable:</p>
+
+<div class="flow-diagram horizontal" role="img" aria-label="Generated flow diagram"><span class="flow-node">C</span><span class="flow-arrow" aria-hidden="true">-></span><span class="flow-node">Commit</span><span class="flow-arrow" aria-hidden="true">-></span><span class="flow-node">A</span></div>
+
+<p>This keeps the site fully static while leaving room for a future markdown → HTML generator.</p>
+
+<h2>Blog structure</h2>
+
+<pre class="post-code"><code>blog/
+  index.html
+  posts/
+    blog-launch.html
+  content/
+    blog-launch.ru.md
+    blog-launch.en.md
+  assets/
+    landing-notifications.png
+    blog-index.png</code></pre>
+
+<figure class="post-figure"><img src="../assets/blog-index.png" alt="Blog index page" /><figcaption>Blog index page</figcaption></figure>
+
+<p>Markdown files are the source. HTML pages are what visitors read. This structure works well with GitHub Pages, keeps the site's visual language consistent, and leaves a clean path for automation later.</p>
+
+<h2>LaTeX example</h2>
+
+<p>Technical notes benefit from formulas. For example, the publishing cost can be described as:</p>
+
+<div class="post-formula"><span class="math-formula">C<sub>publish</sub> = C<sub>write</sub> + C<sub>review</sub> + C<sub>preview</sub></span></div>
+
+<p>The point is simple: publishing should stay inexpensive in effort, otherwise the blog will stop being updated.</p>
+
+<h2>What to copy for the next post</h2>
+
+<p>For the next post, reuse this pattern:</p>
+
+<ol><li>Create <code>*.ru.md</code> and <code>*.en.md</code>.</li><li>Put images in <code>blog/assets/</code>.</li><li>Preview the page locally.</li><li>Commit the finished version.</li></ol>
+
+<p>A static site does not have to feel frozen. When it has dates, updates, notes, and a clear publishing process, it already feels like a working product.</p></div>
+      <div data-lang-content="ru"><h1>Как мы добавили блог и живые уведомления</h1>
+
+<p>Этот пост — не просто запись об обновлении сайта. Он нужен как рабочий образец для будущих публикаций: с frontmatter, иллюстрациями, Mermaid-диаграммой, LaTeX-формулой и понятной структурой.</p>
+
+<h2>Что изменилось</h2>
+
+<p>Мы добавили два слоя поверх статического портфолио:</p>
+
+<ul><li>центр уведомлений на главной странице;</li><li>отдельный раздел блога с markdown-исходниками и папкой для ассетов.</li></ul>
+
+<figure class="post-figure"><img src="../assets/landing-notifications.png" alt="Лендинг с раскрытой панелью уведомлений" /><figcaption>Лендинг с раскрытой панелью уведомлений</figcaption></figure>
+
+<p>Уведомления остаются статическими, но воспринимаются как живая часть сайта. Данные лежат в <code>assets/js/notifications.js</code>, а просмотренные записи запоминаются через <code>localStorage</code>.</p>
+
+<h2>Почему без админки</h2>
+
+<p>Защищённая админка для GitHub Pages потребовала бы авторизацию, загрузку файлов, запись в репозиторий и отдельную логику деплоя. Для текущего сайта проще и надёжнее локальный publishing workflow:</p>
+
+<div class="flow-diagram horizontal" role="img" aria-label="Generated flow diagram"><span class="flow-node">C</span><span class="flow-arrow" aria-hidden="true">-></span><span class="flow-node">Commit</span><span class="flow-arrow" aria-hidden="true">-></span><span class="flow-node">A</span></div>
+
+<p>Такой путь оставляет сайт полностью статическим, но не мешает постепенно добавлять генератор markdown → HTML.</p>
+
+<h2>Как устроен блог</h2>
+
+<pre class="post-code"><code>blog/
+  index.html
+  posts/
+    blog-launch.html
+  content/
+    blog-launch.ru.md
+    blog-launch.en.md
+  assets/
+    landing-notifications.png
+    blog-index.png</code></pre>
+
+<figure class="post-figure"><img src="../assets/blog-index.png" alt="Страница блога" /><figcaption>Страница блога</figcaption></figure>
+
+<p>Markdown-файлы — это источник. HTML-страницы — то, что читает посетитель. Такая схема хорошо работает с GitHub Pages, сохраняет общий визуальный язык сайта и даёт место для будущей автоматизации.</p>
+
+<h2>Пример LaTeX</h2>
+
+<p>Для технических заметок полезно иметь формулы. Например, оценку стоимости публикации можно записать так:</p>
+
+<div class="post-formula"><span class="math-formula">C<sub>publish</sub> = C<sub>write</sub> + C<sub>review</sub> + C<sub>preview</sub></span></div>
+
+<p>Смысл простой: публикация должна оставаться дешёвой по усилиям, иначе блог быстро перестанет обновляться.</p>
+
+<h2>Что брать как шаблон</h2>
+
+<p>Для следующего поста достаточно скопировать этот подход:</p>
+
+<ol><li>Создать <code>*.ru.md</code> и <code>*.en.md</code>.</li><li>Положить изображения в <code>blog/assets/</code>.</li><li>Проверить страницу локально.</li><li>Закоммитить готовую версию.</li></ol>
+
+<p>Статический сайт не обязан быть мёртвым. Если у него есть даты, обновления, заметки и понятный процесс публикации, он уже ощущается как работающий продукт.</p></div>
+      <nav class="post-pagination" aria-label="Post navigation" data-i18n-aria="post-pagination-aria">
+        <span class="post-page-link is-disabled" aria-disabled="true"><span data-i18n="post-prev">Previous</span><strong data-i18n="post-prev-none">No earlier post</strong></span>
+        <a class="post-page-link" href="./arithmetic-overfitting.html"><span data-i18n="post-next">Next</span><strong data-lang-content="en">When a Tiny Mamba Learns Arithmetic</strong><strong data-lang-content="ru">Когда маленькая Mamba учится арифметике</strong></a>
+      </nav>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <span>Oleg Boyko / Lotargo</span>
+    <span>Blog · AI systems · verification</span>
+  </footer>
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/blog-post.js"></script>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="How three optimisation sprints — topological sort caching, memory pooling, and a hybrid Muon+Adam optimizer — eliminated CPU bottlenecks, GPU allocation spikes, and a stubborn loss plateau in a Mamba-3 training pipeline." />
+  <meta name="theme-color" content="#000000" />
+  <title>1000× Faster Backward Pass: Three Sprints That Reshaped the Training Pipeline · Lotargo Blog</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem('lotargo-theme');
+        document.documentElement.dataset.theme = savedTheme || 'dark';
+      } catch (error) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    })();
+  </script>
+</head>
+<body data-title-en="1000× Faster Backward Pass: Three Sprints That Reshaped the Training Pipeline · Lotargo Blog" data-title-ru="1000× быстрее backward pass: три спринта, перестроившие пайплайн обучения · Блог Lotargo">
+  <header class="site-header" data-js="header">
+    <a class="brand" href="../../" aria-label="Back to landing">
+      <span class="brand-mark" aria-hidden="true">LØ</span>
+      <span class="brand-text">Lotargo</span>
+    </a>
+    <div class="header-controls">
+      <nav class="nav" aria-label="Post navigation">
+        <a href="../../" data-i18n="blog-nav-home">Home</a>
+        <a href="../" data-i18n="nav-blog">Blog</a>
+        <a href="../../#projects" data-i18n="nav-projects">Projects</a>
+      </nav>
+      <button class="theme-toggle" type="button" data-js="theme-toggle" aria-label="Switch color theme">
+        <span data-js="theme-label">Theme</span>
+      </button>
+      <button class="lang-toggle" type="button" data-js="lang-toggle" aria-label="Switch language">
+        <span data-js="lang-label">EN</span>
+      </button>
+    </div>
+  </header>
+  <main id="top" class="post-shell">
+    <article class="post-article">
+      <div class="post-toolbar">
+        <a class="post-back" href="../" data-i18n="post-back-blog">Back to blog</a>
+        <div class="post-meta">
+          <span>2026-06-29</span>
+          <span data-lang-content="en">AI systems</span>
+          <span data-lang-content="ru">AI системы</span>
+        </div>
+      </div>
+      <div data-lang-content="en"><h1>1000× Faster Backward Pass: Three Sprints That Reshaped the Training Pipeline</h1>
+
+<p>Training a state-space model at reasonable scale exposes three hard walls in sequence: CPU overhead in the backward pass, GPU memory fragmentation, and optimiser plateaus that no hyperparameter tune can break. Over the last sprint cycle we hit all three — and fixed them.</p>
+
+<div class="post-table-wrap"><table class="post-table"><thead><tr><th>Metric</th><th>Before</th><th>After</th></tr></thead><tbody><tr><td>Topological sort per step</td><td>~12 ms</td><td>&lt; 0.01 ms</td></tr><tr><td>cudaMalloc calls per step</td><td>~2400</td><td>0 (after step 1)</td></tr><tr><td>Loss plateau (Stage 3)</td><td>0.23</td><td>0.018</td></tr><tr><td>Exact-match accuracy</td><td>~82%</td><td>97.2%</td></tr></tbody></table></div>
+
+<p>Here is how each sprint contributed.</p>
+
+<h2>Sprint 1: Making the backward pass nearly free</h2>
+
+<p>The backward pass in an autograd engine builds a topological order of operations before executing gradients. On small graphs the cost is invisible. On a multi-layer Mamba model with complex state updates, <code>BuildTopoSafe</code> consumed ~12 ms per step — CPU time that did nothing but bookkeeping.</p>
+
+<p>The fix was a caching layer with structural hash invalidation. <code>BuildTopoSafeWithCache</code> computes a hash of the graph structure once, then reuses the cached order on every subsequent step unless the hash changes. Dynamic graphs are handled correctly: if the structure diverges, the cache rebuilds automatically.</p>
+
+<p>The same sprint introduced a pre-allocated memory pool. Instead of calling <code>cudaMalloc</code> ~2400 times per step, <code>TTensorMemoryPool</code> maintains free-lists by allocation size bucketed to powers of two. After the first step, runtime allocations drop to zero. VRAM pressure spikes disappeared entirely.</p>
+
+<figure class="chart-card"><figcaption>Bar chart</figcaption><div class="bar-chart"><div class="bar-row"><span>cudaMalloc calls per step (before)</span><div><i style="width: 100.00%"></i></div><strong>2400</strong></div><div class="bar-row"><span>cudaMalloc calls per step (after step 1)</span><div><i style="width: 0.00%"></i></div><strong>0</strong></div></div></figure>
+
+<p>Combined, these two changes meant the backward pass went from a measurable overhead to a negligible one — leaving room for more expensive optimisers and larger models.</p>
+
+<h2>Sprint 2: Breaking the loss plateau with hybrid optimisation</h2>
+
+<p>AdamW is reliable, but on the arithmetic reasoning task (Stage 3) it hit a hard floor: loss oscillated around 0.23, and exact-match accuracy stalled at ~82%. No learning rate schedule or weight decay adjustment helped.</p>
+
+<p>The insight was that different parameter types need different preconditioning. Two-dimensional weight matrices benefit from orthogonalisation via the Newton-Schulz iteration — the core idea behind the Muon optimiser. One-dimensional vectors (biases, layer norms) and embedding tables do not, and work better with standard AdamW.</p>
+
+<p><code>TParamGroupEngine</code> classifies every parameter automatically:</p>
+
+<ul><li>2D weight matrices → Muon (Newton-Schulz orthogonalisation)</li><li>1D vectors (biases, norms) → AdamW</li><li>Embedding tables → AdamW</li></ul>
+
+<div class="flow-diagram horizontal" role="img" aria-label="Generated flow diagram"><span class="flow-node">All Parameters</span><span class="flow-arrow" aria-hidden="true">-></span><span class="flow-node">Muon Optimizer</span><span class="flow-arrow" aria-hidden="true">-></span><span class="flow-node">AdamW Optimizer</span></div>
+
+<p>The <code>THybridOptimizer</code> dispatches a single <code>.Step()</code> across both optimisers transparently. The result broke the plateau:</p>
+
+<div class="post-table-wrap"><table class="post-table"><thead><tr><th>Metric</th><th>Adam-only</th><th>Hybrid Muon+AdamW</th><th>Target</th></tr></thead><tbody><tr><td>Train Loss</td><td>0.23</td><td><strong>0.018</strong></td><td>&lt; 0.05 ✅</td></tr><tr><td>EM Accuracy</td><td>~82%</td><td><strong>97.2%</strong></td><td>&gt; 95% ✅</td></tr><tr><td>Steps to convergence</td><td>&gt;5000 (stall)</td><td><strong>~1800</strong></td><td>—</td></tr></tbody></table></div>
+
+<figure class="chart-card"><figcaption>Bar chart</figcaption><div class="bar-chart"><div class="bar-row"><span>Adam-only EM</span><div><i style="width: 84.36%"></i></div><strong>82</strong></div><div class="bar-row"><span>Hybrid Muon+AdamW EM</span><div><i style="width: 100.00%"></i></div><strong>97.2</strong></div></div></figure>
+
+<p>The ~30 ms epoch overhead from Newton-Schulz iterations was more than compensated by 2.8× faster convergence.</p>
+
+<h2>Sprint 3: Full GPU acceleration for Mamba-3</h2>
+
+<p>Mamba-3 extends the original Mamba architecture with complex-valued SSM states and multiple input/output streams (MIMO). The Pascal implementation worked, but without GPU kernels it could not scale to Stage 4 (carry arithmetic) and beyond.</p>
+
+<p>Three CUDA kernels closed the gap:</p>
+
+<div class="post-table-wrap"><table class="post-table"><thead><tr><th>Kernel</th><th>Purpose</th></tr></thead><tbody><tr><td><code>sonata_cuda_mix_input_streams</code></td><td>MIMO input mixing</td></tr><tr><td><code>sonata_cuda_broadcast_output_streams</code></td><td>MIMO output broadcasting</td></tr><tr><td><code>sonata_cuda_update_complex_state</code></td><td>Complex SSM transition</td></tr></tbody></table></div>
+
+<p>Each kernel has a HAL binding with a CPU fallback, so the same code path works on both platforms. Four new autograd rules (<code>opComplexMul</code>, <code>opComplexAdd</code>, <code>opMixStreams</code>, <code>opBroadcastStreams</code>) integrate complex operations into the cached topological sort from Sprint 1.</p>
+
+<p>The language model now uses <code>TMamba3Layer</code> by default. <code>TMambaLayer</code> is preserved for backward compatibility. Smoke tests confirm correct output shapes, GPU/CPU parity within FP32 tolerance, and gradient flow through all complex operations.</p>
+
+<h2>One sprint feeds the next</h2>
+
+<p>These three sprints were planned independently, but they compound. Faster topological sorting and zero-runtime allocations (Sprint 1) freed compute budget for the hybrid optimiser (Sprint 2), which converged in fewer steps — steps that now run on a fully GPU-accelerated Mamba-3 (Sprint 3). Each fix unlocked the next bottleneck.</p>
+
+<p>A more detailed breakdown of each subtask is available in the public project overview at <a href="https://lotargo.github.io/public_sonata_ai_landing/">lotargo.github.io/public_sonata_ai_landing</a>. The next sprint cycle starts with Stage 4 — carry arithmetic — and the question of whether the same stack can scale further without new surprises.</p></div>
+      <div data-lang-content="ru"><h1>1000× быстрее backward pass: три спринта, перестроившие пайплайн обучения</h1>
+
+<p>При обучении state-space модели в сколько-нибудь разумном масштабе последовательно упираешься в три стены: CPU-overhead в backward pass, фрагментацию GPU-памяти и плато оптимизатора, которое не пробить никакой настройкой гиперпараметров. За последний спринт мы упёрлись во все три — и починили их.</p>
+
+<div class="post-table-wrap"><table class="post-table"><thead><tr><th>Метрика</th><th>До</th><th>После</th></tr></thead><tbody><tr><td>Топологическая сортировка за шаг</td><td>~12 мс</td><td>&lt; 0.01 мс</td></tr><tr><td>cudaMalloc вызовов за шаг</td><td>~2400</td><td>0 (после шага 1)</td></tr><tr><td>Плато loss (Stage 3)</td><td>0.23</td><td>0.018</td></tr><tr><td>Точность exact-match</td><td>~82%</td><td>97.2%</td></tr></tbody></table></div>
+
+<p>Вот что дал каждый спринт.</p>
+
+<h2>Спринт 1: backward pass почти бесплатно</h2>
+
+<p>Backward pass в autograd-движке строит топологический порядок операций перед вычислением градиентов. На маленьких графах это незаметно. На многослойной Mamba с комплексными обновлениями состояния <code>BuildTopoSafe</code> потреблял ~12 мс за шаг — чистое CPU-время на бухгалтерию.</p>
+
+<p>Решение — кэш с хэш-инвалидацией структуры графа. <code>BuildTopoSafeWithCache</code> вычисляет хэш один раз, а на следующих шагах переиспользует закэшированный порядок, если хэш не изменился. Динамические графы обрабатываются корректно: при расхождении структуры кэш перестраивается автоматически.</p>
+
+<p>В этом же спринте появился pre-allocated memory pool. Вместо ~2400 вызовов <code>cudaMalloc</code> за шаг, <code>TTensorMemoryPool</code> поддерживает free-lists по размерам аллокаций (степени двойки). После первого шага runtime-аллокации падают до нуля. Скачки давления на VRAM исчезли совсем.</p>
+
+<figure class="chart-card"><figcaption>Bar chart</figcaption><div class="bar-chart"><div class="bar-row"><span>cudaMalloc вызовов за шаг (до)</span><div><i style="width: 100.00%"></i></div><strong>2400</strong></div><div class="bar-row"><span>cudaMalloc вызовов за шаг (после шага 1)</span><div><i style="width: 0.00%"></i></div><strong>0</strong></div></div></figure>
+
+<p>Вместе эти два изменения превратили backward pass из измеримого оверхеда в пренебрежимый — освободив вычислительный бюджет для более дорогих оптимизаторов и больших моделей.</p>
+
+<h2>Спринт 2: прорыв плато потерь гибридным оптимизатором</h2>
+
+<p>AdamW надёжен, но на задаче арифметического рассуждения (Stage 3) он упёрся в твёрдый пол: loss колебался вокруг 0.23, а точность exact-match застряла на ~82%. Ни подбор learning rate, ни weight decay не помогали.</p>
+
+<p>Идея в том, что разным типам параметров нужна разная предобработка. Двумерным матрицам весов полезна ортогонализация через Newton-Schulz — ключевая идея оптимизатора Muon. Одномерным векторам (biases, нормы слоёв) и embedding tables это не нужно — им достаточно стандартного AdamW.</p>
+
+<p><code>TParamGroupEngine</code> классифицирует каждый параметр автоматически:</p>
+
+<ul><li>2D-матрицы весов → Muon (Newton-Schulz ортогонализация)</li><li>1D-вектора (biases, norms) → AdamW</li><li>Embedding tables → AdamW</li></ul>
+
+<div class="flow-diagram horizontal" role="img" aria-label="Generated flow diagram"><span class="flow-node">Все параметры</span><span class="flow-arrow" aria-hidden="true">-></span><span class="flow-node">Muon Optimizer</span><span class="flow-arrow" aria-hidden="true">-></span><span class="flow-node">AdamW Optimizer</span></div>
+
+<p><code>THybridOptimizer</code> диспатчит единый <code>.Step()</code> на оба оптимизатора прозрачно. Результат — плато пробито:</p>
+
+<div class="post-table-wrap"><table class="post-table"><thead><tr><th>Метрика</th><th>Adam-only</th><th>Гибрид Muon+AdamW</th><th>Цель</th></tr></thead><tbody><tr><td>Train Loss</td><td>0.23</td><td><strong>0.018</strong></td><td>&lt; 0.05 ✅</td></tr><tr><td>EM Accuracy</td><td>~82%</td><td><strong>97.2%</strong></td><td>&gt; 95% ✅</td></tr><tr><td>Шагов до сходимости</td><td>&gt;5000 (stall)</td><td><strong>~1800</strong></td><td>—</td></tr></tbody></table></div>
+
+<figure class="chart-card"><figcaption>Bar chart</figcaption><div class="bar-chart"><div class="bar-row"><span>Adam-only EM</span><div><i style="width: 84.36%"></i></div><strong>82</strong></div><div class="bar-row"><span>Гибрид Muon+AdamW EM</span><div><i style="width: 100.00%"></i></div><strong>97.2</strong></div></div></figure>
+
+<p>Дополнительные ~30 мс на эпоху от Newton-Schulz итераций более чем компенсированы 2.8× ускорением сходимости.</p>
+
+<h2>Спринт 3: полное GPU-ускорение Mamba-3</h2>
+
+<p>Mamba-3 расширяет исходную архитектуру Mamba комплексными SSM-состояниями и множественными входными/выходными потоками (MIMO). Pascal-реализация работала, но без GPU-ядер не могла масштабироваться на Stage 4 (сложение с переносом) и дальше.</p>
+
+<p>Три CUDA-ядра закрыли разрыв:</p>
+
+<div class="post-table-wrap"><table class="post-table"><thead><tr><th>Ядро</th><th>Назначение</th></tr></thead><tbody><tr><td><code>sonata_cuda_mix_input_streams</code></td><td>MIMO входное микширование</td></tr><tr><td><code>sonata_cuda_broadcast_output_streams</code></td><td>MIMO выходное вещание</td></tr><tr><td><code>sonata_cuda_update_complex_state</code></td><td>Комплексный SSM переход</td></tr></tbody></table></div>
+
+<p>Каждое ядро имеет HAL-привязку с CPU-fallback, поэтому один и тот же код работает на обеих платформах. Четыре новых autograd-правила (<code>opComplexMul</code>, <code>opComplexAdd</code>, <code>opMixStreams</code>, <code>opBroadcastStreams</code>) интегрируют комплексные операции в кэшированную топологическую сортировку из Спринта 1.</p>
+
+<p>Языковая модель теперь использует <code>TMamba3Layer</code> по умолчанию. <code>TMambaLayer</code> сохранён для обратной совместимости. Smoke-тесты подтверждают корректные формы выходов, GPU/CPU-паритет в пределах FP32 tolerance и прохождение градиентов через все комплексные операции.</p>
+
+<h2>Спринты работают как конвейер</h2>
+
+<p>Эти три спринта планировались независимо, но они работают как конвейер: быстрая топологическая сортировка и нулевые runtime-аллокации (Спринт 1) освободили вычислительный бюджет для гибридного оптимизатора (Спринт 2), который сошёлся за меньшее количество шагов — шагов, которые теперь выполняются на полностью GPU-ускоренной Mamba-3 (Спринт 3). Каждый фикс открывал следующий bottleneck.</p>
+
+<p>Более подробная разбивка каждой подзадачи — в публичном обзоре проекта на <a href="https://lotargo.github.io/public_sonata_ai_landing/">lotargo.github.io/public_sonata_ai_landing</a>. Следующий цикл спринтов начинается со Stage 4 — арифметики с переносом — и вопроса, сможет ли тот же стек масштабироваться дальше без новых сюрпризов.</p></div>
+      <nav class="post-pagination" aria-label="Post navigation" data-i18n-aria="post-pagination-aria">
+        <a class="post-page-link" href="./arithmetic-overfitting.html"><span data-i18n="post-prev">Previous</span><strong data-lang-content="en">When a Tiny Mamba Learns Arithmetic</strong><strong data-lang-content="ru">Когда маленькая Mamba учится арифметике</strong></a>
+        <span class="post-page-link is-disabled" aria-disabled="true"><span data-i18n="post-next">Next</span><strong data-i18n="post-next-none">No later post</strong></span>
+      </nav>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <span>Oleg Boyko / Lotargo</span>
+    <span>Blog · AI systems · verification</span>
+  </footer>
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/blog-post.js"></script>
+</body>
+</html>

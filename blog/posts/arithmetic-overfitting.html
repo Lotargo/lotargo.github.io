@@ -85,7 +85,7 @@
 
 <ul><li>off-by-one or digit-level approximations, such as <code>41+41 -&gt; 84</code> instead of <code>82</code>;</li><li>generation truncation, where the two-token decode budget was too strict after an unwanted token.</li></ul>
 
-<figure class="chart-card"><figcaption>Bar chart</figcaption><div class="bar-chart"><div class="bar-row"><span>Train EM</span><div><i style="width: 76.00%"></i></div><strong>1.9%</strong></div><div class="bar-row"><span>Val EM</span><div><i style="width: 100.00%"></i></div><strong>2.5%</strong></div></div></figure>
+<figure class="chart-card"><figcaption>Bar chart</figcaption><div class="bar-chart"><div class="bar-row"><span>Train EM</span><div><i style="width: 76.00%"></i></div><strong>1.9</strong></div><div class="bar-row"><span>Val EM</span><div><i style="width: 100.00%"></i></div><strong>2.5</strong></div></div></figure>
 
 <p>This is why the model could pass the sanity check <code>21+48=69</code> while still failing the broader exact-match metric.</p>
 
@@ -132,7 +132,7 @@
 
 <ul><li>off-by-one или digit-level approximation, например <code>41+41 -&gt; 84</code> вместо <code>82</code>;</li><li>truncation при генерации, когда двух токенов не хватало после лишнего разделителя или шумового токена.</li></ul>
 
-<figure class="chart-card"><figcaption>Bar chart</figcaption><div class="bar-chart"><div class="bar-row"><span>Train EM</span><div><i style="width: 76.00%"></i></div><strong>1.9%</strong></div><div class="bar-row"><span>Val EM</span><div><i style="width: 100.00%"></i></div><strong>2.5%</strong></div></div></figure>
+<figure class="chart-card"><figcaption>Bar chart</figcaption><div class="bar-chart"><div class="bar-row"><span>Train EM</span><div><i style="width: 76.00%"></i></div><strong>1.9</strong></div><div class="bar-row"><span>Val EM</span><div><i style="width: 100.00%"></i></div><strong>2.5</strong></div></div></figure>
 
 <p>Поэтому модель могла проходить sanity-check <code>21+48=69</code>, но всё ещё проваливать широкий exact-match.</p>
 
@@ -145,7 +145,7 @@
 <p>Ценность эксперимента именно в том, что он не дошёл до 100%. Запуск показал, что state-space ядро можно стабилизировать, и вывел наружу следующий bottleneck: уже не explosion рекурренса, а протокол обучения вокруг хрупкой символической задачи.</p></div>
       <nav class="post-pagination" aria-label="Post navigation" data-i18n-aria="post-pagination-aria">
         <a class="post-page-link" href="./blog-launch.html"><span data-i18n="post-prev">Previous</span><strong data-lang-content="en">How we added the blog and living updates</strong><strong data-lang-content="ru">Как мы добавили блог и живые уведомления</strong></a>
-        <span class="post-page-link is-disabled" aria-disabled="true"><span data-i18n="post-next">Next</span><strong data-i18n="post-next-none">No later post</strong></span>
+        <a class="post-page-link" href="./three-sprints.html"><span data-i18n="post-next">Next</span><strong data-lang-content="en">1000× Faster Backward Pass: Three Sprints That Reshaped the Training Pipeline</strong><strong data-lang-content="ru">1000× быстрее backward pass: три спринта, перестроившие пайплайн обучения</strong></a>
       </nav>
     </article>
   </main>

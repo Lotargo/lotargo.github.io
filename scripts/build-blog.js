@@ -259,7 +259,7 @@ function renderLineChart(points, title) {
 
 function renderBarChart(bars, title) {
   const max = Math.max(...bars.map((bar) => bar.value), 1);
-  return `<figure class="chart-card"><figcaption>${escapeHtml(title)}</figcaption><div class="bar-chart">${bars.map((bar) => `<div class="bar-row"><span>${escapeHtml(bar.label)}</span><div><i style="width: ${(bar.value / max * 100).toFixed(2)}%"></i></div><strong>${escapeHtml(bar.value)}%</strong></div>`).join('')}</div></figure>`;
+  return `<figure class="chart-card"><figcaption>${escapeHtml(title)}</figcaption><div class="bar-chart">${bars.map((bar) => `<div class="bar-row"><span>${escapeHtml(bar.label)}</span><div><i style="width: ${(bar.value / max * 100).toFixed(2)}%"></i></div><strong>${escapeHtml(bar.value)}</strong></div>`).join('')}</div></figure>`;
 }
 
 function renderMermaidLite(code) {

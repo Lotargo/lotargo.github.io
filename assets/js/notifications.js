@@ -5,6 +5,23 @@
 
 window.PORTFOLIO_NOTIFICATIONS = [
   {
+    id: "2026-06-28-arithmetic-overfitting",
+    date: "2026-06-28",
+    type: {
+      en: "Blog",
+      ru: "Блог"
+    },
+    title: {
+      en: "Arithmetic stability article",
+      ru: "Статья о стабильности арифметики"
+    },
+    text: {
+      en: "A new technical post on Mamba overfitting, FPU overflows, plateaus, and exact-match errors.",
+      ru: "Новый технический пост о Mamba overfit, FPU overflow, плато и exact-match ошибках."
+    },
+    url: "./blog/posts/arithmetic-overfitting.html"
+  },
+  {
     id: "2026-06-28-blog-scaffold",
     date: "2026-06-28",
     type: {

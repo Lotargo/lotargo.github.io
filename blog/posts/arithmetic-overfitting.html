@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="A technical article about overfitting a tiny Mamba model on arithmetic, state-space stability, GPU overflows, and plateau analysis." />
+  <meta name="theme-color" content="#000000" />
+  <title>When a Tiny Mamba Learns Arithmetic · Lotargo Blog</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem('lotargo-theme');
+        document.documentElement.dataset.theme = savedTheme || 'dark';
+      } catch (error) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    })();
+  </script>
+</head>
+<body data-title-i18n="post-arith-page-title">
+  <header class="site-header" data-js="header">
+    <a class="brand" href="../../" aria-label="Back to landing">
+      <span class="brand-mark" aria-hidden="true">LØ</span>
+      <span class="brand-text">Lotargo</span>
+    </a>
+
+    <div class="header-controls">
+      <nav class="nav" aria-label="Post navigation">
+        <a href="../../" data-i18n="blog-nav-home">Home</a>
+        <a href="../" data-i18n="nav-blog">Blog</a>
+        <a href="../../#projects" data-i18n="nav-projects">Projects</a>
+      </nav>
+      <button class="theme-toggle" type="button" data-js="theme-toggle" aria-label="Switch color theme">
+        <span data-js="theme-label">Theme</span>
+      </button>
+      <button class="lang-toggle" type="button" data-js="lang-toggle" aria-label="Switch language">
+        <span data-js="lang-label">EN</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top" class="post-shell">
+    <article class="post-article">
+      <div class="post-toolbar">
+        <a class="post-back" href="../" data-i18n="post-back-blog">Back to blog</a>
+        <div class="post-meta">
+          <span>2026-06-28</span>
+          <span data-i18n="post-type-ai">AI stability</span>
+        </div>
+      </div>
+
+      <h1 data-i18n="post-arith-title">When a Tiny Mamba Learns Arithmetic</h1>
+      <p class="post-lead" data-i18n="post-arith-lead">
+        A small arithmetic overfit test became a useful probe for recurrent stability, GPU overflows, and optimizer plateaus.
+      </p>
+
+      <div class="metric-strip" aria-label="Experiment summary">
+        <div>
+          <span>380k</span>
+          <strong data-i18n="metric-params">parameters</strong>
+        </div>
+        <div>
+          <span>1000</span>
+          <strong data-i18n="metric-samples">samples</strong>
+        </div>
+        <div>
+          <span>0.2261</span>
+          <strong data-i18n="metric-loss">final loss</strong>
+        </div>
+        <div>
+          <span>2.5%</span>
+          <strong data-i18n="metric-val-em">validation EM</strong>
+        </div>
+      </div>
+
+      <p data-i18n="post-arith-p1">
+        The target task was intentionally narrow: train a 6-layer Mamba-style model to overfit 1,000 no-carry two-digit addition examples. The model stayed stable in the final run and answered the sanity check 21+48=69, but exact-match accuracy exposed a deeper protocol problem.
+      </p>
+
+      <h2 data-i18n="post-arith-runs-title">Four runs, one stable path</h2>
+      <p data-i18n="post-arith-runs-p">
+        Each run isolated a different failure mode: underutilization, recurrent expansion, optimizer overflow, and finally a stable but plateaued configuration.
+      </p>
+
+      <div class="post-table-wrap">
+        <table class="post-table">
+          <thead>
+            <tr>
+              <th data-i18n="table-run">Run</th>
+              <th>Batch</th>
+              <th>LR</th>
+              <th>Clamp</th>
+              <th data-i18n="table-outcome">Outcome</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>01</td>
+              <td>128</td>
+              <td>1e-3</td>
+              <td data-i18n="table-no">No</td>
+              <td data-i18n="run1-outcome">Manually stopped</td>
+            </tr>
+            <tr>
+              <td>02</td>
+              <td>256</td>
+              <td>1e-3</td>
+              <td data-i18n="table-no">No</td>
+              <td data-i18n="run2-outcome">FPU overflow at epoch 400</td>
+            </tr>
+            <tr>
+              <td>03</td>
+              <td>512</td>
+              <td>1e-3</td>
+              <td data-i18n="table-yes">Yes</td>
+              <td data-i18n="run3-outcome">NaN / FPU overflow</td>
+            </tr>
+            <tr>
+              <td>04</td>
+              <td>256</td>
+              <td>3e-4</td>
+              <td data-i18n="table-yes">Yes</td>
+              <td data-i18n="run4-outcome">Stable to epoch 1000</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 data-i18n="post-arith-stability-title">What stability meant</h2>
+      <p data-i18n-html="post-arith-stability-p">
+        The diagonal state transition had to remain contracting. Without projection, the recurrent parameter drifted above zero and the scan became expanding. Clamping kept the state-space core stable, but it did not remove the need for a calmer optimizer.
+      </p>
+
+      <div class="post-formula" aria-label="A less than or equal to minus ten to the minus four implies a contracting scan">
+        <span class="math-formula">
+          <i>A</i> <= -10<sup>-4</sup>
+          <span class="math-arrow">=></span>
+          <span>contracting scan</span>
+        </span>
+      </div>
+
+      <h2 data-i18n="post-arith-plateau-title">The plateau</h2>
+      <p data-i18n="post-arith-plateau-p">
+        Most of the learning happened early. From epoch 200 to epoch 1000, the loss moved by only 0.0261 points.
+      </p>
+
+      <figure class="chart-card">
+        <figcaption data-i18n="chart-loss-title">Training loss by epoch</figcaption>
+        <svg class="line-chart" viewBox="0 0 720 320" role="img" aria-label="Training loss curve">
+          <line x1="58" y1="268" x2="680" y2="268" />
+          <line x1="58" y1="24" x2="58" y2="268" />
+          <polyline points="58,36 120,202 182,248 430,250 680,252" />
+          <g>
+            <circle cx="58" cy="36" r="5" />
+            <circle cx="120" cy="202" r="5" />
+            <circle cx="182" cy="248" r="5" />
+            <circle cx="430" cy="250" r="5" />
+            <circle cx="680" cy="252" r="5" />
+          </g>
+          <text x="58" y="292">1</text>
+          <text x="112" y="292">100</text>
+          <text x="172" y="292">200</text>
+          <text x="418" y="292">600</text>
+          <text x="655" y="292">1000</text>
+          <text x="72" y="34">3.0245</text>
+          <text x="132" y="198">0.8238</text>
+          <text x="194" y="244">0.2522</text>
+          <text x="442" y="246">0.2299</text>
+          <text x="600" y="242">0.2261</text>
+        </svg>
+      </figure>
+
+      <h2 data-i18n="post-arith-eval-title">Why exact match stayed low</h2>
+      <p data-i18n="post-arith-eval-p">
+        The model was not random. It often learned the shape of the answer, but exact match punished digit-level approximations and generation truncation as complete failures.
+      </p>
+
+      <div class="chart-grid">
+        <figure class="chart-card">
+          <figcaption data-i18n="chart-em-title">Exact match accuracy</figcaption>
+          <div class="bar-chart">
+            <div class="bar-row">
+              <span>Train</span>
+              <div><i style="width: 1.9%"></i></div>
+              <strong>1.9%</strong>
+            </div>
+            <div class="bar-row">
+              <span>Val</span>
+              <div><i style="width: 2.5%"></i></div>
+              <strong>2.5%</strong>
+            </div>
+          </div>
+        </figure>
+
+        <figure class="chart-card">
+          <figcaption data-i18n="chart-errors-title">Observed error classes</figcaption>
+          <div class="error-pills">
+            <span data-i18n="error-offbyone">Off-by-one digit errors</span>
+            <span data-i18n="error-truncation">Generation truncation</span>
+            <span data-i18n="error-noise">Separator / token noise</span>
+          </div>
+        </figure>
+      </div>
+
+      <pre class="post-code"><code>41+41=  expected 82  generated 84
+27+40=  expected 67  generated 68
+14+40=  expected 54  generated 6=
+65+23=  expected 88  generated 6</code></pre>
+
+      <h2 data-i18n="post-arith-next-title">What changes next</h2>
+      <p data-i18n="post-arith-next-p">
+        The next experiment should add scratchpad tokens, learning-rate decay on plateaus, a safer generation budget, and separate metrics for off-by-one and truncation errors.
+      </p>
+
+      <nav class="post-pagination" aria-label="Post navigation" data-i18n-aria="post-pagination-aria">
+        <a class="post-page-link" href="./first-note.html">
+          <span data-i18n="post-prev">Previous</span>
+          <strong data-i18n="post-first-title">How we added the blog and living updates</strong>
+        </a>
+        <span class="post-page-link is-disabled" aria-disabled="true">
+          <span data-i18n="post-next">Next</span>
+          <strong data-i18n="post-next-none">No later post</strong>
+        </span>
+      </nav>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <span>Oleg Boyko / Lotargo</span>
+    <span>AI stability report</span>
+  </footer>
+
+  <script src="../../assets/js/main.js"></script>
+</body>
+</html>

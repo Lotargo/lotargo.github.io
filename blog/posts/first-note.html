@@ -103,7 +103,17 @@ flowchart LR
       <p data-i18n="post-first-p4">
         Technical articles often need formulas. For example, the publishing cost can be described as:
       </p>
-      <div class="post-formula">$$ C_{publish} = C_{write} + C_{review} + C_{preview} $$</div>
+      <div class="post-formula" aria-label="C publish equals C write plus C review plus C preview">
+        <span class="math-formula">
+          <i>C</i><sub>publish</sub>
+          =
+          <i>C</i><sub>write</sub>
+          +
+          <i>C</i><sub>review</sub>
+          +
+          <i>C</i><sub>preview</sub>
+        </span>
+      </div>
 
       <h2 data-i18n="post-section-template">What to copy next</h2>
       <p data-i18n="post-first-p5">
@@ -115,10 +125,10 @@ flowchart LR
           <span data-i18n="post-prev">Previous</span>
           <strong data-i18n="post-prev-none">No earlier post</strong>
         </span>
-        <span class="post-page-link is-disabled" aria-disabled="true">
+        <a class="post-page-link" href="./arithmetic-overfitting.html">
           <span data-i18n="post-next">Next</span>
-          <strong data-i18n="post-next-none">No later post</strong>
-        </span>
+          <strong data-i18n="post-arith-title">When a Tiny Mamba Learns Arithmetic</strong>
+        </a>
       </nav>
     </article>
   </main>
@@ -129,59 +139,5 @@ flowchart LR
   </footer>
 
   <script src="../../assets/js/main.js"></script>
-  <script>
-    window.addEventListener('DOMContentLoaded', function () {
-      function loadScript(src) {
-        return new Promise(function (resolve, reject) {
-          var script = document.createElement('script');
-          var timeout = window.setTimeout(function () {
-            script.remove();
-            reject(new Error('Timed out loading ' + src));
-          }, 5000);
-          script.src = src;
-          script.async = true;
-          script.onload = function () {
-            window.clearTimeout(timeout);
-            resolve();
-          };
-          script.onerror = function () {
-            window.clearTimeout(timeout);
-            reject(new Error('Failed to load ' + src));
-          };
-          document.head.appendChild(script);
-        });
-      }
-
-      function loadStyle(href) {
-        var link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = href;
-        document.head.appendChild(link);
-      }
-
-      loadScript('https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js')
-        .then(function () {
-          window.mermaid.initialize({ startOnLoad: true, theme: document.documentElement.dataset.theme === 'light' ? 'default' : 'dark' });
-        })
-        .catch(function () {});
-
-      loadStyle('https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.css');
-      loadScript('https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/katex.min.js')
-        .then(function () {
-          return loadScript('https://cdn.jsdelivr.net/npm/katex@0.16.10/dist/contrib/auto-render.min.js');
-        })
-        .then(function () {
-          if (window.renderMathInElement) {
-            window.renderMathInElement(document.body, {
-              delimiters: [
-                { left: '$$', right: '$$', display: true },
-                { left: '$', right: '$', display: false }
-              ]
-            });
-          }
-        })
-        .catch(function () {});
-    });
-  </script>
 </body>
 </html>

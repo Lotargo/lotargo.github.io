@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="A technical note about treating experimental systems as data sources: why logs are not enough, where DS/ML tools fit, and why ClickHouse is a better home for event telemetry than PostgreSQL." />
+  <meta name="theme-color" content="#000000" />
+  <title>Logs Are Not Memory: Why Research Projects Need ClickHouse and a DS/ML Layer · Lotargo Blog</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem('lotargo-theme');
+        document.documentElement.dataset.theme = savedTheme || 'dark';
+      } catch (error) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    })();
+  </script>
+</head>
+<body data-title-en="Logs Are Not Memory: Why Research Projects Need ClickHouse and a DS/ML Layer · Lotargo Blog" data-title-ru="Логи — это не память: зачем исследовательским проектам ClickHouse и DS/ML-слой · Блог Lotargo">
+  <header class="site-header" data-js="header">
+    <a class="brand" href="../../" aria-label="Back to landing">
+      <span class="brand-mark" aria-hidden="true">LØ</span>
+      <span class="brand-text">Lotargo</span>
+    </a>
+    <div class="header-controls">
+      <nav class="nav" aria-label="Post navigation">
+        <a href="../../" data-i18n="blog-nav-home">Home</a>
+        <a href="../" data-i18n="nav-blog">Blog</a>
+        <a href="../../#projects" data-i18n="nav-projects">Projects</a>
+      </nav>
+      <button class="theme-toggle" type="button" data-js="theme-toggle" aria-label="Switch color theme">
+        <span data-js="theme-label">Theme</span>
+      </button>
+      <button class="lang-toggle" type="button" data-js="lang-toggle" aria-label="Switch language">
+        <span data-js="lang-label">EN</span>
+      </button>
+    </div>
+  </header>
+  <main id="top" class="post-shell">
+    <article class="post-article">
+      <div class="post-toolbar">
+        <a class="post-back" href="../" data-i18n="post-back-blog">Back to blog</a>
+        <div class="post-meta">
+          <span>2026-06-29</span>
+          <span data-lang-content="en">Research infrastructure</span>
+          <span data-lang-content="ru">Исследовательская инфраструктура</span>
+        </div>
+      </div>
+
+      <div data-lang-content="en"><h1>Logs Are Not Memory: Why Research Projects Need ClickHouse and a DS/ML Layer</h1>
+
+<p>A small project can survive on <code>print</code>, terminal history, and a few screenshots. A research project cannot.</p>
+
+<p>The moment a system starts producing versions, sweeps, candidate traces, evaluator verdicts, latency samples, failed runs, penalty curves, and reproducibility bundles, it stops being only a program. It becomes a source of experimental data.</p>
+
+<p>That is the moment where a DS/ML layer becomes part of engineering hygiene, not decoration.</p>
+
+<h2>The problem is not storage. The problem is memory.</h2>
+
+<p>Logs answer the question: what happened somewhere?</p>
+
+<p>A research database answers better questions:</p>
+
+<ul><li>what changed after this commit?</li><li>which backend fails more often?</li><li>which configs converge faster?</li><li>which domains produce evaluator disagreements?</li><li>which “successful” runs were actually contaminated by shortcuts?</li><li>which result can still be reproduced two months later?</li></ul>
+
+<p>A terminal log is a trace. A dataset is memory.</p>
+
+<div class="flow-diagram horizontal" role="img" aria-label="Experimental data pipeline"><span class="flow-node">Run</span><span class="flow-arrow" aria-hidden="true">-></span><span class="flow-node">Events</span><span class="flow-arrow" aria-hidden="true">-></span><span class="flow-node">ClickHouse</span><span class="flow-arrow" aria-hidden="true">-></span><span class="flow-node">Analysis</span><span class="flow-arrow" aria-hidden="true">-></span><span class="flow-node">Verification bundle</span></div>
+
+<h2>Postgres is state. ClickHouse is observation.</h2>
+
+<p>PostgreSQL is excellent when the system needs consistent state: users, tasks, relations, configs, artifact metadata, queues, permissions, and application objects.</p>
+
+<p>ClickHouse is built for a different type of data: append-only analytical events. Its official documentation describes it as a high-performance, column-oriented SQL DBMS for OLAP. OLAP queries often aggregate over large datasets, and columnar layout helps because analytical queries usually read only a subset of columns.</p>
+
+<div class="post-formula"><span class="math-formula">Research memory = state + observations + evidence</span></div>
+
+<p>So the point is not “ClickHouse instead of Postgres”. The point is this:</p>
+
+<blockquote><p>Postgres stores what the system is. ClickHouse stores what the system did.</p></blockquote>
+
+<div class="post-table-wrap"><table class="post-table"><thead><tr><th>Layer</th><th>Best fit</th><th>Why</th></tr></thead><tbody><tr><td>PostgreSQL</td><td>current state</td><td>transactions, relations, constraints, integrity</td></tr><tr><td>ClickHouse</td><td>event history</td><td>append-only metrics, time-series, aggregations, high ingest</td></tr><tr><td>verification-lab</td><td>evidence</td><td>manifests, hashes, CSV/JSONL exports, audit reports</td></tr></tbody></table></div>
+
+<h2>Why this matters for research systems</h2>
+
+<p>Consider a neuro-symbolic engine or a binary compute router. A single successful run is not enough. You need to know how it behaved across many runs.</p>
+
+<p>For a systems project like Hermes, useful events look like this:</p>
+
+<pre class="post-code"><code>run_id
+commit_sha
+opcode
+payload_bytes
+response_bytes
+latency_ms
+crc_ok
+backend = lisp | prolog | apl | fallback
+status
+error_type</code></pre>
+
+<p>For an evolutionary engine like AGI-lite, events have a different shape:</p>
+
+<pre class="post-code"><code>run_id
+version = v7 | v9
+domain
+seed
+candidate_id
+ast_size
+ast_depth
+penalty
+fitness
+verdict
+evaluator
+integrity_mode</code></pre>
+
+<p>For a training system like Sonata, the event stream changes again:</p>
+
+<pre class="post-code"><code>epoch
+step
+loss
+tf_answer_acc
+parse_success
+format_valid
+loop_rate
+ar_em
+gate_status</code></pre>
+
+<p>These are not business records. They are observations.</p>
+
+<h2>DS/ML is not only model training</h2>
+
+<p>In this context, DS/ML tools are not there to make the project sound fashionable. They are there to stop the researcher from guessing.</p>
+
+<p>A minimal analysis layer can answer questions like:</p>
+
+<ul><li>did latency actually improve, or did one lucky run look good?</li><li>does a lower penalty correlate with smaller ASTs or only with bloat?</li><li>does a new evaluator reduce invalid candidates or hide them?</li><li>does a deeper model reduce loss while making free generation worse?</li><li>are timeouts clustered around one domain, one opcode, or one commit?</li></ul>
+
+<p>This is not “big data theatre”. It is basic experimental hygiene.</p>
+
+<h2>The architecture I want</h2>
+
+<div class="flow-diagram horizontal" role="img" aria-label="Research memory architecture"><span class="flow-node">Engine</span><span class="flow-arrow" aria-hidden="true">-></span><span class="flow-node">Event Logger</span><span class="flow-arrow" aria-hidden="true">-></span><span class="flow-node">ClickHouse</span><span class="flow-arrow" aria-hidden="true">-></span><span class="flow-node">Python / Polars</span><span class="flow-arrow" aria-hidden="true">-></span><span class="flow-node">verification-lab-1</span></div>
+
+<p>The corresponding responsibility split is:</p>
+
+<pre class="post-code"><code>Postgres          = state and relations
+ClickHouse        = observations and metrics
+verification-lab  = evidence and reproducibility bundles</code></pre>
+
+<p>A compact event table is enough for the first iteration:</p>
+
+<pre class="post-code"><code>CREATE TABLE experiment_events
+(
+    ts DateTime64(3),
+    project LowCardinality(String),
+    run_id String,
+    commit_sha String,
+    event_type LowCardinality(String),
+
+    metric_name LowCardinality(String),
+    metric_value Float64,
+
+    domain LowCardinality(String),
+    backend LowCardinality(String),
+    status LowCardinality(String),
+
+    config_json String,
+    payload_json String
+)
+ENGINE = MergeTree
+PARTITION BY toYYYYMM(ts)
+ORDER BY (project, run_id, event_type, ts);</code></pre>
+
+<p>This is not the final schema. It is a starting point. In early research infrastructure, stable event writing matters more than perfect normalization.</p>
+
+<h2>Why ClickHouse fits the event stream</h2>
+
+<p>Research telemetry is usually appended, filtered by time/run/domain/backend/status, aggregated with functions such as <code>count</code>, <code>avg</code>, <code>quantile</code>, and <code>countIf</code>, and wide enough that most queries read only a few columns.</p>
+
+<p>ClickHouse’s MergeTree family is designed for high ingest and large data volumes: inserts create parts, and background merges compact those parts over time. That model is a natural fit for event telemetry.</p>
+
+<pre class="post-code"><code>SELECT
+    backend,
+    quantile(0.95)(metric_value) AS p95_latency_ms,
+    countIf(status = 'error') AS errors
+FROM experiment_events
+WHERE project = 'hermes'
+  AND event_type = 'request_completed'
+  AND metric_name = 'latency_ms'
+GROUP BY backend
+ORDER BY p95_latency_ms DESC;</code></pre>
+
+<p>This is the kind of question I want to ask constantly.</p>
+
+<h2>The important boundary: data is not evidence yet</h2>
+
+<p>ClickHouse can tell me what happened. It does not prove that the result is publishable.</p>
+
+<p>That is why the analytical layer should export evidence bundles:</p>
+
+<pre class="post-code"><code>verification-lab-1/
+  hermes/
+    &lt;run_id&gt;/
+      MANIFEST.json
+      config.json
+      events.jsonl
+      results.csv
+      audit.md
+      hashes.txt</code></pre>
+
+<p>ClickHouse is queryable memory. <code>verification-lab-1</code> is reproducibility evidence.</p>
+
+<h2>The real reason to do this</h2>
+
+<p>The danger in research projects is not only that a system fails. The danger is that it works once, beautifully, accidentally — and you mistake that for a law.</p>
+
+<div class="post-table-wrap"><table class="post-table"><thead><tr><th>Looks like</th><th>But may actually be</th></tr></thead><tbody><tr><td>progress</td><td>noise</td></tr><tr><td>discovery</td><td>overfit</td></tr><tr><td>stability</td><td>one lucky run</td></tr><tr><td>benchmark</td><td>demo</td></tr><tr><td>verification</td><td>a pretty log</td></tr></tbody></table></div>
+
+<p>Not because every project needs enterprise analytics. Not because every graph is science. But because a research system without analytical memory remembers mostly the developer’s last emotion.</p>
+
+<p>A research system with structured telemetry can remember distributions, regressions, failures, and evidence.</p>
+
+<h2>References</h2>
+
+<ul><li><a href="https://clickhouse.com/docs/intro" target="_blank" rel="noreferrer">ClickHouse: What is ClickHouse?</a></li><li><a href="https://clickhouse.com/docs/engines/table-engines/mergetree-family/mergetree" target="_blank" rel="noreferrer">ClickHouse: MergeTree table engine</a></li><li><a href="https://www.postgresql.org/about/" target="_blank" rel="noreferrer">PostgreSQL: About</a></li></ul></div>
+
+      <div data-lang-content="ru"><h1>Логи — это не память: зачем исследовательским проектам ClickHouse и DS/ML-слой</h1>
+
+<p>Маленький проект может жить на <code>print</code>, истории терминала и паре скриншотов. Исследовательский проект — нет.</p>
+
+<p>Как только в системе появляются версии, sweep-и, traces кандидатов, verdict-ы evaluator-ов, latency, failed runs, penalty curves и воспроизводимые bundle-ы, она перестаёт быть просто программой. Она становится источником экспериментальных данных.</p>
+
+<p>И вот здесь DS/ML-слой становится не украшением, а частью инженерной гигиены.</p>
+
+<h2>Проблема не в хранении. Проблема в памяти.</h2>
+
+<p>Логи отвечают на вопрос: что где-то произошло?</p>
+
+<p>Исследовательская база отвечает на вопросы лучше:</p>
+
+<ul><li>что изменилось после этого коммита?</li><li>какой backend чаще падает?</li><li>какие конфиги быстрее сходятся?</li><li>какие домены чаще вызывают расхождение evaluator-ов?</li><li>какие “успешные” запуски на самом деле загрязнены shortcut-ами?</li><li>какой результат можно воспроизвести через два месяца?</li></ul>
+
+<p>Терминальный лог — это след. Датасет — это память.</p>
+
+<div class="flow-diagram horizontal" role="img" aria-label="Пайплайн экспериментальных данных"><span class="flow-node">Run</span><span class="flow-arrow" aria-hidden="true">-></span><span class="flow-node">Events</span><span class="flow-arrow" aria-hidden="true">-></span><span class="flow-node">ClickHouse</span><span class="flow-arrow" aria-hidden="true">-></span><span class="flow-node">Analysis</span><span class="flow-arrow" aria-hidden="true">-></span><span class="flow-node">Verification bundle</span></div>
+
+<h2>Postgres — это состояние. ClickHouse — это наблюдение.</h2>
+
+<p>PostgreSQL отлично подходит там, где системе нужно согласованное состояние: пользователи, задачи, связи, конфиги, метаданные артефактов, очереди, права доступа и прикладные объекты.</p>
+
+<p>ClickHouse рассчитан на другой тип данных: append-only аналитические события. В официальной документации ClickHouse описан как высокопроизводительная колоночная SQL-СУБД для OLAP. OLAP-запросы часто агрегируют большие наборы данных, а колоночное хранение помогает, потому что аналитические запросы обычно читают только часть колонок.</p>
+
+<div class="post-formula"><span class="math-formula">Исследовательская память = состояние + наблюдения + доказательства</span></div>
+
+<p>Поэтому мысль не в том, что “ClickHouse вместо Postgres”. Мысль вот в чём:</p>
+
+<blockquote><p>Postgres хранит то, чем система является. ClickHouse хранит то, что система делала.</p></blockquote>
+
+<div class="post-table-wrap"><table class="post-table"><thead><tr><th>Слой</th><th>Лучше подходит для</th><th>Почему</th></tr></thead><tbody><tr><td>PostgreSQL</td><td>текущего состояния</td><td>транзакции, связи, ограничения, целостность</td></tr><tr><td>ClickHouse</td><td>истории событий</td><td>append-only метрики, time-series, агрегации, высокий ingest</td></tr><tr><td>verification-lab</td><td>доказательных артефактов</td><td>манифесты, хэши, CSV/JSONL, audit-отчёты</td></tr></tbody></table></div>
+
+<h2>Почему это важно для исследовательских систем</h2>
+
+<p>Возьмём нейросимвольный движок или бинарный вычислительный маршрутизатор. Одного успешного запуска недостаточно. Нужно понимать, как система ведёт себя на множестве запусков.</p>
+
+<p>Для системного проекта вроде Hermes полезные события выглядят так:</p>
+
+<pre class="post-code"><code>run_id
+commit_sha
+opcode
+payload_bytes
+response_bytes
+latency_ms
+crc_ok
+backend = lisp | prolog | apl | fallback
+status
+error_type</code></pre>
+
+<p>Для эволюционного движка вроде AGI-lite форма другая:</p>
+
+<pre class="post-code"><code>run_id
+version = v7 | v9
+domain
+seed
+candidate_id
+ast_size
+ast_depth
+penalty
+fitness
+verdict
+evaluator
+integrity_mode</code></pre>
+
+<p>Для обучающей системы вроде Sonata поток снова меняется:</p>
+
+<pre class="post-code"><code>epoch
+step
+loss
+tf_answer_acc
+parse_success
+format_valid
+loop_rate
+ar_em
+gate_status</code></pre>
+
+<p>Это не бизнес-записи. Это наблюдения.</p>
+
+<h2>DS/ML — это не только обучение моделей</h2>
+
+<p>В этом контексте DS/ML-инструменты нужны не для модного звучания. Они нужны, чтобы исследователь перестал угадывать.</p>
+
+<p>Минимальный аналитический слой может отвечать на вопросы:</p>
+
+<ul><li>latency действительно улучшилась или один запуск просто был удачным?</li><li>низкий penalty связан с компактным AST или только с раздуванием дерева?</li><li>новый evaluator реально уменьшил число invalid-кандидатов или просто начал их скрывать?</li><li>большая глубина модели уменьшает loss, но ломает свободную генерацию?</li><li>timeout-ы группируются вокруг одного домена, opcode или коммита?</li></ul>
+
+<p>Это не “big data театр”. Это базовая экспериментальная гигиена.</p>
+
+<h2>Архитектура, к которой я хочу прийти</h2>
+
+<div class="flow-diagram horizontal" role="img" aria-label="Архитектура исследовательской памяти"><span class="flow-node">Engine</span><span class="flow-arrow" aria-hidden="true">-></span><span class="flow-node">Event Logger</span><span class="flow-arrow" aria-hidden="true">-></span><span class="flow-node">ClickHouse</span><span class="flow-arrow" aria-hidden="true">-></span><span class="flow-node">Python / Polars</span><span class="flow-arrow" aria-hidden="true">-></span><span class="flow-node">verification-lab-1</span></div>
+
+<p>И такое же разделение ответственности:</p>
+
+<pre class="post-code"><code>Postgres          = состояние и связи
+ClickHouse        = наблюдения и метрики
+verification-lab  = доказательства и reproducibility bundles</code></pre>
+
+<p>Для первой итерации достаточно компактной таблицы событий:</p>
+
+<pre class="post-code"><code>CREATE TABLE experiment_events
+(
+    ts DateTime64(3),
+    project LowCardinality(String),
+    run_id String,
+    commit_sha String,
+    event_type LowCardinality(String),
+
+    metric_name LowCardinality(String),
+    metric_value Float64,
+
+    domain LowCardinality(String),
+    backend LowCardinality(String),
+    status LowCardinality(String),
+
+    config_json String,
+    payload_json String
+)
+ENGINE = MergeTree
+PARTITION BY toYYYYMM(ts)
+ORDER BY (project, run_id, event_type, ts);</code></pre>
+
+<p>Это не финальная схема. Это стартовая точка. На раннем этапе исследовательской инфраструктуры стабильная запись событий важнее идеальной нормальной формы.</p>
+
+<h2>Почему ClickHouse подходит под поток событий</h2>
+
+<p>Исследовательская телеметрия обычно дописывается, фильтруется по времени/run/домену/backend/статусу, агрегируется через <code>count</code>, <code>avg</code>, <code>quantile</code> и <code>countIf</code>, и достаточно широка, чтобы большинство запросов читали только часть колонок.</p>
+
+<p>Семейство MergeTree в ClickHouse рассчитано на высокий ingest и большие объёмы: insert-ы создают parts, а фоновые merge-и постепенно объединяют их. Такая модель хорошо подходит для событийной телеметрии.</p>
+
+<pre class="post-code"><code>SELECT
+    backend,
+    quantile(0.95)(metric_value) AS p95_latency_ms,
+    countIf(status = 'error') AS errors
+FROM experiment_events
+WHERE project = 'hermes'
+  AND event_type = 'request_completed'
+  AND metric_name = 'latency_ms'
+GROUP BY backend
+ORDER BY p95_latency_ms DESC;</code></pre>
+
+<p>Вот такие вопросы хочется задавать постоянно.</p>
+
+<h2>Важная граница: данные ещё не доказательство</h2>
+
+<p>ClickHouse может сказать, что произошло. Но он не доказывает, что результат можно публиковать.</p>
+
+<p>Поэтому аналитический слой должен экспортировать доказательные bundle-ы:</p>
+
+<pre class="post-code"><code>verification-lab-1/
+  hermes/
+    &lt;run_id&gt;/
+      MANIFEST.json
+      config.json
+      events.jsonl
+      results.csv
+      audit.md
+      hashes.txt</code></pre>
+
+<p>ClickHouse — это запрашиваемая память. <code>verification-lab-1</code> — это воспроизводимое доказательство.</p>
+
+<h2>Настоящая причина всё это делать</h2>
+
+<p>Опасность исследовательских проектов не только в том, что система не работает. Опасность в том, что она один раз сработает красиво, случайно — и ты примешь это за закономерность.</p>
+
+<div class="post-table-wrap"><table class="post-table"><thead><tr><th>Выглядит как</th><th>Но может быть</th></tr></thead><tbody><tr><td>прогресс</td><td>шум</td></tr><tr><td>discovery</td><td>overfit</td></tr><tr><td>стабильность</td><td>один удачный запуск</td></tr><tr><td>benchmark</td><td>demo</td></tr><tr><td>verification</td><td>красивый лог</td></tr></tbody></table></div>
+
+<p>Не потому что каждому проекту нужна enterprise-аналитика. Не потому что каждый график — это наука. А потому что исследовательская система без аналитической памяти в основном помнит последнюю эмоцию разработчика.</p>
+
+<p>Исследовательская система со структурированной телеметрией помнит распределения, регрессии, отказы и доказательства.</p>
+
+<h2>Источники</h2>
+
+<ul><li><a href="https://clickhouse.com/docs/intro" target="_blank" rel="noreferrer">ClickHouse: What is ClickHouse?</a></li><li><a href="https://clickhouse.com/docs/engines/table-engines/mergetree-family/mergetree" target="_blank" rel="noreferrer">ClickHouse: MergeTree table engine</a></li><li><a href="https://www.postgresql.org/about/" target="_blank" rel="noreferrer">PostgreSQL: About</a></li></ul></div>
+
+      <nav class="post-pagination" aria-label="Post navigation" data-i18n-aria="post-pagination-aria">
+        <a class="post-page-link" href="./three-sprints.html"><span data-i18n="post-prev">Previous</span><strong data-lang-content="en">1000× Faster Backward Pass</strong><strong data-lang-content="ru">1000× быстрее backward pass</strong></a>
+        <span class="post-page-link is-disabled" aria-disabled="true"><span data-i18n="post-next">Next</span><strong data-i18n="post-next-none">No later post</strong></span>
+      </nav>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <span>Oleg Boyko / Lotargo</span>
+    <span>Blog · AI systems · verification</span>
+  </footer>
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/blog-post.js"></script>
+</body>
+</html>

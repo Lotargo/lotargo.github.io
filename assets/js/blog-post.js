@@ -1,4 +1,15 @@
 (function () {
+  const memoryHero = document.querySelector('.memory-hero');
+  if (memoryHero) {
+    memoryHero.querySelectorAll('text').forEach((node) => {
+      if (node.textContent.trim() === 'CLICKHOUSE') {
+        node.setAttribute('x', '12');
+        node.setAttribute('y', '318');
+        node.setAttribute('style', 'font-size:13px;letter-spacing:.28em');
+      }
+    });
+  }
+
   const mermaidBlocks = document.querySelectorAll('.mermaid');
   if (!mermaidBlocks.length) return;
 

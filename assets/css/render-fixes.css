@@ -18,6 +18,24 @@ body::after {
   mix-blend-mode: normal;
 }
 
+.memory-hero {
+  background: var(--bg) !important;
+  box-shadow: none !important;
+}
+
+.memory-hero::before,
+.memory-hero::after {
+  display: none !important;
+  opacity: 0 !important;
+  background-image: none !important;
+  mix-blend-mode: normal !important;
+}
+
+.memory-hero [filter],
+.memory-hero * {
+  filter: none !important;
+}
+
 .hero-line.fill {
   color: var(--fg);
   -webkit-text-stroke: 0;

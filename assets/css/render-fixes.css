@@ -1,10 +1,15 @@
 /* Render-quality fixes for dark GitHub Pages view.
-   Keeps the brutalist layout, but removes the fullscreen noise layer that
-   made the hero text look pixelated on black backgrounds. */
+   Keeps the brutalist layout, but removes fullscreen noise/glow layers that
+   make text and dark backgrounds look pixelated on GitHub Pages. */
 
 body {
+  background: var(--bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+body::before {
+  opacity: 0;
 }
 
 body::after {

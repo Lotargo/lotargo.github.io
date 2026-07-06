@@ -1,4 +1,17 @@
 (function () {
+  function loadRenderFixes() {
+    if (document.querySelector('link[href$="render-fixes.css"]')) return;
+
+    const currentScript = document.currentScript;
+    const scriptUrl = currentScript && currentScript.src ? currentScript.src : '../../assets/js/blog-post.js';
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = new URL('../css/render-fixes.css', scriptUrl).href;
+    document.head.appendChild(link);
+  }
+
+  loadRenderFixes();
+
   const memoryHero = document.querySelector('.memory-hero');
   if (memoryHero) {
     memoryHero.querySelectorAll('text').forEach((node) => {

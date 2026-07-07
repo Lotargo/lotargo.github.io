@@ -51,7 +51,11 @@
       </div>
 
       <figure class="post-figure">
-        <img src="../assets/gemini-safety-filter-layers.svg" alt="Diagram of input, reasoning, output, and moderation layers" />
+        <picture>
+          <source media="(max-width: 640px)" srcset="../assets/gemini-safety-filter-layers-mobile.svg" />
+          <source media="(max-width: 1024px)" srcset="../assets/gemini-safety-filter-layers-tablet.svg" />
+          <img src="../assets/gemini-safety-filter-layers.svg" alt="Diagram of input, reasoning, output, and moderation layers" />
+        </picture>
         <figcaption data-lang-content="en">A defensive diagram of the observed mismatch between prompt checks, reasoning traces, and final-output moderation.</figcaption>
         <figcaption data-lang-content="ru">Defensive-схема наблюдаемого рассинхрона между проверкой prompt-а, reasoning-трассой и модерацией финального ответа.</figcaption>
       </figure>

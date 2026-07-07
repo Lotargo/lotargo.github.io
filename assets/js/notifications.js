@@ -1,75 +1,65 @@
 /*
   Static update feed for the portfolio notification center.
+  Blog post notifications are generated from assets/js/blog-posts.js.
   Use stable IDs so localStorage can remember which items were seen.
 */
 
-window.PORTFOLIO_NOTIFICATIONS = [
-  {
-    id: "2026-07-08-gemini-safety-filter-layers",
-    date: "2026-07-08",
-    type: {
-      en: "Blog",
-      ru: "Блог"
-    },
-    title: {
-      en: "Gemini safety layers note",
-      ru: "Заметка о safety-слоях Gemini"
-    },
-    text: {
-      en: "A defensive article on input moderation, reasoning traces, final-output filters, and control-plane gaps.",
-      ru: "Defensive-статья про input moderation, reasoning-трассы, финальный output-фильтр и разрывы control plane."
-    },
-    url: "./blog/posts/gemini-safety-filter-layers.html"
-  },
-  {
-    id: "2026-06-28-arithmetic-overfitting",
-    date: "2026-06-28",
-    type: {
-      en: "Blog",
-      ru: "Блог"
-    },
-    title: {
-      en: "Arithmetic stability article",
-      ru: "Статья о стабильности арифметики"
-    },
-    text: {
-      en: "A new technical post on Mamba overfitting, FPU overflows, plateaus, and exact-match errors.",
-      ru: "Новый технический пост о Mamba overfit, FPU overflow, плато и exact-match ошибках."
-    },
-    url: "./blog/posts/arithmetic-overfitting.html"
-  },
-  {
-    id: "2026-06-28-blog-scaffold",
-    date: "2026-06-28",
-    type: {
-      en: "Site",
-      ru: "Сайт"
-    },
-    title: {
-      en: "Blog scaffold is live",
-      ru: "Заготовка блога готова"
-    },
-    text: {
-      en: "A new writing space for development notes, architecture decisions, and project updates.",
-      ru: "Новое место для заметок о разработке, архитектурных решениях и обновлениях проектов."
-    },
-    url: "./blog/"
-  },
-  {
-    id: "2026-06-28-portfolio-updates",
-    date: "2026-06-28",
-    type: {
-      en: "Update",
-      ru: "Обновление"
-    },
-    title: {
-      en: "Living portfolio layer",
-      ru: "Живой слой портфолио"
-    },
-    text: {
-      en: "The landing now has a static notification center that remembers viewed updates.",
-      ru: "На лендинге появился статический центр уведомлений, который запоминает просмотренные обновления."
-    },
-    url: "#top"
+(function () {
+  function localize(value, lang) {
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      return value[lang] || value.en || '';
+    }
+    return value || '';
   }
-];
+
+  function buildNotifications() {
+    const posts = Array.isArray(window.BLOG_POSTS) ? window.BLOG_POSTS : [];
+    const postNotifications = posts
+      .filter((post) => post.notify)
+      .map((post) => ({
+        id: post.notificationId || `${post.date}-${post.slug}`,
+        date: post.date,
+        type: {
+          en: 'Blog',
+          ru: 'Блог'
+        },
+        title: post.notificationTitle || post.shortTitle || post.title,
+        text: post.notificationText || post.description,
+        url: post.url || `./blog/posts/${post.slug}.html`
+      }));
+
+    const siteNotifications = Array.isArray(window.BLOG_SITE_NOTIFICATIONS)
+      ? window.BLOG_SITE_NOTIFICATIONS
+      : [];
+
+    window.PORTFOLIO_NOTIFICATIONS = [
+      ...postNotifications,
+      ...siteNotifications
+    ].sort((a, b) => {
+      const dateDiff = String(b.date || '').localeCompare(String(a.date || ''));
+      if (dateDiff !== 0) return dateDiff;
+      return localize(b.title, 'en').localeCompare(localize(a.title, 'en'));
+    });
+  }
+
+  window.BLOG_BUILD_NOTIFICATIONS = buildNotifications;
+
+  if (Array.isArray(window.BLOG_POSTS)) {
+    buildNotifications();
+    return;
+  }
+
+  const currentScript = document.currentScript;
+  const manifestUrl = currentScript && currentScript.src
+    ? new URL('blog-posts.js', currentScript.src).href
+    : './assets/js/blog-posts.js';
+
+  if (document.readyState === 'loading') {
+    document.write('<script src="' + manifestUrl + '"><\/script>');
+  } else {
+    const script = document.createElement('script');
+    script.src = manifestUrl;
+    script.onload = buildNotifications;
+    document.head.appendChild(script);
+  }
+})();

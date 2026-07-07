@@ -5,6 +5,23 @@
 
 window.PORTFOLIO_NOTIFICATIONS = [
   {
+    id: "2026-07-08-gemini-safety-filter-layers",
+    date: "2026-07-08",
+    type: {
+      en: "Blog",
+      ru: "Блог"
+    },
+    title: {
+      en: "Gemini safety layers note",
+      ru: "Заметка о safety-слоях Gemini"
+    },
+    text: {
+      en: "A defensive article on input moderation, reasoning traces, final-output filters, and control-plane gaps.",
+      ru: "Defensive-статья про input moderation, reasoning-трассы, финальный output-фильтр и разрывы control plane."
+    },
+    url: "./blog/posts/gemini-safety-filter-layers.html"
+  },
+  {
     id: "2026-06-28-arithmetic-overfitting",
     date: "2026-06-28",
     type: {

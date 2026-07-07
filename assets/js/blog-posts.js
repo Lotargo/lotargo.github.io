@@ -11,6 +11,7 @@ window.BLOG_POSTS = [
   {
     slug: 'blog-launch',
     date: '2026-06-28',
+    notificationId: '2026-06-28-blog-scaffold',
     href: './blog-launch.html',
     url: './blog/posts/blog-launch.html',
     type: {

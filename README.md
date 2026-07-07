@@ -1,32 +1,65 @@
 # Lotargo GitHub Profile Landing
 
-This repository contains the static landing page for the main GitHub profile:
+This repository contains the static GitHub Pages landing page for Lotargo.
 
-```text
-https://github.com/Lotargo
-```
-
-The published page is available at:
+Published site:
 
 ```text
 https://lotargo.github.io
 ```
 
-The purpose of this page is simple: give visitors one readable entry point into the projects, demos, repositories, and public evidence linked from the Lotargo GitHub profile. It is not a separate framework project, SaaS app, or generated showcase. It is a hand-maintained static GitHub Pages site.
+The repository is intentionally static-first: plain HTML, CSS, and JavaScript served directly by GitHub Pages. There is no backend, package install, build step, or deployment script required for the current version.
 
 ## What This Repo Contains
 
 ```text
-index.html
-assets/css/styles.css
-assets/js/projects.js
-assets/js/main.js
-assets/img/
-PROFILE_README_SNIPPET.md
-v0_PROMPT.md
+index.html                       Main portfolio landing page
+blog/index.html                  Blog index page
+blog/posts/                      Rendered static HTML articles
+blog/content/                    Markdown/source copies for articles
+blog/assets/                     Blog-specific images and SVG banners
+assets/css/styles.css            Main visual system
+assets/css/render-fixes.css      Rendering compatibility fixes
+assets/js/main.js                Theme, language, notifications, project cards
+assets/js/projects.js            Project card manifest
+assets/js/blog-posts.js          Shared blog metadata manifest
+assets/js/blog-index.js          Blog index renderer
+assets/js/blog-post.js           Blog post helpers and prev/next navigation
+assets/js/notifications.js       Notification builder from the blog manifest
+assets/img/                      Landing/project images
+PROFILE_README_SNIPPET.md        Snippet for the GitHub profile README
+v0_PROMPT.md                     Historical reference prompt
 ```
 
-There is no build step, package install, backend, or deployment script required for the current version. GitHub Pages serves the files directly from the repository root.
+## Blog Automation
+
+The blog now uses `assets/js/blog-posts.js` as the first single source of truth for static article metadata.
+
+That manifest drives:
+
+- the blog index cards;
+- `Previous / Next` navigation on article pages;
+- landing-page notifications for posts with `notify: true`.
+
+When adding a new article, do not manually edit:
+
+```text
+assets/js/notifications.js
+assets/js/blog-post.js
+blog/index.html post cards
+```
+
+Instead, add one entry to:
+
+```text
+assets/js/blog-posts.js
+```
+
+See the full publishing checklist here:
+
+```text
+docs/ADDING_BLOG_ARTICLES.md
+```
 
 ## Editing Project Cards
 
@@ -86,6 +119,14 @@ Then open:
 
 ```text
 http://127.0.0.1:4173
+```
+
+Useful pages to check:
+
+```text
+http://127.0.0.1:4173/
+http://127.0.0.1:4173/blog/
+http://127.0.0.1:4173/blog/posts/<slug>.html
 ```
 
 ### Node.js

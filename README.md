@@ -27,6 +27,8 @@ assets/js/blog-index.js          Blog index renderer
 assets/js/blog-post.js           Blog post helpers and prev/next navigation
 assets/js/notifications.js       Notification builder from the blog manifest
 assets/img/                      Landing/project images
+docs/ADDING_BLOG_ARTICLES.md     Current blog publishing checklist
+docs/BLOG_AUTOMATION_ROADMAP.md  Planned typing, validation, and CLI roadmap
 PROFILE_README_SNIPPET.md        Snippet for the GitHub profile README
 v0_PROMPT.md                     Historical reference prompt
 ```
@@ -55,10 +57,16 @@ Instead, add one entry to:
 assets/js/blog-posts.js
 ```
 
-See the full publishing checklist here:
+Current publishing checklist:
 
 ```text
 docs/ADDING_BLOG_ARTICLES.md
+```
+
+Roadmap for typing, validation, CLI helpers, static data, RSS, sitemap, and future generation:
+
+```text
+docs/BLOG_AUTOMATION_ROADMAP.md
 ```
 
 ## Editing Project Cards

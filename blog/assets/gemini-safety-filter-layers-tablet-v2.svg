@@ -1,84 +1,100 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1160" role="img" aria-labelledby="title desc">
   <title id="title">Filter Matryoshka tablet banner</title>
-  <desc id="desc">Tablet-oriented version of the safety layers banner with a clear left-to-right then downward flow.</desc>
+  <desc id="desc">Tablet banner in the Logs ≠ Memory visual language with a red shield warning.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#040404"/>
-      <stop offset="0.5" stop-color="#0f0f0f"/>
-      <stop offset="1" stop-color="#020202"/>
+      <stop offset="0" stop-color="#070707"/>
+      <stop offset="0.55" stop-color="#101010"/>
+      <stop offset="1" stop-color="#050505"/>
     </linearGradient>
-    <radialGradient id="hot" cx="72%" cy="18%" r="48%">
-      <stop offset="0" stop-color="#ff7676" stop-opacity="0.34"/>
-      <stop offset="0.4" stop-color="#ff7676" stop-opacity="0.08"/>
-      <stop offset="1" stop-color="#ff7676" stop-opacity="0"/>
-    </radialGradient>
     <filter id="grain" x="0" y="0" width="100%" height="100%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/>
+      <feTurbulence type="fractalNoise" baseFrequency="0.88" numOctaves="3" stitchTiles="stitch"/>
       <feColorMatrix type="saturate" values="0"/>
-      <feComponentTransfer><feFuncA type="table" tableValues="0 0.1"/></feComponentTransfer>
+      <feComponentTransfer><feFuncA type="table" tableValues="0 0.11"/></feComponentTransfer>
     </filter>
-    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="10" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-    <marker id="arrowR" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
-      <path d="M0 0 12 6 0 12Z" fill="#f5f5f0" opacity="0.76"/>
+    <marker id="arrowR" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 8 4 0 8Z" fill="#e8e8e3" opacity="0.78"/>
     </marker>
-    <marker id="arrowD" markerWidth="12" markerHeight="12" refX="6" refY="10" orient="auto">
-      <path d="M0 0 12 10 0 20Z" fill="#f5f5f0" opacity="0.76"/>
+    <marker id="arrowD" viewBox="0 0 8 8" refX="4" refY="7" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 8 4 0 8Z" fill="#e8e8e3" opacity="0.78" transform="rotate(90 4 4)"/>
     </marker>
   </defs>
+
   <rect width="1600" height="1160" fill="url(#bg)"/>
-  <rect width="1600" height="1160" fill="url(#hot)"/>
-  <g opacity="0.11" stroke="#f5f5f0" stroke-width="1">
+  <g opacity="0.1" stroke="#efefe9" stroke-width="1">
     <path d="M0 120H1600M0 240H1600M0 360H1600M0 480H1600M0 600H1600M0 720H1600M0 840H1600M0 960H1600M0 1080H1600"/>
     <path d="M100 0V1160M200 0V1160M300 0V1160M400 0V1160M500 0V1160M600 0V1160M700 0V1160M800 0V1160M900 0V1160M1000 0V1160M1100 0V1160M1200 0V1160M1300 0V1160M1400 0V1160M1500 0V1160"/>
   </g>
-  <rect width="1600" height="1160" filter="url(#grain)" opacity="0.3"/>
+  <rect width="1600" height="1160" filter="url(#grain)" opacity="0.28"/>
 
-  <text x="96" y="110" fill="#8c8c88" font-family="JetBrains Mono, Consolas, monospace" font-size="20" font-weight="800" letter-spacing="4">DEFENSIVE NOTE / LLM SAFETY PIPELINE</text>
-  <text x="96" y="230" fill="#f5f5f0" font-family="Inter, Segoe UI, sans-serif" font-size="96" font-weight="950" letter-spacing="-4">FILTER</text>
-  <text x="96" y="326" fill="none" stroke="#f5f5f0" stroke-width="2" font-family="Inter, Segoe UI, sans-serif" font-size="96" font-weight="950" letter-spacing="-4">MATRYOSHKA</text>
-  <text x="96" y="384" fill="#b9b9b2" font-family="Inter, Segoe UI, sans-serif" font-size="30">Input checks, reasoning traces, final output, and the gap between them.</text>
-
-  <g transform="translate(1046 118)" filter="url(#glow)">
-    <path d="M150 0 294 58v130c0 108-60 186-144 231C60 374 0 296 0 188V58Z" fill="#ff7676" fill-opacity="0.08" stroke="#ff7676" stroke-width="3"/>
-    <path d="M92 180 138 226 230 116" fill="none" stroke="#ff7676" stroke-width="16" stroke-linecap="square" stroke-linejoin="miter"/>
+  <g opacity="0.54">
+    <path d="M900 44H1530M900 104H1530M900 164H1530M900 224H1530" stroke="#efefe9" stroke-opacity="0.15"/>
+    <path d="M960 20V250M1080 20V250M1200 20V250M1320 20V250M1440 20V250" stroke="#efefe9" stroke-opacity="0.15"/>
+    <path d="M952 214 C1032 170 1102 178 1160 132 S1288 100 1368 132 1440 126 1500 86" fill="none" stroke="#efefe9" stroke-opacity="0.22" stroke-dasharray="6 8"/>
   </g>
-  <text x="1120" y="540" fill="#b9b9b2" font-family="JetBrains Mono, Consolas, monospace" font-size="18" font-weight="800" letter-spacing="3">INDEPENDENT FINAL</text>
-  <text x="1120" y="568" fill="#b9b9b2" font-family="JetBrains Mono, Consolas, monospace" font-size="18" font-weight="800" letter-spacing="3">MODERATION</text>
+
+  <text x="96" y="110" fill="#91918b" font-family="JetBrains Mono, Consolas, monospace" font-size="20" font-weight="800" letter-spacing="4">DEFENSIVE NOTE / LLM SAFETY PIPELINE</text>
+  <text x="96" y="232" fill="#efefe9" font-family="Inter, Segoe UI, sans-serif" font-size="98" font-weight="950" letter-spacing="-4">FILTER</text>
+  <text x="96" y="328" fill="none" stroke="#efefe9" stroke-width="2" font-family="Inter, Segoe UI, sans-serif" font-size="98" font-weight="950" letter-spacing="-4">MATRYOSHKA</text>
+  <text x="96" y="384" fill="#b4b4ad" font-family="Inter, Segoe UI, sans-serif" font-size="30">Input checks, reasoning traces, final output, and the gap between them.</text>
+
+  <g transform="translate(1112 128)" opacity="0.9">
+    <path d="M120 0 238 48v106c0 88-49 152-118 189C49 306 0 242 0 154V48Z" fill="#120707" stroke="#ff5a5f" stroke-width="4"/>
+    <path d="M74 146 112 184 188 90" fill="none" stroke="#ff5a5f" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/>
+  </g>
+  <text x="1120" y="514" fill="#ff5a5f" font-family="JetBrains Mono, Consolas, monospace" font-size="18" font-weight="800" letter-spacing="3">RED ATTACK SURFACE</text>
+  <text x="1120" y="542" fill="#8f8f89" font-family="JetBrains Mono, Consolas, monospace" font-size="18" font-weight="800" letter-spacing="3">SEPARATE FINAL MODERATION</text>
 
   <g transform="translate(96 592)">
-    <rect width="620" height="148" fill="#070707" stroke="#ffffff" stroke-opacity="0.28"/>
-    <text x="28" y="42" fill="#ff7676" font-family="JetBrains Mono, Consolas, monospace" font-size="18" font-weight="900" letter-spacing="3">01 / INPUT</text>
-    <text x="28" y="86" fill="#f5f5f0" font-family="Inter, Segoe UI, sans-serif" font-size="38" font-weight="860">prompt tokens</text>
-    <text x="28" y="122" fill="#8c8c88" font-family="JetBrains Mono, Consolas, monospace" font-size="18">explicit markers are easy</text>
+    <rect width="620" height="148" fill="#0d0d0d" stroke="#5f5f5a"/>
+    <g opacity="0.72" stroke="#efefe9" fill="none" stroke-width="1.4">
+      <rect x="24" y="28" width="40" height="28"/>
+      <path d="M30 66h30M30 76h24M30 86h18"/>
+    </g>
+    <text x="88" y="42" fill="#ff6b70" font-family="JetBrains Mono, Consolas, monospace" font-size="18" font-weight="900" letter-spacing="3">01 / INPUT</text>
+    <text x="88" y="86" fill="#efefe9" font-family="Inter, Segoe UI, sans-serif" font-size="38" font-weight="860">prompt tokens</text>
+    <text x="88" y="122" fill="#8f8f89" font-family="JetBrains Mono, Consolas, monospace" font-size="18">explicit markers are easy</text>
   </g>
+
   <g transform="translate(880 592)">
-    <rect width="620" height="148" fill="#070707" stroke="#ffffff" stroke-opacity="0.28"/>
-    <text x="28" y="42" fill="#ff7676" font-family="JetBrains Mono, Consolas, monospace" font-size="18" font-weight="900" letter-spacing="3">02 / TRACE</text>
-    <text x="28" y="86" fill="#f5f5f0" font-family="Inter, Segoe UI, sans-serif" font-size="38" font-weight="860">reasoning layer</text>
-    <text x="28" y="122" fill="#8c8c88" font-family="JetBrains Mono, Consolas, monospace" font-size="18">intent may surface here</text>
+    <rect width="620" height="148" fill="#0d0d0d" stroke="#5f5f5a"/>
+    <g opacity="0.72" stroke="#efefe9" fill="none" stroke-width="1.4">
+      <circle cx="36" cy="38" r="7"/>
+      <circle cx="36" cy="76" r="7"/>
+      <circle cx="62" cy="57" r="7"/>
+      <path d="M42 42 56 53M42 72 56 61M69 57h14"/>
+    </g>
+    <text x="88" y="42" fill="#ff6b70" font-family="JetBrains Mono, Consolas, monospace" font-size="18" font-weight="900" letter-spacing="3">02 / TRACE</text>
+    <text x="88" y="86" fill="#efefe9" font-family="Inter, Segoe UI, sans-serif" font-size="38" font-weight="860">reasoning layer</text>
+    <text x="88" y="122" fill="#8f8f89" font-family="JetBrains Mono, Consolas, monospace" font-size="18">intent may surface here</text>
   </g>
-  <g fill="none" stroke="#f5f5f0" stroke-width="2" opacity="0.76">
-    <path d="M716 666H844" marker-end="url(#arrowR)"/>
-    <path d="M406 740V814" marker-end="url(#arrowD)"/>
-    <path d="M1190 740V814" marker-end="url(#arrowD)"/>
-  </g>
+
+  <path d="M716 666H844" fill="none" stroke="#efefe9" stroke-opacity="0.75" stroke-width="1.2" marker-end="url(#arrowR)"/>
+  <path d="M406 740V814" fill="none" stroke="#efefe9" stroke-opacity="0.75" stroke-width="1.2" marker-end="url(#arrowD)"/>
+  <path d="M1190 740V814" fill="none" stroke="#efefe9" stroke-opacity="0.75" stroke-width="1.2" marker-end="url(#arrowD)"/>
 
   <g transform="translate(96 828)">
-    <rect width="620" height="148" fill="#070707" stroke="#ffffff" stroke-opacity="0.28"/>
-    <text x="28" y="42" fill="#ff7676" font-family="JetBrains Mono, Consolas, monospace" font-size="18" font-weight="900" letter-spacing="3">03 / OUTPUT</text>
-    <text x="28" y="86" fill="#f5f5f0" font-family="Inter, Segoe UI, sans-serif" font-size="38" font-weight="860">candidate text</text>
-    <text x="28" y="122" fill="#8c8c88" font-family="JetBrains Mono, Consolas, monospace" font-size="18">must be checked again</text>
-  </g>
-  <g transform="translate(880 828)">
-    <rect width="620" height="148" fill="#140909" stroke="#ff7676" stroke-opacity="0.82"/>
-    <text x="28" y="42" fill="#ff7676" font-family="JetBrains Mono, Consolas, monospace" font-size="18" font-weight="900" letter-spacing="3">04 / GAP</text>
-    <text x="28" y="86" fill="#f5f5f0" font-family="Inter, Segoe UI, sans-serif" font-size="38" font-weight="860">mismatch</text>
-    <text x="28" y="122" fill="#8c8c88" font-family="JetBrains Mono, Consolas, monospace" font-size="18">control-plane drift</text>
+    <rect width="620" height="148" fill="#0d0d0d" stroke="#5f5f5a"/>
+    <g opacity="0.72" stroke="#efefe9" fill="none" stroke-width="1.4">
+      <rect x="26" y="24" width="36" height="46"/>
+      <path d="M32 38h24M32 48h18M32 58h24M32 68h14"/>
+    </g>
+    <text x="88" y="42" fill="#ff6b70" font-family="JetBrains Mono, Consolas, monospace" font-size="18" font-weight="900" letter-spacing="3">03 / OUTPUT</text>
+    <text x="88" y="86" fill="#efefe9" font-family="Inter, Segoe UI, sans-serif" font-size="38" font-weight="860">candidate text</text>
+    <text x="88" y="122" fill="#8f8f89" font-family="JetBrains Mono, Consolas, monospace" font-size="18">must be checked again</text>
   </g>
 
-  <path d="M96 1026H1504" stroke="#ffffff" stroke-opacity="0.2"/>
-  <text x="96" y="1076" fill="#8c8c88" font-family="JetBrains Mono, Consolas, monospace" font-size="18" letter-spacing="2">NO PAYLOADS. NO EXPLOIT PROMPTS. REPRODUCIBILITY WITHOUT OPERATIONAL ABUSE.</text>
+  <g transform="translate(880 828)">
+    <rect width="620" height="148" fill="#15090a" stroke="#ff5a5f"/>
+    <g opacity="0.86" stroke="#ff5a5f" fill="none" stroke-width="1.5">
+      <path d="M26 28h38v38H26z"/>
+      <path d="M34 36 56 58M56 36 34 58"/>
+    </g>
+    <text x="88" y="42" fill="#ff6b70" font-family="JetBrains Mono, Consolas, monospace" font-size="18" font-weight="900" letter-spacing="3">04 / GAP</text>
+    <text x="88" y="86" fill="#efefe9" font-family="Inter, Segoe UI, sans-serif" font-size="38" font-weight="860">mismatch</text>
+    <text x="88" y="122" fill="#8f8f89" font-family="JetBrains Mono, Consolas, monospace" font-size="18">control-plane drift</text>
+  </g>
+
+  <path d="M96 1026H1504" stroke="#efefe9" stroke-opacity="0.18"/>
+  <text x="96" y="1076" fill="#8f8f89" font-family="JetBrains Mono, Consolas, monospace" font-size="18" letter-spacing="2">NO PAYLOADS. NO EXPLOIT PROMPTS. REPRODUCIBILITY WITHOUT OPERATIONAL ABUSE.</text>
 </svg>

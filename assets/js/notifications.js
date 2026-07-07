@@ -5,13 +5,6 @@
 */
 
 (function () {
-  function localize(value, lang) {
-    if (value && typeof value === 'object' && !Array.isArray(value)) {
-      return value[lang] || value.en || '';
-    }
-    return value || '';
-  }
-
   function buildNotifications() {
     const posts = Array.isArray(window.BLOG_POSTS) ? window.BLOG_POSTS : [];
     const postNotifications = posts
@@ -35,11 +28,7 @@
     window.PORTFOLIO_NOTIFICATIONS = [
       ...postNotifications,
       ...siteNotifications
-    ].sort((a, b) => {
-      const dateDiff = String(b.date || '').localeCompare(String(a.date || ''));
-      if (dateDiff !== 0) return dateDiff;
-      return localize(b.title, 'en').localeCompare(localize(a.title, 'en'));
-    });
+    ].sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
   }
 
   window.BLOG_BUILD_NOTIFICATIONS = buildNotifications;

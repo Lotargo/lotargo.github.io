@@ -66,7 +66,7 @@
           </div>
           <a class="button" href="../" data-i18n="blog-back-home">Back home</a>
         </div>
-        <div class="post-list">
+        <div class="post-list" data-js="blog-post-list">
           <article class="post-card">
             <div class="post-meta">
               <span>2026-07-08</span>
@@ -74,57 +74,9 @@
               <span data-lang-content="ru">Архитектура safety</span>
             </div>
             <h3><a href="./posts/gemini-safety-filter-layers.html"><span data-lang-content="en">The Filter Matryoshka: Notes on Gemini Safety Layers</span><span data-lang-content="ru">Матрёшка фильтров: заметки о safety-слоях Gemini</span></a></h3>
-            <p data-lang-content="en">A defensive note about input moderation, reasoning traces, final-output filters, and why a safe LLM product should not depend on a single tripwire.</p>
-            <p data-lang-content="ru">Defensive-разбор input moderation, reasoning-трасс, финального output-фильтра и того, почему безопасная LLM-система не должна зависеть от одного трипвайра.</p>
+            <p data-lang-content="en">A defensive note about input moderation, reasoning traces, final-output filters, and why LLM safety systems should not depend on a single layer.</p>
+            <p data-lang-content="ru">Defensive-разбор input moderation, reasoning-трасс, финального output-фильтра и того, почему безопасная LLM-система не должна зависеть от одного слоя.</p>
             <a class="post-link" href="./posts/gemini-safety-filter-layers.html" data-i18n="post-read-note">Read note</a>
-          </article>
-
-          <article class="post-card">
-            <div class="post-meta">
-              <span>2026-06-29</span>
-              <span data-lang-content="en">Research infrastructure</span>
-              <span data-lang-content="ru">Исследовательская инфраструктура</span>
-            </div>
-            <h3><a href="./posts/logs-are-not-memory.html"><span data-lang-content="en">Logs ≠ Memory: Why Research Projects Need ClickHouse</span><span data-lang-content="ru">Логи ≠ память: зачем исследовательским проектам ClickHouse</span></a></h3>
-            <p data-lang-content="en">Why experimental systems need DS/ML tooling, why PostgreSQL and ClickHouse serve different kinds of memory, and how verification bundles turn telemetry into evidence.</p>
-            <p data-lang-content="ru">Почему экспериментальным системам нужен DS/ML-слой, чем память состояния отличается от памяти наблюдений, и как verification bundles превращают телеметрию в доказательства.</p>
-            <a class="post-link" href="./posts/logs-are-not-memory.html" data-i18n="post-read-note">Read note</a>
-          </article>
-
-          <article class="post-card">
-            <div class="post-meta">
-              <span>2026-06-29</span>
-              <span data-lang-content="en">AI systems</span>
-              <span data-lang-content="ru">AI системы</span>
-            </div>
-            <h3><a href="./posts/three-sprints.html"><span data-lang-content="en">1000× Faster Backward Pass: Three Sprints That Reshaped the Training Pipeline</span><span data-lang-content="ru">1000× быстрее backward pass: три спринта, перестроившие пайплайн обучения</span></a></h3>
-            <p data-lang-content="en">How three optimisation sprints — topological sort caching, memory pooling, and a hybrid Muon+Adam optimizer — eliminated CPU bottlenecks, GPU allocation spikes, and a stubborn loss plateau in a Mamba-3 training pipeline.</p>
-            <p data-lang-content="ru">Как три спринта оптимизации — кэширование топологической сортировки, пулинг памяти и гибридный оптимизатор Muon+Adam — устранили CPU-бутылочные горлышки, скачки аллокаций GPU и упрямое плато потерь в пайплайне обучения Mamba-3.</p>
-            <a class="post-link" href="./posts/three-sprints.html" data-i18n="post-read-note">Read note</a>
-          </article>
-
-          <article class="post-card">
-            <div class="post-meta">
-              <span>2026-06-28</span>
-              <span data-lang-content="en">AI stability</span>
-              <span data-lang-content="ru">Стабильность ИИ</span>
-            </div>
-            <h3><a href="./posts/arithmetic-overfitting.html"><span data-lang-content="en">When a Tiny Mamba Learns Arithmetic</span><span data-lang-content="ru">Когда маленькая Mamba учится арифметике</span></a></h3>
-            <p data-lang-content="en">A technical article about overfitting a 380k parameter Mamba model on two-digit addition, GPU overflow failure modes, state-space stability, and why the final plateau mattered.</p>
-            <p data-lang-content="ru">Техническая статья об overfit-эксперименте: 380k-параметровая Mamba на сложении двухзначных чисел, GPU overflow, стабильность state-space динамики и плато обучения.</p>
-            <a class="post-link" href="./posts/arithmetic-overfitting.html" data-i18n="post-read-note">Read note</a>
-          </article>
-
-          <article class="post-card">
-            <div class="post-meta">
-              <span>2026-06-28</span>
-              <span data-lang-content="en">Site architecture</span>
-              <span data-lang-content="ru">Архитектура сайта</span>
-            </div>
-            <h3><a href="./posts/blog-launch.html"><span data-lang-content="en">How we added the blog and living updates</span><span data-lang-content="ru">Как мы добавили блог и живые уведомления</span></a></h3>
-            <p data-lang-content="en">The first sample post: blog structure, static notifications, assets, Mermaid, and LaTeX for future technical notes.</p>
-            <p data-lang-content="ru">Первый образец поста: структура блога, статические уведомления, ассеты, Mermaid и LaTeX для будущих технических заметок.</p>
-            <a class="post-link" href="./posts/blog-launch.html" data-i18n="post-read-note">Read note</a>
           </article>
         </div>
       </div>
@@ -134,6 +86,8 @@
     <span>Oleg Boyko / Lotargo</span>
     <span>Blog · AI systems · verification</span>
   </footer>
+  <script src="../assets/js/blog-posts.js"></script>
+  <script src="../assets/js/blog-index.js"></script>
   <script src="../assets/js/main.js"></script>
 </body>
 </html>

@@ -1,1 +1,181 @@
 <!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="A defensive technical note about input moderation, reasoning traces, final-output filters, and why LLM safety systems should not depend on a single layer." />
+  <meta name="theme-color" content="#000000" />
+  <title>The Filter Matryoshka: Notes on Gemini Safety Layers · Lotargo Blog</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <style>
+    .post-figure.post-figure-hero {
+      width: min(100%, 1600px);
+      margin: 0 auto 2rem;
+    }
+
+    .post-figure.post-figure-hero picture,
+    .post-figure.post-figure-hero img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    @media (min-width: 1200px) {
+      .post-figure.post-figure-hero {
+        width: min(calc(100vw - 96px), 1600px);
+        max-width: none;
+        margin-left: 50%;
+        margin-right: 0;
+        transform: translateX(-50%);
+      }
+    }
+  </style>
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem('lotargo-theme');
+        document.documentElement.dataset.theme = savedTheme || 'dark';
+      } catch (error) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    })();
+  </script>
+</head>
+<body data-title-en="The Filter Matryoshka: Notes on Gemini Safety Layers · Lotargo Blog" data-title-ru="Матрёшка фильтров: заметки о safety-слоях Gemini · Блог Lotargo">
+  <header class="site-header" data-js="header">
+    <a class="brand" href="../../" aria-label="Back to landing">
+      <span class="brand-mark" aria-hidden="true">LØ</span>
+      <span class="brand-text">Lotargo</span>
+    </a>
+    <div class="header-controls">
+      <nav class="nav" aria-label="Post navigation">
+        <a href="../../" data-i18n="blog-nav-home">Home</a>
+        <a href="../" data-i18n="nav-blog">Blog</a>
+        <a href="../../#projects" data-i18n="nav-projects">Projects</a>
+      </nav>
+      <button class="theme-toggle" type="button" data-js="theme-toggle" aria-label="Switch color theme">
+        <span data-js="theme-label">Theme</span>
+      </button>
+      <button class="lang-toggle" type="button" data-js="lang-toggle" aria-label="Switch language">
+        <span data-js="lang-label">EN</span>
+      </button>
+    </div>
+  </header>
+  <main id="top" class="post-shell">
+    <article class="post-article">
+      <div class="post-toolbar">
+        <a class="post-back" href="../" data-i18n="post-back-blog">Back to blog</a>
+        <div class="post-meta">
+          <span>2026-07-08</span>
+          <span data-lang-content="en">Safety architecture</span>
+          <span data-lang-content="ru">Архитектура safety</span>
+        </div>
+      </div>
+
+      <figure class="post-figure post-figure-hero">
+        <picture>
+          <source media="(max-width: 640px)" srcset="../assets/gemini-safety-filter-layers-mobile-v2.svg" />
+          <source media="(max-width: 1024px)" srcset="../assets/gemini-safety-filter-layers-tablet-v2.svg" />
+          <img src="../assets/gemini-safety-filter-layers.svg" alt="Diagram of input, reasoning, output, and moderation layers" />
+        </picture>
+        <figcaption data-lang-content="en">A defensive diagram of the observed mismatch between prompt checks, reasoning traces, and final-output moderation.</figcaption>
+        <figcaption data-lang-content="ru">Defensive-схема наблюдаемого рассинхрона между проверкой prompt-а, reasoning-трассой и модерацией финального ответа.</figcaption>
+      </figure>
+
+      <div data-lang-content="en">
+        <h1>The Filter Matryoshka: Notes on Gemini Safety Layers</h1>
+        <p class="post-lead">This is a defensive note about a strange moderation behavior I observed while comparing local and cloud LLMs in 2025–2026. The payloads and exact prompts are intentionally omitted. The useful part is not the bypass. The useful part is the architecture smell.</p>
+
+        <h2>What I observed</h2>
+        <p>The rough pattern was simple. If unsafe content was present directly in the incoming prompt, the request was blocked. If the model surfaced the unsafe intent in a visible reasoning or self-check trace, the run was also much more likely to be blocked. But in one class of tests, the incoming text stayed neutral, the reasoning trace did not expose the dangerous category, and the final answer still crossed a policy boundary.</p>
+        <p>That does not prove that Gemini has no output filtering. Google documentation explicitly describes response safety feedback, blocked candidates, and finish reasons such as <code>SAFETY</code>, <code>SPII</code>, and <code>PROHIBITED_CONTENT</code>. The more accurate conclusion is narrower: in some configurations, the final-output layer can appear weaker than the combined input + reasoning/self-check layer.</p>
+
+        <div class="post-table-wrap"><table class="post-table"><thead><tr><th>Layer</th><th>What it catches well</th><th>Failure smell</th></tr></thead><tbody><tr><td>Input moderation</td><td>Explicit markers in user text</td><td>Neutral social framing can hide intent</td></tr><tr><td>Reasoning / self-check</td><td>Intent that becomes explicit during planning</td><td>If the trace stays clean, the signal may disappear</td></tr><tr><td>Final-output moderation</td><td>Generated unsafe text after decoding</td><td>May miss cases not pre-announced by earlier layers</td></tr><tr><td>Application policy</td><td>Domain-specific rules and escalation</td><td>Often absent in quick prototypes</td></tr></tbody></table></div>
+
+        <h2>Why reasoning changes the picture</h2>
+        <p>Reasoning is usually discussed as a quality feature: better planning, better code, better math, better decomposition. But from a safety perspective it can also behave like an intent-detection surface. If the model says, even internally or in a summarized trace, what it is about to do, the surrounding system has a much easier time classifying the run.</p>
+        <p>This creates a subtle dependency. A product may look safer when reasoning is on because unsafe intent becomes visible earlier. The same product may become less predictable if reasoning is hidden, minimized, summarized too aggressively, or shaped by instructions that interfere with the trace format. That is not a reason to expose private chain-of-thought. It is a reason to avoid treating reasoning as the only safety tripwire.</p>
+
+        <h2>The control-plane problem</h2>
+        <p>The most interesting part is not the content category. It is the architectural boundary. Prompt checks and reasoning checks belong to the control plane: they decide whether the run should continue. Final-output moderation belongs to the data plane: it inspects the artifact that will actually leave the system.</p>
+        <p>A robust safety system should not allow the data plane to become less protected just because the control plane did not see a bad signal earlier. The final answer is what the user receives. Therefore the final answer deserves its own strong, independent moderation pass.</p>
+
+        <div class="flow-diagram horizontal" role="img" aria-label="Safety moderation flow">
+          <span class="flow-node">Prompt check</span>
+          <span class="flow-arrow" aria-hidden="true">-&gt;</span>
+          <span class="flow-node">Reasoning trace</span>
+          <span class="flow-arrow" aria-hidden="true">-&gt;</span>
+          <span class="flow-node">Candidate output</span>
+          <span class="flow-arrow" aria-hidden="true">-&gt;</span>
+          <span class="flow-node">Independent final moderation</span>
+        </div>
+
+        <h2>What I would log in a responsible report</h2>
+        <p>The test should be reproducible without publishing an operational jailbreak. That means the report should describe the shape of the failure, not provide a ready-to-use exploit string.</p>
+        <ul><li>model name, endpoint, date, region, and API/UI mode;</li><li>safety settings and blocking thresholds;</li><li>whether thinking/reasoning was on, off, minimal, or automatic;</li><li>whether streaming was used;</li><li>whether <code>promptFeedback</code> was empty or blocked;</li><li>whether the final candidate had <code>finishReason: STOP</code> or a safety finish reason;</li><li>whether <code>safetyRatings</code> included the relevant category and probability;</li><li>how many repeated runs reproduced the mismatch.</li></ul>
+
+        <h2>What the fix probably looks like</h2>
+        <p>The defensive lesson is not “never use reasoning” and not “filtering is fake”. The lesson is to make moderation layered and independent:</p>
+        <ul><li>check the prompt before generation;</li><li>use reasoning summaries or internal traces as additional signal, not as the only signal;</li><li>moderate the final text that will be delivered to the user;</li><li>treat tool calls, agent outputs, and streaming chunks as separate surfaces;</li><li>log enough metadata to diagnose false negatives without storing unnecessary sensitive content.</li></ul>
+        <p>The scary version of the bug is a system where the model is safe only when it happens to confess the unsafe plan before answering. That is not a reliable safety boundary. A safe product should catch the final artifact even when the path toward it looked harmless.</p>
+
+        <h2>Sources</h2>
+        <ul><li><a href="https://ai.google.dev/gemini-api/docs/safety-settings" target="_blank" rel="noreferrer">Gemini API: Safety settings</a></li><li><a href="https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/configure-safety-filters" target="_blank" rel="noreferrer">Google Cloud: Safety and content filters</a></li><li><a href="https://ai.google.dev/gemini-api/docs/thinking" target="_blank" rel="noreferrer">Gemini API: Thinking</a></li></ul>
+      </div>
+
+      <div data-lang-content="ru">
+        <h1>Матрёшка фильтров: заметки о safety-слоях Gemini</h1>
+        <p class="post-lead">Это defensive-заметка о странном поведении модерации, которое я заметил при сравнении локальных и облачных LLM в 2025–2026 году. Payload-ы и точные промпты намеренно не публикуются. Полезная часть тут не в обходе, а в архитектурном запахе.</p>
+
+        <h2>Что наблюдалось</h2>
+        <p>Общий паттерн был простой. Если небезопасное содержимое было прямо во входящем prompt-е, запрос блокировался. Если модель выносила небезопасное намерение в видимую reasoning-трассу или self-check, запуск тоже заметно чаще блокировался. Но в одном классе тестов входящий текст оставался нейтральным, reasoning-трасса не подсвечивала опасную категорию, а финальный ответ всё равно пересекал policy-границу.</p>
+        <p>Это не доказывает, что у Gemini вообще нет фильтрации output-а. Документация Google прямо описывает response safety feedback, заблокированные candidate-ы и причины остановки вроде <code>SAFETY</code>, <code>SPII</code> и <code>PROHIBITED_CONTENT</code>. Более точный вывод уже: в некоторых конфигурациях финальный output-слой может выглядеть слабее, чем связка input + reasoning/self-check.</p>
+
+        <div class="post-table-wrap"><table class="post-table"><thead><tr><th>Слой</th><th>Что хорошо ловит</th><th>Запах сбоя</th></tr></thead><tbody><tr><td>Input moderation</td><td>Явные маркеры в тексте пользователя</td><td>Нейтральная социальная рамка может скрыть намерение</td></tr><tr><td>Reasoning / self-check</td><td>Намерение, которое стало явным на этапе планирования</td><td>Если трасса чистая, сигнал может исчезнуть</td></tr><tr><td>Final-output moderation</td><td>Сгенерированный небезопасный текст после decoding-а</td><td>Может пропустить случаи, не объявленные ранними слоями</td></tr><tr><td>Application policy</td><td>Доменные правила и escalation</td><td>Часто отсутствует в быстрых прототипах</td></tr></tbody></table></div>
+
+        <h2>Почему reasoning меняет картину</h2>
+        <p>Reasoning обычно обсуждают как функцию качества: лучшее планирование, лучший код, лучшая математика, лучшая декомпозиция. Но с точки зрения safety он может работать ещё и как поверхность intent detection. Если модель, даже внутри или в summary-трассе, формулирует, что собирается сделать, внешней системе намного проще классифицировать запуск.</p>
+        <p>Из-за этого появляется тонкая зависимость. Продукт может выглядеть безопаснее с включённым reasoning, потому что опасное намерение становится видимым раньше. Тот же продукт может стать менее предсказуемым, если reasoning скрыт, минимизирован, слишком грубо суммаризируется или ломается пользовательскими инструкциями, которые вмешиваются в формат трассы. Это не аргумент за раскрытие private chain-of-thought. Это аргумент против того, чтобы считать reasoning единственным safety-трипвайром.</p>
+
+        <h2>Проблема control plane</h2>
+        <p>Самая интересная часть тут не в категории контента, а в архитектурной границе. Проверка prompt-а и проверка reasoning-а относятся к control plane: они решают, можно ли продолжать запуск. Модерация финального output-а относится к data plane: она проверяет артефакт, который реально уйдёт пользователю.</p>
+        <p>Надёжная safety-система не должна оставлять data plane менее защищённым только потому, что control plane раньше не увидел плохой сигнал. Финальный ответ — это то, что получает пользователь. Значит, финальный ответ должен проходить собственный сильный и независимый moderation-pass.</p>
+
+        <div class="flow-diagram horizontal" role="img" aria-label="Safety moderation flow">
+          <span class="flow-node">Prompt check</span>
+          <span class="flow-arrow" aria-hidden="true">-&gt;</span>
+          <span class="flow-node">Reasoning trace</span>
+          <span class="flow-arrow" aria-hidden="true">-&gt;</span>
+          <span class="flow-node">Candidate output</span>
+          <span class="flow-arrow" aria-hidden="true">-&gt;</span>
+          <span class="flow-node">Independent final moderation</span>
+        </div>
+
+        <h2>Что стоит логировать в ответственном отчёте</h2>
+        <p>Тест должен быть воспроизводимым, но не должен превращаться в готовый эксплуатационный jailbreak. Поэтому отчёт описывает форму сбоя, а не публикует готовую строку для обхода.</p>
+        <ul><li>название модели, endpoint, дата, регион и режим API/UI;</li><li>safety settings и blocking thresholds;</li><li>был ли thinking/reasoning включён, выключен, минимален или автоматический;</li><li>использовался ли streaming;</li><li>был ли <code>promptFeedback</code> пустым или заблокированным;</li><li>был ли у финального candidate-а <code>finishReason: STOP</code> или safety-причина;</li><li>содержал ли <code>safetyRatings</code> нужную категорию и вероятность;</li><li>сколько повторных прогонов воспроизводили рассинхрон.</li></ul>
+
+        <h2>Как, вероятно, чинить</h2>
+        <p>Defensive-вывод не в том, что reasoning нельзя использовать, и не в том, что фильтрация фейковая. Вывод в том, что модерация должна быть многослойной и независимой:</p>
+        <ul><li>проверять prompt до генерации;</li><li>использовать reasoning summaries или внутренние трассы как дополнительный сигнал, а не единственный сигнал;</li><li>модерировать финальный текст, который будет показан пользователю;</li><li>считать tool calls, agent outputs и streaming chunks отдельными поверхностями;</li><li>логировать достаточно metadata для диагностики false negative, не сохраняя лишний чувствительный контент.</li></ul>
+        <p>Страшная версия бага — это система, где модель безопасна только тогда, когда случайно “созналась” в небезопасном плане до ответа. Это ненадёжная safety-граница. Безопасный продукт должен ловить финальный артефакт даже тогда, когда путь к нему выглядел безобидным.</p>
+
+        <h2>Источники</h2>
+        <ul><li><a href="https://ai.google.dev/gemini-api/docs/safety-settings" target="_blank" rel="noreferrer">Gemini API: Safety settings</a></li><li><a href="https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/capabilities/configure-safety-filters" target="_blank" rel="noreferrer">Google Cloud: Safety and content filters</a></li><li><a href="https://ai.google.dev/gemini-api/docs/thinking" target="_blank" rel="noreferrer">Gemini API: Thinking</a></li></ul>
+      </div>
+
+      <nav class="post-pagination" aria-label="Post navigation" data-i18n-aria="post-pagination-aria">
+        <a class="post-page-link" href="./logs-are-not-memory.html"><span data-i18n="post-prev">Previous</span><strong data-lang-content="en">Logs ≠ Memory</strong><strong data-lang-content="ru">Логи ≠ память</strong></a>
+        <span class="post-page-link is-disabled" aria-disabled="true"><span data-i18n="post-next">Next</span><strong data-i18n="post-next-none">No later post</strong></span>
+      </nav>
+    </article>
+  </main>
+  <footer class="site-footer">
+    <span>Oleg Boyko / Lotargo</span>
+    <span>Blog · AI systems · verification</span>
+  </footer>
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/blog-post.js"></script>
+</body>
+</html>

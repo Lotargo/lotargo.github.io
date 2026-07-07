@@ -1,48 +1,90 @@
 (function () {
+  const currentScript = document.currentScript;
+  const scriptUrl = currentScript && currentScript.src ? currentScript.src : '../../assets/js/blog-post.js';
+
+  function loadScript(src, errorMessage) {
+    return new Promise((resolve, reject) => {
+      const existing = document.querySelector('script[src="' + src + '"]');
+      if (existing) {
+        if (existing.dataset.loaded === 'true') {
+          resolve();
+          return;
+        }
+        existing.addEventListener('load', () => resolve(), { once: true });
+        existing.addEventListener('error', () => reject(new Error(errorMessage)), { once: true });
+        return;
+      }
+
+      const script = document.createElement('script');
+      const timeout = window.setTimeout(() => {
+        script.remove();
+        reject(new Error(errorMessage));
+      }, 5000);
+
+      script.src = src;
+      script.async = true;
+      script.onload = () => {
+        window.clearTimeout(timeout);
+        script.dataset.loaded = 'true';
+        resolve();
+      };
+      script.onerror = () => {
+        window.clearTimeout(timeout);
+        reject(new Error(errorMessage));
+      };
+      document.head.appendChild(script);
+    });
+  }
+
   function loadRenderFixes() {
     if (document.querySelector('link[href$="render-fixes.css"]')) return;
 
-    const currentScript = document.currentScript;
-    const scriptUrl = currentScript && currentScript.src ? currentScript.src : '../../assets/js/blog-post.js';
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.href = new URL('../css/render-fixes.css', scriptUrl).href;
     document.head.appendChild(link);
   }
 
+  function loadBlogPostsManifest() {
+    if (Array.isArray(window.BLOG_POSTS)) return Promise.resolve();
+    return loadScript(new URL('blog-posts.js', scriptUrl).href, 'Failed to load blog posts manifest');
+  }
+
+  function localized(value, lang) {
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      return value[lang] || value.en || '';
+    }
+    return value || '';
+  }
+
   function normalizePostPagination() {
     const pagination = document.querySelector('.post-pagination');
     if (!pagination) return;
 
-    const posts = [
-      ['blog-launch', './blog-launch.html', 'How we added the blog and living updates', 'Как мы добавили блог и живые уведомления'],
-      ['arithmetic-overfitting', './arithmetic-overfitting.html', 'When a Tiny Mamba Learns Arithmetic', 'Когда маленькая Mamba учится арифметике'],
-      ['three-sprints', './three-sprints.html', '1000× Faster Backward Pass', '1000× быстрее backward pass'],
-      ['logs-are-not-memory', './logs-are-not-memory.html', 'Logs ≠ Memory', 'Логи ≠ память'],
-      ['gemini-safety-filter-layers', './gemini-safety-filter-layers.html', 'The Filter Matryoshka', 'Матрёшка фильтров']
-    ];
-
+    const posts = Array.isArray(window.BLOG_POSTS) ? window.BLOG_POSTS : [];
     const currentFile = window.location.pathname.split('/').pop() || '';
     const currentSlug = currentFile.replace(/\.html$/, '');
-    const currentIndex = posts.findIndex((post) => post[0] === currentSlug);
+    const currentIndex = posts.findIndex((post) => post.slug === currentSlug);
     if (currentIndex === -1) return;
 
     function addTitleNodes(container, post) {
+      const title = post.shortTitle || post.title || post.slug;
+
       const enTitle = document.createElement('strong');
       enTitle.dataset.langContent = 'en';
-      enTitle.textContent = post[2];
+      enTitle.textContent = localized(title, 'en');
       container.appendChild(enTitle);
 
       const ruTitle = document.createElement('strong');
       ruTitle.dataset.langContent = 'ru';
-      ruTitle.textContent = post[3];
+      ruTitle.textContent = localized(title, 'ru');
       container.appendChild(ruTitle);
     }
 
     function createEnabledLink(direction, post) {
       const link = document.createElement('a');
       link.className = 'post-page-link';
-      link.href = post[1];
+      link.href = post.href || `./${post.slug}.html`;
 
       const label = document.createElement('span');
       label.dataset.i18n = direction === 'prev' ? 'post-prev' : 'post-next';
@@ -77,7 +119,7 @@
   }
 
   loadRenderFixes();
-  normalizePostPagination();
+  loadBlogPostsManifest().then(normalizePostPagination).catch(() => {});
 
   const memoryHero = document.querySelector('.memory-hero');
   if (memoryHero) {
@@ -93,29 +135,7 @@
   const mermaidBlocks = document.querySelectorAll('.mermaid');
   if (!mermaidBlocks.length) return;
 
-  function loadScript(src) {
-    return new Promise((resolve, reject) => {
-      const script = document.createElement('script');
-      const timeout = window.setTimeout(() => {
-        script.remove();
-        reject(new Error('Timed out loading Mermaid'));
-      }, 5000);
-
-      script.src = src;
-      script.async = true;
-      script.onload = () => {
-        window.clearTimeout(timeout);
-        resolve();
-      };
-      script.onerror = () => {
-        window.clearTimeout(timeout);
-        reject(new Error('Failed to load Mermaid'));
-      };
-      document.head.appendChild(script);
-    });
-  }
-
-  loadScript('https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js')
+  loadScript('https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js', 'Failed to load Mermaid')
     .then(() => {
       if (!window.mermaid) return;
       window.mermaid.initialize({

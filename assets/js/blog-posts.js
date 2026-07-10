@@ -139,6 +139,37 @@ window.BLOG_POSTS = [
       ru: 'Defensive-статья про input moderation, reasoning-трассы, финальный output-фильтр и разрывы control plane.'
     },
     notify: true
+  },
+  {
+    slug: 'testing-web-app-ai-sandbox',
+    date: '2026-07-10',
+    href: './testing-web-app-ai-sandbox.html',
+    url: './blog/posts/testing-web-app-ai-sandbox.html',
+    type: {
+      en: 'AI-assisted development',
+      ru: 'AI-разработка'
+    },
+    title: {
+      en: 'The Browser Exists, but localhost Does Not: Testing a Web App Inside an AI Sandbox',
+      ru: 'Браузер есть, а localhost нет: тестирование веб-приложения внутри AI-песочницы'
+    },
+    shortTitle: {
+      en: 'Testing in an AI sandbox',
+      ru: 'Тесты в AI-песочнице'
+    },
+    notificationTitle: {
+      en: 'New sandbox testing note',
+      ru: 'Новая заметка о тестировании в песочнице'
+    },
+    description: {
+      en: 'A practical capability map for testing backend code, frontend DOM, local HTTP, and browser behavior when an AI sandbox exposes each through a different channel.',
+      ru: 'Практическая карта возможностей для проверки backend, frontend DOM, локального HTTP и браузера, когда AI-песочница открывает каждый слой через отдельный канал.'
+    },
+    notificationText: {
+      en: 'What still works when Chromium is installed but localhost navigation and package downloads are blocked.',
+      ru: 'Что всё ещё можно проверить, когда Chromium установлен, но переход на localhost и загрузка пакетов заблокированы.'
+    },
+    notify: true
   }
 ];
 

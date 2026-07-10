@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="A practical look at testing a web application inside an AI sandbox when GitHub access, backend execution, Chromium, and browser networking are available through different channels." />
+  <meta name="theme-color" content="#000000" />
+  <title>The Browser Exists, but localhost Does Not: Testing a Web App Inside an AI Sandbox · Lotargo Blog</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem('lotargo-theme');
+        document.documentElement.dataset.theme = savedTheme || 'dark';
+      } catch (error) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    })();
+  </script>
+</head>
+<body data-title-en="The Browser Exists, but localhost Does Not: Testing a Web App Inside an AI Sandbox · Lotargo Blog" data-title-ru="Браузер есть, а localhost нет: тестирование веб-приложения внутри AI-песочницы · Блог Lotargo">
+  <header class="site-header" data-js="header">
+    <a class="brand" href="../../" aria-label="Back to landing">
+      <span class="brand-mark" aria-hidden="true">LØ</span>
+      <span class="brand-text">Lotargo</span>
+    </a>
+    <div class="header-controls">
+      <nav class="nav" aria-label="Post navigation">
+        <a href="../../" data-i18n="blog-nav-home">Home</a>
+        <a href="../" data-i18n="nav-blog">Blog</a>
+        <a href="../../#projects" data-i18n="nav-projects">Projects</a>
+      </nav>
+      <button class="theme-toggle" type="button" data-js="theme-toggle" aria-label="Switch color theme">
+        <span data-js="theme-label">Theme</span>
+      </button>
+      <button class="lang-toggle" type="button" data-js="lang-toggle" aria-label="Switch language">
+        <span data-js="lang-label">EN</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top" class="post-shell">
+    <article class="post-article">
+      <div class="post-toolbar">
+        <a class="post-back" href="../" data-i18n="post-back-blog">Back to blog</a>
+        <div class="post-meta">
+          <span>2026-07-10</span>
+          <span data-lang-content="en">AI-assisted development</span>
+          <span data-lang-content="ru">AI-разработка</span>
+        </div>
+      </div>
+
+      <div data-lang-content="en">
+        <h1>The Browser Exists, but localhost Does Not: Testing a Web App Inside an AI Sandbox</h1>
+        <p class="post-lead">Recently I decided to test not another framework, but the AI agent's working environment itself. If an agent can see a GitHub repository, work with files, and has a sandbox, can it start a web application and verify it in a browser on its own?</p>
+        <p>The answer was more interesting than a plain yes or no. The environment really did contain Node.js, Chromium, and Playwright. Local processes and HTTP servers could run. But direct browser navigation to <code>localhost</code>, <code>127.0.0.1</code>, and even <code>file://</code> was blocked by environment policy.</p>
+        <p>The main lesson is that having a browser does not automatically mean having full browser-to-server E2E. That does not make the sandbox useless. It only means verification should be split into layers, with each available channel used for the job it can actually perform.</p>
+
+        <h2>The starting point</h2>
+        <p>The experiment used a small Link Saver:</p>
+        <ul>
+          <li>Node.js and Express on the backend;</li>
+          <li>plain HTML, CSS, and JavaScript on the frontend;</li>
+          <li>a JSON file for persistence;</li>
+          <li><code>node:test</code> for tests;</li>
+          <li>a GitHub connector for reading and changing the repository.</li>
+        </ul>
+        <p>I did not ask the agent to change the code. The task was purely exploratory: get the repository into the sandbox, start the server, and find out whether real browser verification was available.</p>
+
+        <h2>First boundary: a GitHub connector is not <code>git clone</code></h2>
+        <p>The connector is useful for reading files, retrieving commits and diffs, creating and updating files, and writing changes back to a branch. That does not necessarily mean the repository can be materialized into the sandbox filesystem with one operation.</p>
+        <p>A direct <code>git clone</code> also failed because the terminal could not resolve <code>github.com</code>. The local copy therefore had to be assembled from files read through the connector.</p>
+        <pre><code>GitHub connector access != network access from the runtime</code></pre>
+        <p>An agent may reach the GitHub API through a separate trusted channel while the terminal itself still has no ordinary outbound internet access.</p>
+
+        <h2>Second boundary: the runtime exists, the dependency network does not</h2>
+        <p>Node.js was present in the sandbox, but <code>pnpm</code> and a ready <code>node_modules</code> directory were not. Corepack existed, yet it could not download the package manager or dependencies from the npm registry because of network restrictions.</p>
+        <p>Modules using only the Node.js standard library could still run:</p>
+        <ul>
+          <li>URL validation;</li>
+          <li>JSON storage;</li>
+          <li>filesystem operations;</li>
+          <li>creating and deleting records;</li>
+          <li>checking that data survives reinitialization.</li>
+        </ul>
+        <p>Parts depending on external packages could not be started immediately: the Express application, Express routes, and the npm HTML parser. The problem was not an inability to test backend code in general. It was only the absence of preinstalled external dependencies.</p>
+
+        <h2>Third boundary: Chromium is installed, navigation is forbidden</h2>
+        <p>The environment contained Chromium and Python Playwright. The headless browser launched, JavaScript executed, and the DOM was available.</p>
+        <p>But attempts to open the following addresses all ended the same way:</p>
+        <pre><code>http://127.0.0.1:&lt;port&gt;/
+http://localhost:&lt;port&gt;/
+http://0.0.0.0:&lt;port&gt;/
+file:///.../index.html</code></pre>
+        <p>Chromium returned:</p>
+        <pre><code>net::ERR_BLOCKED_BY_ADMINISTRATOR</code></pre>
+        <p>This was not CORS, an Express failure, a missing server, or a Playwright error. A local static server answered requests through <code>curl</code>, but browser navigation itself was blocked by administrative policy.</p>
+        <p>Flags such as <code>--disable-web-security</code> or <code>--no-sandbox</code> are therefore unlikely to solve the problem. They control different security layers and do not necessarily override URL policy.</p>
+
+        <h2>What can still be verified</h2>
+        <div class="post-table-wrap">
+          <table class="post-table">
+            <thead><tr><th>Layer</th><th>Status</th><th>Verification path</th></tr></thead>
+            <tbody>
+              <tr><td>Pure backend logic</td><td>Available</td><td><code>node --test</code>, temporary directories, mock <code>fetch</code></td></tr>
+              <tr><td>JSON persistence</td><td>Available</td><td>Real sandbox filesystem</td></tr>
+              <tr><td>Local HTTP server</td><td>Available</td><td>Node <code>fetch</code>, <code>curl</code>, API test client</td></tr>
+              <tr><td>Frontend DOM and CSS</td><td>Available</td><td><code>page.setContent()</code></td></tr>
+              <tr><td>Frontend JavaScript</td><td>Available</td><td>Load the real <code>app.js</code> in Playwright</td></tr>
+              <tr><td>Browser screenshots</td><td>Available</td><td>Headless Chromium</td></tr>
+              <tr><td>Direct <code>page.goto(localhost)</code></td><td>Blocked</td><td>Environment policy</td></tr>
+              <tr><td>Installing npm packages</td><td>Unavailable without cache</td><td>No registry access</td></tr>
+              <tr><td>Real browser-to-server E2E</td><td>Not directly available</td><td>Requires a bridge or external CI environment</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>The most useful finding was <code>page.setContent()</code>. HTML can be read from disk and injected directly into the browser, then CSS and JavaScript can be attached. Playwright can still locate elements, click buttons, fill inputs, inspect form states, read computed styles, collect console errors, and take screenshots.</p>
+        <p>So the frontend can still be tested almost fully if its network boundary is replaced with a controlled adapter.</p>
+
+        <h2>Architectural workaround instead of bypassing policy</h2>
+        <div class="flow-diagram horizontal" role="img" aria-label="Browser to backend bridge">
+          <span class="flow-node">Playwright page</span>
+          <span class="flow-arrow" aria-hidden="true">-&gt;</span>
+          <span class="flow-node">fetch adapter</span>
+          <span class="flow-arrow" aria-hidden="true">-&gt;</span>
+          <span class="flow-node">Node bridge</span>
+          <span class="flow-arrow" aria-hidden="true">-&gt;</span>
+          <span class="flow-node">Express API</span>
+          <span class="flow-arrow" aria-hidden="true">-&gt;</span>
+          <span class="flow-node">JSON storage</span>
+        </div>
+        <p>The browser never opens <code>localhost</code> and never sends the direct network request. The frontend calls an overridden <code>window.fetch</code>, which forwards the request into a Node.js function. Node then calls the real Express server and returns the result to the page.</p>
+        <pre><code>await page.exposeFunction('__backendRequest', async ({ path, method, body }) =&gt; {
+  const response = await fetch(`http://127.0.0.1:${port}${path}`, {
+    method,
+    body,
+    headers: { 'content-type': 'application/json' }
+  });
+
+  return {
+    status: response.status,
+    body: await response.text()
+  };
+});
+
+await page.evaluate(() =&gt; {
+  window.fetch = async (input, options = {}) =&gt; {
+    const url = new URL(input, 'http://link-saver.test');
+    const result = await window.__backendRequest({
+      path: `${url.pathname}${url.search}`,
+      method: options.method || 'GET',
+      body: options.body
+    });
+
+    return new Response(result.body, { status: result.status });
+  };
+});</code></pre>
+        <p>This is not 100% E2E in the strict sense because Node, not Chromium, performs the network hop. But the functional value is high: the real frontend and backend run, real data is persisted, Playwright interacts with the real DOM, and browser policy is not violated.</p>
+
+        <h2>A better verification ladder</h2>
+        <h3>1. Unit tests for pure modules</h3>
+        <p>Test URL parsing, title extraction, storage, deletion regressions, error mapping, and state transformations separately.</p>
+
+        <h3>2. Backend integration</h3>
+        <p>Start the server on a random port and call it through Node <code>fetch</code> or the test runner's API client.</p>
+        <pre><code>node:test -&gt; Node fetch -&gt; Express -&gt; storage</code></pre>
+
+        <h3>3. Frontend browser tests with a mock API</h3>
+        <p>Load the HTML through <code>page.setContent()</code>, attach CSS and JavaScript, and replace <code>window.fetch</code> with predictable mock responses. This is ideal for UI states without depending on the backend.</p>
+
+        <h3>4. Browser-to-Node bridge</h3>
+        <p>Connect the real frontend to the real backend through <code>page.exposeFunction()</code>. This becomes an almost complete functional test of the whole system.</p>
+
+        <h3>5. Real E2E in an external environment</h3>
+        <p>Leave only the check the sandbox fundamentally cannot perform to GitHub Actions, WSL, Codespaces, or a normal local machine:</p>
+        <pre><code>Chromium -&gt; localhost -&gt; Express -&gt; persistence</code></pre>
+        <p>The sandbox restrictions no longer block development. They only determine which layer performs each check.</p>
+
+        <h2>Why this matters for AI-assisted development</h2>
+        <p>The question “does the agent have a browser?” is too coarse. Better questions are:</p>
+        <ul>
+          <li>can the browser launch and execute JavaScript;</li>
+          <li>is <code>page.goto</code> allowed;</li>
+          <li>is <code>localhost</code> reachable from the browser process;</li>
+          <li>is <code>localhost</code> reachable from the Node process;</li>
+          <li>can dependencies be installed or restored from cache;</li>
+          <li>can the connector materialize a repository;</li>
+          <li>can the agent take screenshots and perform DOM assertions.</li>
+        </ul>
+        <p>This is not a binary capability. It is a capability matrix.</p>
+        <p>A good agent should not pretend to have completed full verification when the environment prevents it. It should identify the boundaries, test each hypothesis separately, run the maximum available verification, record what remains unverified, and move only the unavailable layer to an external environment.</p>
+
+        <h2>Conclusion</h2>
+        <p>An AI sandbox can be much more capable than it first appears after an <code>ERR_BLOCKED_BY_ADMINISTRATOR</code> response.</p>
+        <p>Direct browser-to-localhost E2E may be forbidden. A GitHub connector may not provide a local checkout. The package registry may be unreachable. But the environment may still support pure backend tests, real filesystem persistence, local HTTP processes, API verification through Node, frontend rendering in Chromium, JavaScript execution, DOM assertions, screenshots, and a controlled bridge to the real backend.</p>
+        <p>The main mistake is treating the sandbox like an ordinary laptop with a browser. It is a different environment with separate access channels. Once those channels are mapped by layer, the restrictions stop being a dead end and become a normal architecture problem.</p>
+      </div>
+
+      <div data-lang-content="ru">
+        <h1>Браузер есть, а localhost нет: тестирование веб-приложения внутри AI-песочницы</h1>
+        <p class="post-lead">Недавно я решил проверить не очередной фреймворк, а само рабочее окружение AI-агента. Если агент видит GitHub-репозиторий, умеет работать с файлами и имеет песочницу, сможет ли он сам поднять веб-приложение и проверить его браузером?</p>
+        <p>Ответ оказался интереснее обычного «да» или «нет». Внутри окружения действительно были Node.js, Chromium и Playwright. Локальные процессы и HTTP-серверы запускались. Но прямой переход браузера на <code>localhost</code>, <code>127.0.0.1</code> и даже <code>file://</code> блокировался политикой среды.</p>
+        <p>Главный вывод: наличие браузера ещё не означает наличие полноценного browser-to-server E2E. Но это не делает песочницу бесполезной. Нужно просто разделить проверку на уровни и использовать каждый доступный канал по назначению.</p>
+
+        <h2>Исходная задача</h2>
+        <p>Эксперимент проводился на небольшом Link Saver:</p>
+        <ul>
+          <li>Node.js и Express на backend;</li>
+          <li>обычные HTML, CSS и JavaScript на frontend;</li>
+          <li>JSON-файл как постоянное хранилище;</li>
+          <li><code>node:test</code> для тестов;</li>
+          <li>GitHub-коннектор для чтения и изменения репозитория.</li>
+        </ul>
+        <p>Я не просил агента менять код. Задача была сугубо исследовательской: получить репозиторий в песочнице, запустить сервер и понять, доступна ли настоящая браузерная проверка.</p>
+
+        <h2>Первое ограничение: GitHub-коннектор не равен <code>git clone</code></h2>
+        <p>Коннектор хорошо подходит для чтения файлов, получения коммитов и diff, создания и обновления файлов, а также записи изменений обратно в ветку. Но это не обязательно означает, что репозиторий можно одной операцией материализовать в локальную файловую систему песочницы.</p>
+        <p>Прямой <code>git clone</code> также не сработал, потому что терминал не мог разрешить <code>github.com</code>. В итоге локальную копию пришлось собирать из файлов, прочитанных через коннектор.</p>
+        <pre><code>GitHub connector access != network access from the runtime</code></pre>
+        <p>Агент может иметь доступ к GitHub API через отдельный доверенный канал, но при этом не иметь обычного исходящего интернета из терминала.</p>
+
+        <h2>Второе ограничение: runtime доступен, сеть зависимостей — нет</h2>
+        <p>В песочнице был Node.js, но не было установленного <code>pnpm</code> и готового <code>node_modules</code>. Corepack присутствовал, однако скачать пакетный менеджер и зависимости из npm registry не смог из-за сетевых ограничений.</p>
+        <p>Модули, использующие только стандартную библиотеку Node.js, всё равно можно было запускать:</p>
+        <ul>
+          <li>URL-валидацию;</li>
+          <li>JSON-хранилище;</li>
+          <li>работу с файлами;</li>
+          <li>создание и удаление записей;</li>
+          <li>проверку сохранения данных после повторной инициализации.</li>
+        </ul>
+        <p>Части, зависящие от внешних пакетов, нельзя было сразу запустить: Express-приложение, Express routes и HTML parser из npm. Проблема была не в невозможности тестировать backend как таковой, а только в отсутствии заранее установленных внешних зависимостей.</p>
+
+        <h2>Третье ограничение: Chromium есть, но навигация запрещена</h2>
+        <p>В окружении нашлись Chromium и Python Playwright. Headless-браузер запускался, JavaScript выполнялся, DOM был доступен.</p>
+        <p>Но попытки открыть следующие адреса завершались одинаково:</p>
+        <pre><code>http://127.0.0.1:&lt;port&gt;/
+http://localhost:&lt;port&gt;/
+http://0.0.0.0:&lt;port&gt;/
+file:///.../index.html</code></pre>
+        <p>Chromium возвращал:</p>
+        <pre><code>net::ERR_BLOCKED_BY_ADMINISTRATOR</code></pre>
+        <p>Это не CORS, не проблема Express, не отсутствие сервера и не ошибка Playwright. Локальный статический сервер отвечал на запросы через <code>curl</code>, но именно browser navigation блокировалась административной политикой.</p>
+        <p>Поэтому флаги вроде <code>--disable-web-security</code> или <code>--no-sandbox</code> здесь почти наверняка не решают задачу. Они управляют другими слоями защиты и не обязаны отменять URL policy.</p>
+
+        <h2>Что всё равно можно проверить</h2>
+        <div class="post-table-wrap">
+          <table class="post-table">
+            <thead><tr><th>Уровень</th><th>Статус</th><th>Способ проверки</th></tr></thead>
+            <tbody>
+              <tr><td>Чистая backend-логика</td><td>Доступна</td><td><code>node --test</code>, временные директории, mock <code>fetch</code></td></tr>
+              <tr><td>JSON persistence</td><td>Доступна</td><td>Реальная файловая система песочницы</td></tr>
+              <tr><td>Локальный HTTP-сервер</td><td>Доступен</td><td>Node <code>fetch</code>, <code>curl</code>, API test client</td></tr>
+              <tr><td>Frontend DOM и CSS</td><td>Доступны</td><td><code>page.setContent()</code></td></tr>
+              <tr><td>Frontend JavaScript</td><td>Доступен</td><td>Подключение реального <code>app.js</code> в Playwright</td></tr>
+              <tr><td>Browser screenshots</td><td>Доступны</td><td>Headless Chromium</td></tr>
+              <tr><td>Прямой <code>page.goto(localhost)</code></td><td>Заблокирован</td><td>Политика окружения</td></tr>
+              <tr><td>Установка npm-пакетов</td><td>Недоступна без кэша</td><td>Нет доступа к registry</td></tr>
+              <tr><td>Настоящий browser-to-server E2E</td><td>Недоступен напрямую</td><td>Нужен мост или внешнее CI-окружение</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Самая полезная находка — <code>page.setContent()</code>. HTML можно прочитать с диска, передать прямо в браузер, затем подключить CSS и JavaScript. После этого Playwright всё ещё умеет искать элементы, нажимать кнопки, вводить текст, проверять состояния формы, читать computed styles, собирать ошибки консоли и делать скриншоты.</p>
+        <p>То есть frontend можно проверять почти полноценно, если заменить сетевую часть управляемым адаптером.</p>
+
+        <h2>Архитектурный обход вместо взлома политики</h2>
+        <div class="flow-diagram horizontal" role="img" aria-label="Browser to backend bridge">
+          <span class="flow-node">Playwright page</span>
+          <span class="flow-arrow" aria-hidden="true">-&gt;</span>
+          <span class="flow-node">fetch adapter</span>
+          <span class="flow-arrow" aria-hidden="true">-&gt;</span>
+          <span class="flow-node">Node bridge</span>
+          <span class="flow-arrow" aria-hidden="true">-&gt;</span>
+          <span class="flow-node">Express API</span>
+          <span class="flow-arrow" aria-hidden="true">-&gt;</span>
+          <span class="flow-node">JSON storage</span>
+        </div>
+        <p>Браузер не открывает <code>localhost</code> и не делает прямой сетевой запрос. Вместо этого frontend вызывает переопределённый <code>window.fetch</code>, который передаёт запрос в функцию Node.js. Уже Node обращается к реальному Express-серверу и возвращает результат обратно в страницу.</p>
+        <pre><code>await page.exposeFunction('__backendRequest', async ({ path, method, body }) =&gt; {
+  const response = await fetch(`http://127.0.0.1:${port}${path}`, {
+    method,
+    body,
+    headers: { 'content-type': 'application/json' }
+  });
+
+  return {
+    status: response.status,
+    body: await response.text()
+  };
+});
+
+await page.evaluate(() =&gt; {
+  window.fetch = async (input, options = {}) =&gt; {
+    const url = new URL(input, 'http://link-saver.test');
+    const result = await window.__backendRequest({
+      path: `${url.pathname}${url.search}`,
+      method: options.method || 'GET',
+      body: options.body
+    });
+
+    return new Response(result.body, { status: result.status });
+  };
+});</code></pre>
+        <p>Это не стопроцентный E2E в строгом смысле, потому что сетевой переход выполняет Node, а не Chromium. Но для проверки поведения приложения ценность очень высокая: используется реальный frontend-код, работает реальный backend, сохраняются реальные данные, Playwright взаимодействует с настоящим DOM, а административная политика браузера не нарушается.</p>
+
+        <h2>Правильная лестница проверок</h2>
+        <h3>1. Unit-тесты чистых модулей</h3>
+        <p>Отдельно проверять URL parsing, title extraction, storage, delete regression, error mapping и state transformations.</p>
+
+        <h3>2. Backend integration</h3>
+        <p>Поднять сервер на случайном порту и обращаться к нему через Node <code>fetch</code> или API-клиент тестового раннера.</p>
+        <pre><code>node:test -&gt; Node fetch -&gt; Express -&gt; storage</code></pre>
+
+        <h3>3. Frontend browser tests с mock API</h3>
+        <p>Загрузить HTML через <code>page.setContent()</code>, подключить CSS и JS, а <code>window.fetch</code> заменить предсказуемым mock. Это хорошо проверяет UI-состояния без зависимости от backend.</p>
+
+        <h3>4. Browser-to-Node bridge</h3>
+        <p>Связать реальный frontend с реальным backend через <code>page.exposeFunction()</code>. Это уже почти полноценный функциональный тест всей системы.</p>
+
+        <h3>5. Настоящий E2E во внешнем окружении</h3>
+        <p>Оставить GitHub Actions, WSL, Codespaces или обычной локальной машине только ту проверку, которую песочница принципиально не может выполнить:</p>
+        <pre><code>Chromium -&gt; localhost -&gt; Express -&gt; persistence</code></pre>
+        <p>Так ограничения песочницы не блокируют разработку. Они лишь определяют, на каком уровне выполняется конкретная проверка.</p>
+
+        <h2>Почему это важно для AI-assisted development</h2>
+        <p>Вопрос «у агента есть браузер?» слишком грубый. Правильнее спросить:</p>
+        <ul>
+          <li>может ли браузер запускаться и выполнять JavaScript;</li>
+          <li>разрешён ли <code>page.goto</code>;</li>
+          <li>доступен ли <code>localhost</code> из browser process;</li>
+          <li>доступен ли <code>localhost</code> из Node process;</li>
+          <li>можно ли устанавливать зависимости или восстанавливать их из кэша;</li>
+          <li>может ли коннектор материализовать репозиторий;</li>
+          <li>может ли агент делать скриншоты и DOM assertions.</li>
+        </ul>
+        <p>Это уже не бинарная возможность, а capability matrix.</p>
+        <p>Хороший агент не должен изображать полную проверку там, где она невозможна. Он должен определить границы среды, проверить каждую гипотезу отдельно, выполнить максимум доступных тестов, честно записать, что осталось непроверенным, и вынести только недоступный слой во внешнее окружение.</p>
+
+        <h2>Вывод</h2>
+        <p>AI-песочница может оказаться намного мощнее, чем кажется после первого <code>ERR_BLOCKED_BY_ADMINISTRATOR</code>.</p>
+        <p>Прямой browser-to-localhost E2E может быть запрещён. GitHub-коннектор может не уметь делать локальный checkout. Package registry может быть недоступен. Но внутри всё ещё можно тестировать чистую backend-логику, проверять persistence на реальной файловой системе, запускать локальные HTTP-процессы, проверять API через Node, рендерить frontend в Chromium, выполнять JavaScript и DOM assertions, делать скриншоты и связывать браузер с реальным backend через контролируемый мост.</p>
+        <p>Главная ошибка — воспринимать песочницу как обычный ноутбук с браузером. Это другое окружение с отдельными каналами доступа. Как только эти каналы разложены по слоям, ограничения перестают быть тупиком и превращаются в обычную архитектурную задачу.</p>
+      </div>
+
+      <nav class="post-pagination" aria-label="Post navigation" data-i18n-aria="post-pagination-aria">
+        <a class="post-page-link" href="./gemini-safety-filter-layers.html"><span data-i18n="post-prev">Previous</span><strong data-lang-content="en">The Filter Matryoshka</strong><strong data-lang-content="ru">Матрёшка фильтров</strong></a>
+        <span class="post-page-link is-disabled" aria-disabled="true"><span data-i18n="post-next">Next</span><strong data-i18n="post-next-none">No later post</strong></span>
+      </nav>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <span>Oleg Boyko / Lotargo</span>
+    <span>Blog · AI systems · verification</span>
+  </footer>
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/blog-post.js"></script>
+</body>
+</html>

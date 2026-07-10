@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="A practical look at testing a web application inside an AI sandbox when GitHub access, backend execution, Chromium, and browser networking are available through different channels." />
+  <meta name="description" content="A practical experiment in how much real repository work, backend testing, and browser verification can be done in regular ChatGPT Chat without spending the shared Codex and ChatGPT Work agentic allowance." />
   <meta name="theme-color" content="#000000" />
-  <title>The Browser Exists, but localhost Does Not: Testing a Web App Inside an AI Sandbox · Lotargo Blog</title>
+  <title>Coding Without Codex: How Far Regular ChatGPT Can Go · Lotargo Blog</title>
   <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
   <script>
@@ -19,7 +19,7 @@
     })();
   </script>
 </head>
-<body data-title-en="The Browser Exists, but localhost Does Not: Testing a Web App Inside an AI Sandbox · Lotargo Blog" data-title-ru="Браузер есть, а localhost нет: тестирование веб-приложения внутри AI-песочницы · Блог Lotargo">
+<body data-title-en="Coding Without Codex: How Far Regular ChatGPT Can Go · Lotargo Blog" data-title-ru="Код без Codex: как далеко можно зайти в обычном ChatGPT · Блог Lotargo">
   <header class="site-header" data-js="header">
     <a class="brand" href="../../" aria-label="Back to landing">
       <span class="brand-mark" aria-hidden="true">LØ</span>
@@ -52,73 +52,85 @@
       </div>
 
       <div data-lang-content="en">
-        <h1>The Browser Exists, but localhost Does Not: Testing a Web App Inside an AI Sandbox</h1>
-        <p class="post-lead">Recently I decided to test not another framework, but the AI agent's working environment itself. If an agent can see a GitHub repository, work with files, and has a sandbox, can it start a web application and verify it in a browser on its own?</p>
-        <p>The answer was more interesting than a plain yes or no. The environment really did contain Node.js, Chromium, and Playwright. Local processes and HTTP servers could run. But direct browser navigation to <code>localhost</code>, <code>127.0.0.1</code>, and even <code>file://</code> was blocked by environment policy.</p>
-        <p>The main lesson is that having a browser does not automatically mean having full browser-to-server E2E. That does not make the sandbox useless. It only means verification should be split into layers, with each available channel used for the job it can actually perform.</p>
+        <h1>Coding Without Codex: How Far Regular ChatGPT Can Go</h1>
+        <p class="post-lead">ChatGPT is usually treated as a general assistant, while serious repository work is sent to Codex. But Codex and ChatGPT Work share an agentic usage pool, while ordinary Chat messages are accounted for separately. That raises a practical question: how much real software work can be done without launching an agentic mode at all?</p>
+        <p>This article is about a test performed in regular ChatGPT Chat, not Codex, not Work, and not a local IDE agent. The tools were a GitHub connector, the file sandbox, and the execution capabilities available inside the conversation.</p>
 
-        <h2>The starting point</h2>
-        <p>The experiment used a small Link Saver:</p>
+        <h2>Three product surfaces that are easy to confuse</h2>
         <ul>
-          <li>Node.js and Express on the backend;</li>
-          <li>plain HTML, CSS, and JavaScript on the frontend;</li>
-          <li>a JSON file for persistence;</li>
-          <li><code>node:test</code> for tests;</li>
-          <li>a GitHub connector for reading and changing the repository.</li>
+          <li><strong>ChatGPT Chat</strong> is the normal conversation surface. It can use connected apps and plugins, work with files, execute code in a sandbox, and perform permitted external actions.</li>
+          <li><strong>ChatGPT Work</strong> is a separate experience for longer research and deliverable-oriented tasks.</li>
+          <li><strong>Codex</strong> is the specialized coding agent available through ChatGPT, IDE integrations, and the CLI.</li>
         </ul>
-        <p>I did not ask the agent to change the code. The task was purely exploratory: get the repository into the sandbox, start the server, and find out whether real browser verification was available.</p>
+        <p>OpenAI explicitly states that Codex, ChatGPT Work, and several other agentic products draw from the same agentic usage pool. Regular Chat messages are separate; Plus and Pro list messages and interactions as unlimited, subject to abuse guardrails.</p>
+        <blockquote><p>The interesting space is not “chat versus coding.” It is bounded work in Chat versus autonomous work in an agentic environment.</p></blockquote>
+
+        <h2>Why regular Chat can do more than give advice</h2>
+        <p>Through a connected GitHub app, ChatGPT can read repository files, inspect commits and diffs, create and update files, write changes to a branch, and bring files into the sandbox for local analysis.</p>
+        <p>That already covers a large set of practical tasks:</p>
+        <ul>
+          <li>project plans, <code>AGENTS.md</code>, and skills;</li>
+          <li>code review and regression analysis;</li>
+          <li>targeted fixes and small modules;</li>
+          <li>unit tests and test-output analysis;</li>
+          <li>README and technical documentation updates;</li>
+          <li>GitHub work without manually copying files.</li>
+        </ul>
+        <p>Chat does not receive the user's hardware, local IDE, Docker daemon, or unrestricted network. But most small and medium tasks do not require those things.</p>
+
+        <h2>The experiment: Link Saver in regular Chat</h2>
+        <p>The test project was a small Link Saver with Node.js and Express, a plain JavaScript frontend, JSON persistence, <code>node:test</code>, and a GitHub connector.</p>
+        <p>The goal was exploratory: obtain the code, run every available verification step, and determine how close regular Chat could get to real browser-to-server E2E.</p>
 
         <h2>First boundary: a GitHub connector is not <code>git clone</code></h2>
-        <p>The connector is useful for reading files, retrieving commits and diffs, creating and updating files, and writing changes back to a branch. That does not necessarily mean the repository can be materialized into the sandbox filesystem with one operation.</p>
-        <p>A direct <code>git clone</code> also failed because the terminal could not resolve <code>github.com</code>. The local copy therefore had to be assembled from files read through the connector.</p>
+        <p>The connector worked with the remote repository, but did not expose a one-click operation that materialized the entire repository into the sandbox filesystem.</p>
+        <p>A direct <code>git clone</code> also failed because the terminal could not resolve <code>github.com</code>. The local copy had to be assembled from files read through the connector's separate trusted channel.</p>
         <pre><code>GitHub connector access != network access from the runtime</code></pre>
-        <p>An agent may reach the GitHub API through a separate trusted channel while the terminal itself still has no ordinary outbound internet access.</p>
+        <p>ChatGPT's integration with GitHub and the container's outbound network are separate access surfaces.</p>
 
-        <h2>Second boundary: the runtime exists, the dependency network does not</h2>
-        <p>Node.js was present in the sandbox, but <code>pnpm</code> and a ready <code>node_modules</code> directory were not. Corepack existed, yet it could not download the package manager or dependencies from the npm registry because of network restrictions.</p>
-        <p>Modules using only the Node.js standard library could still run:</p>
+        <h2>Second boundary: the runtime exists, but the dependency network may not</h2>
+        <p>Node.js was present, but <code>pnpm</code> and a ready <code>node_modules</code> directory were not. Corepack existed, yet it could not download the package manager or dependencies from the npm registry.</p>
+        <p>Code using only the Node.js standard library still ran:</p>
         <ul>
           <li>URL validation;</li>
           <li>JSON storage;</li>
           <li>filesystem operations;</li>
           <li>creating and deleting records;</li>
-          <li>checking that data survives reinitialization.</li>
+          <li>persistence checks after reinitialization.</li>
         </ul>
-        <p>Parts depending on external packages could not be started immediately: the Express application, Express routes, and the npm HTML parser. The problem was not an inability to test backend code in general. It was only the absence of preinstalled external dependencies.</p>
+        <p>Parts requiring Express and an npm HTML parser could not start without dependencies. The boundary was therefore set by the sandbox contents, not by the Chat surface itself.</p>
 
-        <h2>Third boundary: Chromium is installed, navigation is forbidden</h2>
-        <p>The environment contained Chromium and Python Playwright. The headless browser launched, JavaScript executed, and the DOM was available.</p>
-        <p>But attempts to open the following addresses all ended the same way:</p>
+        <h2>Third boundary: Chromium exists, but localhost may be closed</h2>
+        <p>Chromium and Playwright were available. The browser launched, executed JavaScript, exposed the DOM, computed CSS, and produced screenshots.</p>
+        <p>Direct navigation to local addresses was blocked:</p>
         <pre><code>http://127.0.0.1:&lt;port&gt;/
 http://localhost:&lt;port&gt;/
 http://0.0.0.0:&lt;port&gt;/
 file:///.../index.html</code></pre>
         <p>Chromium returned:</p>
         <pre><code>net::ERR_BLOCKED_BY_ADMINISTRATOR</code></pre>
-        <p>This was not CORS, an Express failure, a missing server, or a Playwright error. A local static server answered requests through <code>curl</code>, but browser navigation itself was blocked by administrative policy.</p>
-        <p>Flags such as <code>--disable-web-security</code> or <code>--no-sandbox</code> are therefore unlikely to solve the problem. They control different security layers and do not necessarily override URL policy.</p>
+        <p>The same local server still answered through <code>curl</code>. The application was running; the block existed specifically at the browser-navigation policy layer.</p>
 
-        <h2>What can still be verified</h2>
+        <h2>What can actually be verified in Chat</h2>
         <div class="post-table-wrap">
           <table class="post-table">
             <thead><tr><th>Layer</th><th>Status</th><th>Verification path</th></tr></thead>
             <tbody>
               <tr><td>Pure backend logic</td><td>Available</td><td><code>node --test</code>, temporary directories, mock <code>fetch</code></td></tr>
               <tr><td>JSON persistence</td><td>Available</td><td>Real sandbox filesystem</td></tr>
-              <tr><td>Local HTTP server</td><td>Available</td><td>Node <code>fetch</code>, <code>curl</code>, API test client</td></tr>
+              <tr><td>Local HTTP server</td><td>Available</td><td>Node <code>fetch</code>, <code>curl</code>, API client</td></tr>
               <tr><td>Frontend DOM and CSS</td><td>Available</td><td><code>page.setContent()</code></td></tr>
               <tr><td>Frontend JavaScript</td><td>Available</td><td>Load the real <code>app.js</code> in Playwright</td></tr>
               <tr><td>Browser screenshots</td><td>Available</td><td>Headless Chromium</td></tr>
               <tr><td>Direct <code>page.goto(localhost)</code></td><td>Blocked</td><td>Environment policy</td></tr>
-              <tr><td>Installing npm packages</td><td>Unavailable without cache</td><td>No registry access</td></tr>
-              <tr><td>Real browser-to-server E2E</td><td>Not directly available</td><td>Requires a bridge or external CI environment</td></tr>
+              <tr><td>Installing npm packages</td><td>Environment-dependent</td><td>Registry was unavailable in this test</td></tr>
+              <tr><td>True browser-to-server E2E</td><td>Not directly available</td><td>Bridge or external CI</td></tr>
             </tbody>
           </table>
         </div>
-        <p>The most useful finding was <code>page.setContent()</code>. HTML can be read from disk and injected directly into the browser, then CSS and JavaScript can be attached. Playwright can still locate elements, click buttons, fill inputs, inspect form states, read computed styles, collect console errors, and take screenshots.</p>
-        <p>So the frontend can still be tested almost fully if its network boundary is replaced with a controlled adapter.</p>
+        <p>The most useful finding was <code>page.setContent()</code>. HTML can be injected directly into Chromium, then the real CSS and JavaScript can be attached. Playwright can still locate elements, click buttons, fill inputs, inspect form states, read computed styles, collect console errors, and take screenshots.</p>
 
-        <h2>Architectural workaround instead of bypassing policy</h2>
+        <h2>Bridging the browser to the real backend</h2>
         <div class="flow-diagram horizontal" role="img" aria-label="Browser to backend bridge">
           <span class="flow-node">Playwright page</span>
           <span class="flow-arrow" aria-hidden="true">-&gt;</span>
@@ -130,141 +142,129 @@ file:///.../index.html</code></pre>
           <span class="flow-arrow" aria-hidden="true">-&gt;</span>
           <span class="flow-node">JSON storage</span>
         </div>
-        <p>The browser never opens <code>localhost</code> and never sends the direct network request. The frontend calls an overridden <code>window.fetch</code>, which forwards the request into a Node.js function. Node then calls the real Express server and returns the result to the page.</p>
-        <pre><code>await page.exposeFunction('__backendRequest', async ({ path, method, body }) =&gt; {
-  const response = await fetch(`http://127.0.0.1:${port}${path}`, {
-    method,
-    body,
-    headers: { 'content-type': 'application/json' }
-  });
+        <p>The browser can call an overridden <code>window.fetch</code>, which crosses into Node.js through <code>page.exposeFunction()</code>. Node calls the real Express server and returns the response to the page.</p>
+        <p>This is not strict 100% E2E because Node performs the HTTP hop, but it functionally verifies the real frontend, real backend, persistence, DOM interactions, and loading, error, delete, and favourite flows.</p>
 
-  return {
-    status: response.status,
-    body: await response.text()
-  };
-});
+        <h2>When regular Chat is enough</h2>
+        <p>Chat is a good fit for bounded work that can be decomposed into verifiable steps: documentation, a small feature or fix, code review, unit and API tests, static frontend work, GitHub operations, and analysis of files, logs, and test output.</p>
+        <p>Codex is the better choice for long autonomous work across a large code tree, IDE or CLI workflows, parallel agents and worktrees, complex migrations, active dependency installation, local developer tools, and tasks where constant steering costs more than the agentic allowance.</p>
+        <p>Work is useful for long research and deliverable tasks where the agent needs to assemble a substantial final result independently.</p>
+        <blockquote><p>The mode should be selected by required autonomy and infrastructure, not simply by whether the task contains code.</p></blockquote>
 
-await page.evaluate(() =&gt; {
-  window.fetch = async (input, options = {}) =&gt; {
-    const url = new URL(input, 'http://link-saver.test');
-    const result = await window.__backendRequest({
-      path: `${url.pathname}${url.search}`,
-      method: options.method || 'GET',
-      body: options.body
-    });
-
-    return new Response(result.body, { status: result.status });
-  };
-});</code></pre>
-        <p>This is not 100% E2E in the strict sense because Node, not Chromium, performs the network hop. But the functional value is high: the real frontend and backend run, real data is persisted, Playwright interacts with the real DOM, and browser policy is not violated.</p>
+        <h2>Why OpenAI has an unusual product combination here</h2>
+        <p>This is not a claim that competing models are worse at coding. The point is the product combination.</p>
+        <p>A regular ChatGPT conversation can combine a strong reasoning model, a broad message allowance, connected apps with read and write actions, a file sandbox, code execution, a browser runtime, screenshots, and repository writes.</p>
+        <p>Google AI Studio offers a powerful playground, code execution, Google Search, URL Context, Computer Use, and File Search. But Google's official documentation presents AI Studio primarily as an environment for prototyping with the Gemini API. Custom integrations rely on function calling and execution in the user's own application; an equivalent ready-made GitHub repository connector with write actions is not listed among the built-in tools.</p>
+        <p>The official Gemini app is also capable, but its usage limits are more visible during long iterative sessions. In this workflow, the combination of regular chat, connected apps, a sandbox, and a broad message allowance is unusually strong in OpenAI's product.</p>
+        <p>This is a product-ergonomics assessment as of July 2026, not a permanent model ranking.</p>
 
         <h2>A better verification ladder</h2>
-        <h3>1. Unit tests for pure modules</h3>
-        <p>Test URL parsing, title extraction, storage, deletion regressions, error mapping, and state transformations separately.</p>
-
-        <h3>2. Backend integration</h3>
-        <p>Start the server on a random port and call it through Node <code>fetch</code> or the test runner's API client.</p>
-        <pre><code>node:test -&gt; Node fetch -&gt; Express -&gt; storage</code></pre>
-
-        <h3>3. Frontend browser tests with a mock API</h3>
-        <p>Load the HTML through <code>page.setContent()</code>, attach CSS and JavaScript, and replace <code>window.fetch</code> with predictable mock responses. This is ideal for UI states without depending on the backend.</p>
-
-        <h3>4. Browser-to-Node bridge</h3>
-        <p>Connect the real frontend to the real backend through <code>page.exposeFunction()</code>. This becomes an almost complete functional test of the whole system.</p>
-
-        <h3>5. Real E2E in an external environment</h3>
-        <p>Leave only the check the sandbox fundamentally cannot perform to GitHub Actions, WSL, Codespaces, or a normal local machine:</p>
-        <pre><code>Chromium -&gt; localhost -&gt; Express -&gt; persistence</code></pre>
-        <p>The sandbox restrictions no longer block development. They only determine which layer performs each check.</p>
-
-        <h2>Why this matters for AI-assisted development</h2>
-        <p>The question “does the agent have a browser?” is too coarse. Better questions are:</p>
-        <ul>
-          <li>can the browser launch and execute JavaScript;</li>
-          <li>is <code>page.goto</code> allowed;</li>
-          <li>is <code>localhost</code> reachable from the browser process;</li>
-          <li>is <code>localhost</code> reachable from the Node process;</li>
-          <li>can dependencies be installed or restored from cache;</li>
-          <li>can the connector materialize a repository;</li>
-          <li>can the agent take screenshots and perform DOM assertions.</li>
-        </ul>
-        <p>This is not a binary capability. It is a capability matrix.</p>
-        <p>A good agent should not pretend to have completed full verification when the environment prevents it. It should identify the boundaries, test each hypothesis separately, run the maximum available verification, record what remains unverified, and move only the unavailable layer to an external environment.</p>
+        <ol>
+          <li>Unit tests for pure modules.</li>
+          <li>Backend integration through Node <code>fetch</code>.</li>
+          <li>Frontend browser tests with a mock API.</li>
+          <li>A browser-to-Node bridge with the real backend.</li>
+          <li>One true E2E check in an external environment.</li>
+        </ol>
+        <p>A good assistant should not pretend an unavailable check was completed. It should map the environment, run the maximum available verification, and leave only the genuinely impossible layer to external CI.</p>
 
         <h2>Conclusion</h2>
-        <p>An AI sandbox can be much more capable than it first appears after an <code>ERR_BLOCKED_BY_ADMINISTRATOR</code> response.</p>
-        <p>Direct browser-to-localhost E2E may be forbidden. A GitHub connector may not provide a local checkout. The package registry may be unreachable. But the environment may still support pure backend tests, real filesystem persistence, local HTTP processes, API verification through Node, frontend rendering in Chromium, JavaScript execution, DOM assertions, screenshots, and a controlled bridge to the real backend.</p>
-        <p>The main mistake is treating the sandbox like an ordinary laptop with a browser. It is a different environment with separate access channels. Once those channels are mapped by layer, the restrictions stop being a dead end and become a normal architecture problem.</p>
+        <p>Regular ChatGPT Chat is significantly underestimated as a development tool.</p>
+        <p>It is not the Codex IDE and it does not receive access to the user's Docker installation, GPU, or local terminal. Even so, it can work with a real GitHub repository, write code, run pure backend tests, verify persistence, start local HTTP processes, inspect APIs through Node, execute frontend code in Chromium, assert DOM and CSS behavior, take screenshots, and write the result back to the repository.</p>
+        <p>For a small or medium task, Codex is often convenient but not mandatory. A substantial part of development can happen in regular Chat, preserving the shared Work and Codex agentic allowance for tasks that genuinely need an autonomous IDE-like environment.</p>
+
+        <h2>Sources</h2>
+        <ul>
+          <li><a href="https://help.openai.com/en/articles/11369540-codex-in-chatgpt" target="_blank" rel="noreferrer">OpenAI: Using Codex with your ChatGPT plan</a></li>
+          <li><a href="https://chatgpt.com/pricing/" target="_blank" rel="noreferrer">OpenAI: ChatGPT plans and feature limits</a></li>
+          <li><a href="https://help.openai.com/en/articles/11487775-connectors-in-chatgpt" target="_blank" rel="noreferrer">OpenAI: Apps in ChatGPT</a></li>
+          <li><a href="https://openai.com/codex/" target="_blank" rel="noreferrer">OpenAI: Codex</a></li>
+          <li><a href="https://ai.google.dev/gemini-api/docs/ai-studio-quickstart" target="_blank" rel="noreferrer">Google: Google AI Studio quickstart</a></li>
+          <li><a href="https://ai.google.dev/gemini-api/docs/tools" target="_blank" rel="noreferrer">Google: Using Tools with Gemini API</a></li>
+          <li><a href="https://support.google.com/gemini/answer/16275805" target="_blank" rel="noreferrer">Google: Gemini Apps limits</a></li>
+        </ul>
       </div>
 
       <div data-lang-content="ru">
-        <h1>Браузер есть, а localhost нет: тестирование веб-приложения внутри AI-песочницы</h1>
-        <p class="post-lead">Недавно я решил проверить не очередной фреймворк, а само рабочее окружение AI-агента. Если агент видит GitHub-репозиторий, умеет работать с файлами и имеет песочницу, сможет ли он сам поднять веб-приложение и проверить его браузером?</p>
-        <p>Ответ оказался интереснее обычного «да» или «нет». Внутри окружения действительно были Node.js, Chromium и Playwright. Локальные процессы и HTTP-серверы запускались. Но прямой переход браузера на <code>localhost</code>, <code>127.0.0.1</code> и даже <code>file://</code> блокировался политикой среды.</p>
-        <p>Главный вывод: наличие браузера ещё не означает наличие полноценного browser-to-server E2E. Но это не делает песочницу бесполезной. Нужно просто разделить проверку на уровни и использовать каждый доступный канал по назначению.</p>
+        <h1>Код без Codex: как далеко можно зайти в обычном ChatGPT</h1>
+        <p class="post-lead">ChatGPT обычно воспринимают как универсального собеседника, а серьёзную работу с репозиторием отправляют в Codex. Но Codex и ChatGPT Work используют общий агентский пул, тогда как обычные сообщения Chat учитываются отдельно. Отсюда простой вопрос: сколько реальной разработки можно выполнить, вообще не включая агентский режим?</p>
+        <p>Эта статья о проверке внутри обычного ChatGPT Chat, а не Codex, не Work и не локального агента в IDE. Использовались GitHub-коннектор, файловая песочница и доступные инструменты выполнения.</p>
 
-        <h2>Исходная задача</h2>
-        <p>Эксперимент проводился на небольшом Link Saver:</p>
+        <h2>Три режима, которые легко спутать</h2>
         <ul>
-          <li>Node.js и Express на backend;</li>
-          <li>обычные HTML, CSS и JavaScript на frontend;</li>
-          <li>JSON-файл как постоянное хранилище;</li>
-          <li><code>node:test</code> для тестов;</li>
-          <li>GitHub-коннектор для чтения и изменения репозитория.</li>
+          <li><strong>ChatGPT Chat</strong> — обычный диалог. Он может использовать подключённые приложения и плагины, работать с файлами, выполнять код в песочнице и совершать разрешённые внешние действия.</li>
+          <li><strong>ChatGPT Work</strong> — отдельный режим для длинных исследований и deliverable-задач.</li>
+          <li><strong>Codex</strong> — специализированный coding agent в ChatGPT, IDE и CLI.</li>
         </ul>
-        <p>Я не просил агента менять код. Задача была сугубо исследовательской: получить репозиторий в песочнице, запустить сервер и понять, доступна ли настоящая браузерная проверка.</p>
+        <p>OpenAI прямо указывает, что Codex, ChatGPT Work и некоторые другие агентские продукты расходуют общий agentic usage pool. Обычные сообщения Chat считаются отдельно; для Plus и Pro сообщения и взаимодействия обозначены как unlimited с оговоркой про abuse guardrails.</p>
+        <blockquote><p>Интересная граница проходит не между «чатом» и «кодом», а между ограниченной задачей в Chat и автономной работой в агентской среде.</p></blockquote>
+
+        <h2>Почему обычный Chat умеет больше, чем давать советы</h2>
+        <p>Через подключённое GitHub-приложение ChatGPT может читать файлы репозитория, смотреть коммиты и diff, создавать и обновлять файлы, писать изменения в ветку и переносить материалы в песочницу для локального анализа.</p>
+        <p>Этого уже достаточно для большого класса задач:</p>
+        <ul>
+          <li>планы проекта, <code>AGENTS.md</code> и skills;</li>
+          <li>code review и анализ регрессий;</li>
+          <li>точечные исправления и небольшие модули;</li>
+          <li>unit-тесты и анализ test output;</li>
+          <li>README и техническая документация;</li>
+          <li>работа с GitHub без ручного копирования файлов.</li>
+        </ul>
+        <p>Chat не получает доступ к железу пользователя, локальной IDE, Docker daemon и неограниченной сети. Но для большинства небольших и средних задач это не требуется.</p>
+
+        <h2>Эксперимент: Link Saver в обычном Chat</h2>
+        <p>Тестовым проектом стал небольшой Link Saver: Node.js и Express на backend, обычный JavaScript на frontend, JSON persistence, <code>node:test</code> и GitHub-коннектор.</p>
+        <p>Цель была исследовательской: получить код, выполнить все доступные проверки и понять, насколько близко обычный Chat может подойти к настоящему browser-to-server E2E.</p>
 
         <h2>Первое ограничение: GitHub-коннектор не равен <code>git clone</code></h2>
-        <p>Коннектор хорошо подходит для чтения файлов, получения коммитов и diff, создания и обновления файлов, а также записи изменений обратно в ветку. Но это не обязательно означает, что репозиторий можно одной операцией материализовать в локальную файловую систему песочницы.</p>
-        <p>Прямой <code>git clone</code> также не сработал, потому что терминал не мог разрешить <code>github.com</code>. В итоге локальную копию пришлось собирать из файлов, прочитанных через коннектор.</p>
+        <p>Коннектор работал с удалённым репозиторием, но не предоставлял одной операции для полной материализации проекта в файловую систему песочницы.</p>
+        <p>Прямой <code>git clone</code> тоже не сработал: терминал не мог разрешить <code>github.com</code>. Локальную копию пришлось собирать из файлов, прочитанных через отдельный доверенный канал коннектора.</p>
         <pre><code>GitHub connector access != network access from the runtime</code></pre>
-        <p>Агент может иметь доступ к GitHub API через отдельный доверенный канал, но при этом не иметь обычного исходящего интернета из терминала.</p>
+        <p>Интеграция ChatGPT с GitHub и исходящий интернет контейнера — разные поверхности доступа.</p>
 
-        <h2>Второе ограничение: runtime доступен, сеть зависимостей — нет</h2>
-        <p>В песочнице был Node.js, но не было установленного <code>pnpm</code> и готового <code>node_modules</code>. Corepack присутствовал, однако скачать пакетный менеджер и зависимости из npm registry не смог из-за сетевых ограничений.</p>
-        <p>Модули, использующие только стандартную библиотеку Node.js, всё равно можно было запускать:</p>
+        <h2>Второе ограничение: runtime есть, а сети зависимостей может не быть</h2>
+        <p>В песочнице был Node.js, но не было готового <code>pnpm</code> и <code>node_modules</code>. Corepack присутствовал, однако не мог скачать пакетный менеджер и зависимости из npm registry.</p>
+        <p>Код на стандартной библиотеке Node.js всё равно запускался:</p>
         <ul>
-          <li>URL-валидацию;</li>
+          <li>URL-валидация;</li>
           <li>JSON-хранилище;</li>
-          <li>работу с файлами;</li>
+          <li>работа с файлами;</li>
           <li>создание и удаление записей;</li>
-          <li>проверку сохранения данных после повторной инициализации.</li>
+          <li>проверка persistence после повторной инициализации.</li>
         </ul>
-        <p>Части, зависящие от внешних пакетов, нельзя было сразу запустить: Express-приложение, Express routes и HTML parser из npm. Проблема была не в невозможности тестировать backend как таковой, а только в отсутствии заранее установленных внешних зависимостей.</p>
+        <p>Части с Express и HTML parser из npm без зависимостей не стартовали. Значит, границу задавало содержимое песочницы, а не сам режим Chat.</p>
 
-        <h2>Третье ограничение: Chromium есть, но навигация запрещена</h2>
-        <p>В окружении нашлись Chromium и Python Playwright. Headless-браузер запускался, JavaScript выполнялся, DOM был доступен.</p>
-        <p>Но попытки открыть следующие адреса завершались одинаково:</p>
+        <h2>Третье ограничение: Chromium есть, но localhost может быть закрыт</h2>
+        <p>Chromium и Playwright были доступны. Браузер запускался, выполнял JavaScript, видел DOM, вычислял CSS и делал скриншоты.</p>
+        <p>Прямой переход на локальные адреса блокировался:</p>
         <pre><code>http://127.0.0.1:&lt;port&gt;/
 http://localhost:&lt;port&gt;/
 http://0.0.0.0:&lt;port&gt;/
 file:///.../index.html</code></pre>
         <p>Chromium возвращал:</p>
         <pre><code>net::ERR_BLOCKED_BY_ADMINISTRATOR</code></pre>
-        <p>Это не CORS, не проблема Express, не отсутствие сервера и не ошибка Playwright. Локальный статический сервер отвечал на запросы через <code>curl</code>, но именно browser navigation блокировалась административной политикой.</p>
-        <p>Поэтому флаги вроде <code>--disable-web-security</code> или <code>--no-sandbox</code> здесь почти наверняка не решают задачу. Они управляют другими слоями защиты и не обязаны отменять URL policy.</p>
+        <p>Тот же локальный сервер отвечал через <code>curl</code>. Приложение работало, а блокировка находилась именно на уровне browser-navigation policy.</p>
 
-        <h2>Что всё равно можно проверить</h2>
+        <h2>Что реально можно проверить в Chat</h2>
         <div class="post-table-wrap">
           <table class="post-table">
             <thead><tr><th>Уровень</th><th>Статус</th><th>Способ проверки</th></tr></thead>
             <tbody>
               <tr><td>Чистая backend-логика</td><td>Доступна</td><td><code>node --test</code>, временные директории, mock <code>fetch</code></td></tr>
               <tr><td>JSON persistence</td><td>Доступна</td><td>Реальная файловая система песочницы</td></tr>
-              <tr><td>Локальный HTTP-сервер</td><td>Доступен</td><td>Node <code>fetch</code>, <code>curl</code>, API test client</td></tr>
+              <tr><td>Локальный HTTP-сервер</td><td>Доступен</td><td>Node <code>fetch</code>, <code>curl</code>, API client</td></tr>
               <tr><td>Frontend DOM и CSS</td><td>Доступны</td><td><code>page.setContent()</code></td></tr>
               <tr><td>Frontend JavaScript</td><td>Доступен</td><td>Подключение реального <code>app.js</code> в Playwright</td></tr>
               <tr><td>Browser screenshots</td><td>Доступны</td><td>Headless Chromium</td></tr>
               <tr><td>Прямой <code>page.goto(localhost)</code></td><td>Заблокирован</td><td>Политика окружения</td></tr>
-              <tr><td>Установка npm-пакетов</td><td>Недоступна без кэша</td><td>Нет доступа к registry</td></tr>
-              <tr><td>Настоящий browser-to-server E2E</td><td>Недоступен напрямую</td><td>Нужен мост или внешнее CI-окружение</td></tr>
+              <tr><td>Установка npm-пакетов</td><td>Зависит от среды</td><td>В эксперименте registry был недоступен</td></tr>
+              <tr><td>Настоящий browser-to-server E2E</td><td>Недоступен напрямую</td><td>Мост или внешнее CI</td></tr>
             </tbody>
           </table>
         </div>
-        <p>Самая полезная находка — <code>page.setContent()</code>. HTML можно прочитать с диска, передать прямо в браузер, затем подключить CSS и JavaScript. После этого Playwright всё ещё умеет искать элементы, нажимать кнопки, вводить текст, проверять состояния формы, читать computed styles, собирать ошибки консоли и делать скриншоты.</p>
-        <p>То есть frontend можно проверять почти полноценно, если заменить сетевую часть управляемым адаптером.</p>
+        <p>Самой полезной находкой оказался <code>page.setContent()</code>. HTML можно передать прямо в Chromium, затем подключить реальные CSS и JavaScript. Playwright всё ещё может искать элементы, нажимать кнопки, вводить текст, проверять состояния формы, читать computed styles, собирать console errors и делать скриншоты.</p>
 
-        <h2>Архитектурный обход вместо взлома политики</h2>
+        <h2>Мост между браузером и реальным backend</h2>
         <div class="flow-diagram horizontal" role="img" aria-label="Browser to backend bridge">
           <span class="flow-node">Playwright page</span>
           <span class="flow-arrow" aria-hidden="true">-&gt;</span>
@@ -276,71 +276,47 @@ file:///.../index.html</code></pre>
           <span class="flow-arrow" aria-hidden="true">-&gt;</span>
           <span class="flow-node">JSON storage</span>
         </div>
-        <p>Браузер не открывает <code>localhost</code> и не делает прямой сетевой запрос. Вместо этого frontend вызывает переопределённый <code>window.fetch</code>, который передаёт запрос в функцию Node.js. Уже Node обращается к реальному Express-серверу и возвращает результат обратно в страницу.</p>
-        <pre><code>await page.exposeFunction('__backendRequest', async ({ path, method, body }) =&gt; {
-  const response = await fetch(`http://127.0.0.1:${port}${path}`, {
-    method,
-    body,
-    headers: { 'content-type': 'application/json' }
-  });
+        <p>Браузер может вызывать переопределённый <code>window.fetch</code>, который через <code>page.exposeFunction()</code> передаёт запрос в Node.js. Уже Node обращается к реальному Express-серверу и возвращает ответ странице.</p>
+        <p>Это не строгий стопроцентный E2E, потому что HTTP-переход выполняет Node. Но функционально проверяются реальный frontend, реальный backend, persistence, DOM и пользовательские сценарии loading, error, delete и favourites.</p>
 
-  return {
-    status: response.status,
-    body: await response.text()
-  };
-});
+        <h2>Когда обычного Chat достаточно</h2>
+        <p>Chat хорошо подходит для ограниченной работы, которую можно разложить на проверяемые шаги: документация, небольшая функция или исправление, code review, unit- и API-тесты, статический frontend, GitHub-операции и анализ файлов, логов и test output.</p>
+        <p>Codex разумнее использовать для длинной автономной работы по большому дереву кода, IDE/CLI-workflow, параллельных agents и worktrees, сложных migrations, активной установки зависимостей, локальных developer tools и задач, где постоянное ручное управление дороже agentic лимита.</p>
+        <p>Work полезен для длинных исследований и deliverable-задач, где агент должен самостоятельно собрать большой итоговый результат.</p>
+        <blockquote><p>Режим нужно выбирать по требуемой автономности и инфраструктуре, а не просто по признаку «в задаче есть код».</p></blockquote>
 
-await page.evaluate(() =&gt; {
-  window.fetch = async (input, options = {}) =&gt; {
-    const url = new URL(input, 'http://link-saver.test');
-    const result = await window.__backendRequest({
-      path: `${url.pathname}${url.search}`,
-      method: options.method || 'GET',
-      body: options.body
-    });
-
-    return new Response(result.body, { status: result.status });
-  };
-});</code></pre>
-        <p>Это не стопроцентный E2E в строгом смысле, потому что сетевой переход выполняет Node, а не Chromium. Но для проверки поведения приложения ценность очень высокая: используется реальный frontend-код, работает реальный backend, сохраняются реальные данные, Playwright взаимодействует с настоящим DOM, а административная политика браузера не нарушается.</p>
+        <h2>Почему у OpenAI здесь редкая продуктовая связка</h2>
+        <p>Речь не о том, что модели конкурентов хуже пишут код. Речь о сочетании возможностей продукта.</p>
+        <p>Один обычный диалог ChatGPT может объединить сильную reasoning-модель, широкий лимит сообщений, подключённые приложения с read/write actions, файловую песочницу, выполнение кода, browser runtime, скриншоты и запись изменений обратно в репозиторий.</p>
+        <p>Google AI Studio предлагает мощный playground, code execution, Google Search, URL Context, Computer Use и File Search. Но официальная документация описывает AI Studio прежде всего как среду прототипирования Gemini API. Пользовательские интеграции требуют function calling и исполнения в собственном приложении; эквивалентный готовый GitHub-коннектор с write actions не указан среди built-in tools.</p>
+        <p>Официальное приложение Gemini тоже способно на многое, но его usage limits заметнее влияют на длинные итеративные сессии. В этом сценарии сочетание обычного чата, connectors, sandbox и широкого message limit у OpenAI выглядит особенно сильным.</p>
+        <p>Это оценка продуктовой эргономики на июль 2026 года, а не вечный рейтинг моделей.</p>
 
         <h2>Правильная лестница проверок</h2>
-        <h3>1. Unit-тесты чистых модулей</h3>
-        <p>Отдельно проверять URL parsing, title extraction, storage, delete regression, error mapping и state transformations.</p>
-
-        <h3>2. Backend integration</h3>
-        <p>Поднять сервер на случайном порту и обращаться к нему через Node <code>fetch</code> или API-клиент тестового раннера.</p>
-        <pre><code>node:test -&gt; Node fetch -&gt; Express -&gt; storage</code></pre>
-
-        <h3>3. Frontend browser tests с mock API</h3>
-        <p>Загрузить HTML через <code>page.setContent()</code>, подключить CSS и JS, а <code>window.fetch</code> заменить предсказуемым mock. Это хорошо проверяет UI-состояния без зависимости от backend.</p>
-
-        <h3>4. Browser-to-Node bridge</h3>
-        <p>Связать реальный frontend с реальным backend через <code>page.exposeFunction()</code>. Это уже почти полноценный функциональный тест всей системы.</p>
-
-        <h3>5. Настоящий E2E во внешнем окружении</h3>
-        <p>Оставить GitHub Actions, WSL, Codespaces или обычной локальной машине только ту проверку, которую песочница принципиально не может выполнить:</p>
-        <pre><code>Chromium -&gt; localhost -&gt; Express -&gt; persistence</code></pre>
-        <p>Так ограничения песочницы не блокируют разработку. Они лишь определяют, на каком уровне выполняется конкретная проверка.</p>
-
-        <h2>Почему это важно для AI-assisted development</h2>
-        <p>Вопрос «у агента есть браузер?» слишком грубый. Правильнее спросить:</p>
-        <ul>
-          <li>может ли браузер запускаться и выполнять JavaScript;</li>
-          <li>разрешён ли <code>page.goto</code>;</li>
-          <li>доступен ли <code>localhost</code> из browser process;</li>
-          <li>доступен ли <code>localhost</code> из Node process;</li>
-          <li>можно ли устанавливать зависимости или восстанавливать их из кэша;</li>
-          <li>может ли коннектор материализовать репозиторий;</li>
-          <li>может ли агент делать скриншоты и DOM assertions.</li>
-        </ul>
-        <p>Это уже не бинарная возможность, а capability matrix.</p>
-        <p>Хороший агент не должен изображать полную проверку там, где она невозможна. Он должен определить границы среды, проверить каждую гипотезу отдельно, выполнить максимум доступных тестов, честно записать, что осталось непроверенным, и вынести только недоступный слой во внешнее окружение.</p>
+        <ol>
+          <li>Unit-тесты чистых модулей.</li>
+          <li>Backend integration через Node <code>fetch</code>.</li>
+          <li>Frontend browser tests с mock API.</li>
+          <li>Browser-to-Node bridge с реальным backend.</li>
+          <li>Один настоящий E2E во внешнем окружении.</li>
+        </ol>
+        <p>Хороший помощник не должен притворяться, что выполнил недоступную проверку. Он должен определить границы среды, выполнить максимум доступного и оставить внешнему CI только действительно невозможный слой.</p>
 
         <h2>Вывод</h2>
-        <p>AI-песочница может оказаться намного мощнее, чем кажется после первого <code>ERR_BLOCKED_BY_ADMINISTRATOR</code>.</p>
-        <p>Прямой browser-to-localhost E2E может быть запрещён. GitHub-коннектор может не уметь делать локальный checkout. Package registry может быть недоступен. Но внутри всё ещё можно тестировать чистую backend-логику, проверять persistence на реальной файловой системе, запускать локальные HTTP-процессы, проверять API через Node, рендерить frontend в Chromium, выполнять JavaScript и DOM assertions, делать скриншоты и связывать браузер с реальным backend через контролируемый мост.</p>
-        <p>Главная ошибка — воспринимать песочницу как обычный ноутбук с браузером. Это другое окружение с отдельными каналами доступа. Как только эти каналы разложены по слоям, ограничения перестают быть тупиком и превращаются в обычную архитектурную задачу.</p>
+        <p>Обычный ChatGPT Chat сильно недооценён как инструмент разработки.</p>
+        <p>Это не Codex IDE, и он не получает доступ к пользовательскому Docker, GPU или локальному терминалу. Но даже при этих ограничениях Chat может работать с настоящим GitHub-репозиторием, писать код, запускать чистые backend-тесты, проверять persistence, поднимать локальные HTTP-процессы, анализировать API через Node, выполнять frontend-код в Chromium, проверять DOM и CSS, делать скриншоты и записывать результат обратно в репозиторий.</p>
+        <p>Для небольшой или средней задачи Codex часто удобен, но не обязателен. Значительную часть разработки можно выполнить в обычном Chat, сохранив общий лимит Work/Codex для задач, где действительно нужна автономная IDE-подобная среда.</p>
+
+        <h2>Источники</h2>
+        <ul>
+          <li><a href="https://help.openai.com/en/articles/11369540-codex-in-chatgpt" target="_blank" rel="noreferrer">OpenAI: Using Codex with your ChatGPT plan</a></li>
+          <li><a href="https://chatgpt.com/pricing/" target="_blank" rel="noreferrer">OpenAI: ChatGPT plans and feature limits</a></li>
+          <li><a href="https://help.openai.com/en/articles/11487775-connectors-in-chatgpt" target="_blank" rel="noreferrer">OpenAI: Apps in ChatGPT</a></li>
+          <li><a href="https://openai.com/codex/" target="_blank" rel="noreferrer">OpenAI: Codex</a></li>
+          <li><a href="https://ai.google.dev/gemini-api/docs/ai-studio-quickstart" target="_blank" rel="noreferrer">Google: Google AI Studio quickstart</a></li>
+          <li><a href="https://ai.google.dev/gemini-api/docs/tools" target="_blank" rel="noreferrer">Google: Using Tools with Gemini API</a></li>
+          <li><a href="https://support.google.com/gemini/answer/16275805" target="_blank" rel="noreferrer">Google: Gemini Apps limits</a></li>
+        </ul>
       </div>
 
       <nav class="post-pagination" aria-label="Post navigation" data-i18n-aria="post-pagination-aria">

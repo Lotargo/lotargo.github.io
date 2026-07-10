@@ -150,24 +150,24 @@ window.BLOG_POSTS = [
       ru: 'AI-разработка'
     },
     title: {
-      en: 'The Browser Exists, but localhost Does Not: Testing a Web App Inside an AI Sandbox',
-      ru: 'Браузер есть, а localhost нет: тестирование веб-приложения внутри AI-песочницы'
+      en: 'Coding Without Codex: How Far Regular ChatGPT Can Go',
+      ru: 'Код без Codex: как далеко можно зайти в обычном ChatGPT'
     },
     shortTitle: {
-      en: 'Testing in an AI sandbox',
-      ru: 'Тесты в AI-песочнице'
+      en: 'Coding without Codex',
+      ru: 'Код без Codex'
     },
     notificationTitle: {
-      en: 'New sandbox testing note',
-      ru: 'Новая заметка о тестировании в песочнице'
+      en: 'New note on coding in regular ChatGPT',
+      ru: 'Новая заметка о разработке в обычном ChatGPT'
     },
     description: {
-      en: 'A practical capability map for testing backend code, frontend DOM, local HTTP, and browser behavior when an AI sandbox exposes each through a different channel.',
-      ru: 'Практическая карта возможностей для проверки backend, frontend DOM, локального HTTP и браузера, когда AI-песочница открывает каждый слой через отдельный канал.'
+      en: 'How much repository work, backend testing, and browser verification can be done in regular ChatGPT Chat without spending the shared Codex and Work agentic allowance.',
+      ru: 'Сколько работы с репозиторием, backend-тестами и браузером можно выполнить в обычном ChatGPT Chat без расхода общего агентского лимита Codex и Work.'
     },
     notificationText: {
-      en: 'What still works when Chromium is installed but localhost navigation and package downloads are blocked.',
-      ru: 'Что всё ещё можно проверить, когда Chromium установлен, но переход на localhost и загрузка пакетов заблокированы.'
+      en: 'A practical capability map for GitHub connectors, sandbox tests, Chromium, and deciding when Codex is actually necessary.',
+      ru: 'Практическая карта GitHub-коннекторов, тестов в песочнице, Chromium и границы, после которой действительно нужен Codex.'
     },
     notify: true
   }

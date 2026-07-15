@@ -46,6 +46,30 @@
     document.head.appendChild(link);
   }
 
+  function prepareVisualNovelArticle() {
+    if (!window.location.pathname.endsWith('/visual-novel-ai-game.html')) return;
+
+    if (!document.querySelector('link[data-visual-novel-article-styles]')) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.dataset.visualNovelArticleStyles = 'true';
+      link.href = new URL('../css/visual-novel-article.css?v=20260715-1', scriptUrl).href;
+      document.head.appendChild(link);
+    }
+
+    const copy = {
+      en: 'The illustrations below are early visual concepts generated specifically for this project.',
+      ru: 'Иллюстрации ниже — ранние визуальные концепты, сгенерированные специально для этого проекта.'
+    };
+
+    document.querySelectorAll('.post-note--generated').forEach((note) => {
+      const languageBlock = note.closest('[data-lang-content]');
+      const lang = languageBlock?.dataset.langContent === 'ru' ? 'ru' : 'en';
+      note.className = 'post-image-origin-note';
+      note.textContent = copy[lang];
+    });
+  }
+
   function loadImageViewer() {
     if (!document.querySelector('link[data-image-viewer-styles]')) {
       const link = document.createElement('link');
@@ -139,6 +163,7 @@
   }
 
   loadRenderFixes();
+  prepareVisualNovelArticle();
   loadImageViewer().catch(() => {});
   loadBlogPostsManifest().then(normalizePostPagination).catch(() => {});
 

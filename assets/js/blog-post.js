@@ -1,7 +1,7 @@
 (function () {
   const currentScript = document.currentScript;
   const scriptUrl = currentScript && currentScript.src ? currentScript.src : '../../assets/js/blog-post.js';
-  const imageViewerVersion = '20260715-2';
+  const imageViewerVersion = '20260715-3';
 
   function loadScript(src, errorMessage) {
     return new Promise((resolve, reject) => {
@@ -63,6 +63,79 @@
       new URL(`image-viewer.js?v=${imageViewerVersion}`, scriptUrl).href,
       'Failed to load image viewer'
     );
+  }
+
+  function patchVisualNovelArticleCopy() {
+    if (!window.location.pathname.endsWith('/visual-novel-ai-game.html')) return;
+    if (document.querySelector('[data-visual-novel-copy-patch]')) return;
+
+    const copy = {
+      en: {
+        noteTitle: 'About the visuals',
+        note: "Every illustration in this article was generated specifically for this project as an early concept asset. These are not screenshots, interface fragments, characters, or backgrounds taken from an existing third-party game. They are exploratory AI generations used to find the project's own visual language.",
+        nextTitle: 'What happens next',
+        nextOne: 'The first technical prototypes will compare a web-first desktop stack built around Tauri, Svelte, and a Canvas/WebGL scene layer with a more traditional game-engine route. The comparison will focus on character compositing, scene transitions, cinematic overlays, long dialogue sessions, local AI processes, and a future Steam build.',
+        nextTwo: 'The visual pipeline will be tested separately: character LoRA consistency, background removal, alpha edges, chroma-key fallback, reusable sprite caching, complete CG generation, and transitions between layered and cinematic modes. The audio prototype will test seamless loops, ambience, character leitmotifs, and state-driven crossfades.',
+        publishTitle: 'How development will be published',
+        publish: 'The project repository will remain private. Public progress will appear periodically in this blog instead: interface iterations, architecture notes, generated concepts, short demonstrations, technical experiments, and conclusions from failed approaches. The goal is to show real progress without turning unfinished implementation details into a public codebase.'
+      },
+      ru: {
+        noteTitle: 'О происхождении иллюстраций',
+        note: 'Все изображения в этой статье были сгенерированы специально для проекта как ранние концепт-ассеты. Это не скриншоты, не элементы интерфейса, не персонажи и не фоны из готовой чужой игры. Генерации используются для поиска собственного визуального языка будущего продукта.',
+        nextTitle: 'Что будет дальше',
+        nextOne: 'Первые технические прототипы должны сравнить web-first desktop-стек на основе Tauri, Svelte и Canvas/WebGL-сцены с более традиционным вариантом на игровом движке. Сравнивать будем композицию персонажа, переходы между сценами, cinematic-overlay, длинные диалоги, локальные AI-процессы и возможность дальнейшего выпуска в Steam.',
+        nextTwo: 'Визуальный pipeline будет проверяться отдельно: каноничность персонажа через LoRA, удаление фона, качество alpha-краёв, chroma key как запасной путь, кэширование спрайтов, цельные CG-генерации и переходы между составным и cinematic-режимами. Для аудио отдельно проверим бесшовные loops, ambience, лейтмотивы персонажей и crossfade, управляемый состоянием сцены.',
+        publishTitle: 'Как будет публиковаться разработка',
+        publish: 'Репозиторий проекта останется закрытым. Публичные результаты будут периодически выходить в этом блоге: итерации интерфейса, архитектурные заметки, сгенерированные концепты, короткие демонстрации, технические эксперименты и выводы из неудачных подходов. Так можно показывать реальный прогресс, не превращая незавершённые детали реализации в публичную кодовую базу.'
+      }
+    };
+
+    ['en', 'ru'].forEach((lang) => {
+      const blocks = Array.from(document.querySelectorAll(`[data-lang-content="${lang}"]`));
+      const intro = blocks.find((block) => block.querySelector('h1'));
+      const ending = blocks.find((block) => Array.from(block.querySelectorAll('h2')).some((heading) => /Current status|Текущий статус/.test(heading.textContent)));
+      const text = copy[lang];
+
+      if (intro) {
+        const quote = intro.querySelector('blockquote');
+        if (quote && !intro.querySelector('.post-note--generated')) {
+          const note = document.createElement('aside');
+          note.className = 'post-note post-note--generated';
+          note.dataset.visualNovelCopyPatch = 'true';
+          const title = document.createElement('strong');
+          title.textContent = text.noteTitle;
+          const paragraph = document.createElement('p');
+          paragraph.textContent = text.note;
+          note.append(title, paragraph);
+          quote.insertAdjacentElement('afterend', note);
+        }
+      }
+
+      if (ending) {
+        const statusHeading = Array.from(ending.querySelectorAll('h2')).find((heading) => /Current status|Текущий статус/.test(heading.textContent));
+        if (statusHeading && !ending.querySelector('[data-visual-novel-plans]')) {
+          const fragment = document.createDocumentFragment();
+          const nextHeading = document.createElement('h2');
+          nextHeading.textContent = text.nextTitle;
+          nextHeading.dataset.visualNovelPlans = 'true';
+          const nextOne = document.createElement('p');
+          nextOne.textContent = text.nextOne;
+          const nextTwo = document.createElement('p');
+          nextTwo.textContent = text.nextTwo;
+          const publishHeading = document.createElement('h2');
+          publishHeading.textContent = text.publishTitle;
+          const publish = document.createElement('p');
+          publish.textContent = text.publish;
+          fragment.append(nextHeading, nextOne, nextTwo, publishHeading, publish);
+          statusHeading.before(fragment);
+        }
+
+        ending.querySelectorAll('a[href*="github.com/Lotargo/visual-novel"]').forEach((link) => {
+          const paragraph = link.closest('p');
+          if (paragraph) paragraph.remove();
+        });
+      }
+    });
   }
 
   function loadBlogPostsManifest() {
@@ -139,6 +212,7 @@
   }
 
   loadRenderFixes();
+  patchVisualNovelArticleCopy();
   loadImageViewer().catch(() => {});
   loadBlogPostsManifest().then(normalizePostPagination).catch(() => {});
 

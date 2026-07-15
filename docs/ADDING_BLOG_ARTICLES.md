@@ -2,279 +2,253 @@
 
 This repository supports three publication routes:
 
-1. Article Bundle through CI.
-2. Direct installation through the CLI.
-3. Manual repository editing.
+1. Markdown-first Article Bundle through CI.
+2. Direct rendering and installation through the CLI.
+3. Manual repository editing for exceptional legacy cases.
 
-The published result is always static HTML, Markdown source, ordinary binary assets, and one shared blog metadata entry.
-
-## Choose A Route
-
-### Article Bundle Through CI
-
-Best for AI-assisted publication, tools with limited GitHub operations, and delivering a complete article as one artifact.
-
-Read:
+The recommended path is now:
 
 ```text
-docs/ARTICLE_BUNDLE_STANDARD.md
-instructions/skills/publish-binary-bundle/SKILL.md
+article.json + content/en.md + content/ru.md + assets
+                         ↓
+              scripts/publish_article.py
+                         ↓
+                    article.html
+                         ↓
+             static GitHub Pages article
 ```
 
-Upload one file to:
+## Recommended Starting Point
+
+Copy:
 
 ```text
-.article-import/<slug>/bundle.zip
-.article-import/<slug>/bundle.tar.gz
-.article-import/<slug>/bundle.tgz
-.article-import/<slug>/bundle.b64
+examples/article-bundle/
 ```
 
-GitHub Actions installs and commits the article automatically.
+Rename the working directory to the intended lowercase kebab-case slug.
 
-### CLI Installation
-
-Best for local clones, coding agents, and sandboxes with terminal and filesystem access.
-
-Read:
+## Bundle Layout
 
 ```text
-instructions/skills/publish-with-cli/SKILL.md
-```
-
-Typical flow:
-
-```bash
-python scripts/article_bundle.py validate ./work/my-article
-python scripts/article_bundle.py install ./work/my-article --root .
-python -m http.server 4173
-```
-
-### Manual Publication
-
-Best for small edits and environments where direct repository editing is simpler than packaging.
-
-Read:
-
-```text
-instructions/skills/publish-manually/SKILL.md
-```
-
-## Installed Article Layout
-
-For slug `my-article`:
-
-```text
-blog/posts/my-article.html
-blog/content/my-article.ru.md
-blog/content/my-article.en.md
-blog/content/my-article.article.json
-blog/assets/my-article/
-```
-
-Metadata is inserted or updated in:
-
-```text
-assets/js/blog-posts.js
-```
-
-## Source Of Truth
-
-Markdown is the semantic source of the article. HTML is the deterministic publication artifact.
-
-The shared runtime metadata manifest controls:
-
-1. Blog index cards.
-2. Previous/Next navigation.
-3. Landing-page notifications for posts with `notify: true`.
-
-Do not manually duplicate blog cards in `blog/index.html`. Do not duplicate article notifications in `assets/js/notifications.js`.
-
-## Article Bundle Layout
-
-```text
-my-article/
+my-new-article/
 ├── article.json
-├── article.html
 ├── content/
-│   ├── ru.md
-│   └── en.md
+│   ├── en.md
+│   └── ru.md
 └── assets/
     ├── cover.avif
-    ├── gallery-01.avif
-    └── diagram.svg
+    └── gallery-01.avif
 ```
 
-Minimal `article.json`:
+`article.html` is generated. Do not create it manually unless the article deliberately uses the legacy HTML path.
+
+## Minimum Checklist
+
+1. Update `article.json`:
 
 ```json
 {
   "format_version": 1,
-  "slug": "my-article",
+  "slug": "my-new-article",
   "date": "2026-07-15",
   "html": "article.html",
+  "render": {
+    "engine": "markdown",
+    "template": "default"
+  },
   "sources": {
-    "ru": "content/ru.md",
-    "en": "content/en.md"
+    "en": "content/en.md",
+    "ru": "content/ru.md"
   },
   "assets": "assets",
   "post": {
     "type": {
-      "ru": "Разработка",
-      "en": "Development"
+      "en": "Development",
+      "ru": "Разработка"
     },
     "title": {
-      "ru": "Полный заголовок",
-      "en": "Full title"
+      "en": "Full English Article Title",
+      "ru": "Полный русский заголовок"
     },
     "shortTitle": {
-      "ru": "Короткий заголовок",
-      "en": "Short title"
+      "en": "Short title",
+      "ru": "Короткий заголовок"
     },
     "description": {
-      "ru": "Описание для блога.",
-      "en": "Blog description."
+      "en": "Short description for the blog index.",
+      "ru": "Короткое описание для индекса блога."
     },
     "notify": true
   }
 }
 ```
 
-Machine-readable schema:
+2. Write both Markdown sources.
 
-```text
-schemas/article-bundle.schema.json
+3. Put ordinary binary media into `assets/`.
+
+4. Reference images from Markdown as:
+
+```md
+![Useful alt text](assets/image.avif "Visible caption")
 ```
 
-## CLI Reference
-
-Validate:
+5. Install publishing dependencies:
 
 ```bash
-python scripts/article_bundle.py validate ./my-article
-python scripts/article_bundle.py validate ./bundle.zip
-python scripts/article_bundle.py validate ./bundle.b64
+python -m pip install -r requirements-publishing.txt
 ```
 
-Pack ZIP:
+6. Render and validate:
 
 ```bash
-python scripts/article_bundle.py pack ./my-article \
-  --archive-format zip \
-  --transport binary \
-  --output ./bundle.zip
+python scripts/publish_article.py render ./my-new-article
+python scripts/publish_article.py validate ./my-new-article
 ```
 
-Pack TAR.GZ:
+7. Install into a local checkout for preview:
 
 ```bash
-python scripts/article_bundle.py pack ./my-article \
-  --archive-format tar.gz \
-  --transport binary \
-  --output ./bundle.tar.gz
+python scripts/publish_article.py install ./my-new-article --root .
 ```
 
-Pack Base64:
-
-```bash
-python scripts/article_bundle.py pack ./my-article \
-  --archive-format zip \
-  --transport b64 \
-  --output ./bundle.b64
-```
-
-Install:
-
-```bash
-python scripts/article_bundle.py install ./bundle.zip --root .
-```
-
-## Article Page Requirements
-
-Each rendered HTML page must:
-
-- use the standard site header and footer;
-- contain `.post-article`;
-- include a `.post-pagination` element;
-- load the normal scripts at the end;
-- use valid relative asset paths;
-- place the title and lead before major illustrations.
-
-Required scripts:
-
-```html
-<script src="../../assets/js/main.js"></script>
-<script src="../../assets/js/blog-post.js"></script>
-```
-
-## Images And Galleries
-
-Read:
-
-```text
-docs/IMAGE_GALLERIES.md
-instructions/skills/prepare-article-images/SKILL.md
-```
-
-Use real binary assets in `blog/assets/<slug>/`. Do not embed low-resolution raster data in SVG or HTML.
-
-For preview plus full-resolution viewing:
-
-```html
-<img
-  src="preview.avif"
-  data-full-src="full.avif"
-  alt="Useful description"
-/>
-```
-
-## Writing Instructions
-
-Read:
-
-```text
-instructions/skills/write-blog-article/SKILL.md
-```
-
-Key rules:
-
-- one H1;
-- H2 for major sections;
-- honest distinction between implemented work and plans;
-- illustrations integrated near relevant text;
-- no large defensive disclaimers;
-- no private repository links unless explicitly approved;
-- Russian and English versions should remain semantically aligned.
-
-## Preview And Review
-
-Start a local server:
+8. Serve the site:
 
 ```bash
 python -m http.server 4173
 ```
 
-Open:
+9. Check:
 
 ```text
 http://127.0.0.1:4173/blog/
-http://127.0.0.1:4173/blog/posts/<slug>.html
+http://127.0.0.1:4173/blog/posts/my-new-article.html
 ```
 
-Then follow:
+10. Test desktop, mobile, both languages, both themes, image captions, and fullscreen gallery navigation.
+
+## Automatic Image Layout
+
+One standalone image becomes an editorial figure:
+
+```md
+![Main screen](assets/main-screen.avif "Main screen concept")
+```
+
+Consecutive standalone images become a gallery:
+
+```md
+![Apartment](assets/apartment.avif "Evening apartment")
+
+![Classroom](assets/classroom.avif "Daytime classroom")
+
+![Park](assets/park.avif "Park at sunset")
+```
+
+Place images near the paragraphs they illustrate. Do not put a detached gallery before the article title.
+
+## Packaging
+
+ZIP:
+
+```bash
+python scripts/publish_article.py pack ./my-new-article \
+  --archive-format zip \
+  --transport binary \
+  --output ./bundle.zip
+```
+
+TAR.GZ:
+
+```bash
+python scripts/publish_article.py pack ./my-new-article \
+  --archive-format tar.gz \
+  --transport binary \
+  --output ./bundle.tar.gz
+```
+
+Base64 transport:
+
+```bash
+python scripts/publish_article.py pack ./my-new-article \
+  --archive-format zip \
+  --transport b64 \
+  --output ./bundle.b64
+```
+
+## CI Publication
+
+Upload exactly one package into:
 
 ```text
+.article-import/my-new-article/
+```
+
+Accepted names:
+
+```text
+bundle.zip
+bundle.tar.gz
+bundle.tgz
+bundle.b64
+```
+
+The workflow renders Markdown when required, validates the result, installs static files, updates `assets/js/blog-posts.js`, removes the staging package, and commits the publication.
+
+## What Is Automated
+
+- Markdown-to-HTML rendering;
+- bilingual article shell;
+- title and lead placement;
+- tables, code, blockquotes, lists, links, and footnotes;
+- editorial image figures;
+- responsive lightbox galleries;
+- asset path rewriting;
+- bundle validation;
+- HTML, Markdown, manifest, and asset installation;
+- blog index metadata;
+- Previous/Next navigation metadata;
+- landing-page notifications.
+
+## What Still Requires Editorial Review
+
+- clarity and factual accuracy;
+- natural Russian and English text;
+- image quality and relevance;
+- visual rhythm;
+- whether a generated-image note is necessary;
+- privacy and public/private boundaries;
+- browser verification after deployment.
+
+## Legacy Manual HTML
+
+Use manual HTML only when an article needs markup the default renderer cannot express.
+
+A legacy bundle:
+
+- contains final `article.html`;
+- may omit `render`;
+- still includes Markdown source copies where possible;
+- can use the high-level CLI without forced rendering or the lower-level `scripts/article_bundle.py`.
+
+Do not convert a normal article to legacy HTML merely to adjust spacing or image placement. Improve the shared renderer or Markdown structure instead.
+
+## Source Of Truth
+
+- `article.json` is canonical for metadata;
+- Markdown is canonical for content;
+- generated HTML is the published artifact;
+- `assets/js/blog-posts.js` is the runtime metadata manifest and is updated by the importer.
+
+Do not manually add blog cards to `blog/index.html` or duplicate notifications in `assets/js/notifications.js`.
+
+## Related Instructions
+
+```text
+docs/ARTICLE_BUNDLE_STANDARD.md
+instructions/skills/render-markdown-article/SKILL.md
+instructions/skills/write-blog-article/SKILL.md
+instructions/skills/prepare-article-images/SKILL.md
 instructions/skills/review-publication/SKILL.md
 ```
-
-Review desktop, mobile, both themes, both languages, image sharpness, fullscreen gallery navigation, console errors, and public GitHub Pages output.
-
-## AI Instruction Layout
-
-Task-specific instructions live in:
-
-```text
-instructions/skills/
-```
-
-This repository intentionally does not use `AGENTS.md`.

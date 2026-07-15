@@ -47,9 +47,6 @@ def main() -> None:
 
     bundle_dir = args.bundle_dir.resolve()
     root = args.root.resolve()
-    if not (bundle_dir / "READY").exists():
-        raise SystemExit(f"Missing READY marker in {bundle_dir}")
-
     encoded = read_encoded_bundle(bundle_dir)
     archive_bytes = base64.b64decode(encoded, validate=True)
 

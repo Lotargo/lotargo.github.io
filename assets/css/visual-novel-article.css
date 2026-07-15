@@ -1,0 +1,19 @@
+.post-image-origin-note {
+  margin: 14px 0 30px;
+  color: var(--muted-2);
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.6;
+}
+
+.post-image-origin-note::before {
+  content: "— ";
+  color: var(--muted);
+}
+
+@media (max-width: 760px) {
+  .post-image-origin-note {
+    margin-bottom: 24px;
+    font-size: 12.5px;
+  }
+}

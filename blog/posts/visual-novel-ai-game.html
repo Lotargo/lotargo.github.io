@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="A first public concept note about Visual Novel: an AI-powered game combining free dialogue, persistent memory, dynamic scenes, ComfyUI generation, and adaptive music." />
+  <meta name="theme-color" content="#000000" />
+  <title>Visual Novel: Starting an AI Game That Breaks the Fourth Wall · Lotargo Blog</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem('lotargo-theme');
+        document.documentElement.dataset.theme = savedTheme || 'dark';
+      } catch (error) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    })();
+  </script>
+</head>
+<body data-title-en="Visual Novel: Starting an AI Game That Breaks the Fourth Wall · Lotargo Blog" data-title-ru="Visual Novel: начинаю разработку AI-игры, которая ломает четвёртую стену · Блог Lotargo">
+  <header class="site-header" data-js="header">
+    <a class="brand" href="../../" aria-label="Back to landing">
+      <span class="brand-mark" aria-hidden="true">LØ</span>
+      <span class="brand-text">Lotargo</span>
+    </a>
+    <div class="header-controls">
+      <nav class="nav" aria-label="Post navigation">
+        <a href="../../" data-i18n="blog-nav-home">Home</a>
+        <a href="../" data-i18n="nav-blog">Blog</a>
+        <a href="../../#projects" data-i18n="nav-projects">Projects</a>
+      </nav>
+      <button class="theme-toggle" type="button" data-js="theme-toggle" aria-label="Switch color theme">
+        <span data-js="theme-label">Theme</span>
+      </button>
+      <button class="lang-toggle" type="button" data-js="lang-toggle" aria-label="Switch language">
+        <span data-js="lang-label">EN</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top" class="post-shell">
+    <article class="post-article">
+      <div class="post-toolbar">
+        <a class="post-back" href="../" data-i18n="post-back-blog">Back to blog</a>
+        <div class="post-meta">
+          <span>2026-07-15</span>
+          <span data-lang-content="en">AI game development</span>
+          <span data-lang-content="ru">Разработка AI-игры</span>
+        </div>
+      </div>
+
+      <figure class="post-figure" data-gallery="visual-novel-concepts">
+        <img
+          src="../assets/visual-novel/main-menu.svg"
+          alt="Concept of the Visual Novel main menu with character selection and AI settings"
+          data-caption-en="The first main-screen concept: character selection, story continuation, profile, gallery, and quick AI settings."
+          data-caption-ru="Первый концепт главного экрана: выбор персонажа, продолжение истории, профиль, галерея и быстрые настройки ИИ."
+        />
+        <figcaption data-lang-content="en">The project should look like a game from the first screen, not like another chatbot dashboard.</figcaption>
+        <figcaption data-lang-content="ru">Проект должен восприниматься как игра уже с первого экрана, а не как очередная панель чат-бота.</figcaption>
+      </figure>
+
+      <div data-lang-content="en">
+        <h1>Visual Novel: Starting an AI Game That Breaks the Fourth Wall</h1>
+        <p class="post-lead">I have started designing a new project at the boundary between an AI chat, a visual novel, and a stateful game. The core idea is simple: the player should not feel that they opened a dialogue window. They should feel that they entered a character's living space and continued a shared story.</p>
+
+        <h2>Not another character chatbot</h2>
+        <p>Most AI character products still inherit the structure of a messenger: a portrait, a stream of messages, and a text field. Images are usually decorative attachments. I want to reverse that hierarchy. The scene comes first, while dialogue becomes one of the ways to interact with it.</p>
+        <p>A character may remember previous visits, greet the player first, refer to shared events, move between locations, change clothing or mood, and offer contextual actions as interface buttons. Proactive behavior remains optional: the player can disable first messages, automatic location changes, long-term memory, visual updates, or generated choices.</p>
+
+        <blockquote><p>The central object is not the message history. It is the current state of the scene.</p></blockquote>
+
+        <h2>Entering a room instead of opening a thread</h2>
+        <p>When the player opens a character room, the application restores memory, relationships, the current location, time of day, outfit, mood, and unfinished events. During this preparation, the interface can show atmospheric streaming statuses instead of an empty loading screen.</p>
+        <p>If proactive dialogue is enabled, the opening line is generated from the character legend, the player's legend, and previous meetings. The greeting is not a fixed template. It can sound like: “You have not visited for a while,” or refer to what the character is doing at that moment.</p>
+
+        <h2>Two visual modes for one continuous scene</h2>
+        <p>The regular visual-novel mode uses independent layers: a reusable background, a character sprite with transparency, effects, dialogue, and choices. This makes common interactions fast and allows the location, pose, expression, and interface to change without regenerating the whole image.</p>
+        <p>For important, complex, or emotionally intense moments, the game switches to a cinematic mode. ComfyUI generates the character and environment as one coherent illustration. When that episode ends, the application returns to the layered scene without resetting the conversation or world state.</p>
+      </div>
+
+      <div class="post-gallery" data-gallery="visual-novel-concepts">
+        <figure class="post-gallery-item">
+          <img
+            src="../assets/visual-novel/scene-modes.svg"
+            alt="Six SFW concepts showing layered and cinematic Visual Novel scenes"
+            data-caption-en="Six SFW examples: apartment, classroom, park, cafe, rainy street, and library. The upper row demonstrates layered scenes; the lower row demonstrates complete cinematic CG generation."
+            data-caption-ru="Шесть SFW-примеров: квартира, аудитория, парк, кафе, дождливая улица и библиотека. Верхний ряд показывает составные сцены, нижний — цельную cinematic CG-генерацию."
+          />
+          <figcaption data-lang-content="en">Layered scenes and complete cinematic CG scenes share the same dialogue and state.</figcaption>
+          <figcaption data-lang-content="ru">Составные сцены и цельные cinematic CG-сцены используют один диалог и одно состояние мира.</figcaption>
+        </figure>
+      </div>
+
+      <div data-lang-content="en">
+        <h2>Generated choices without losing freedom</h2>
+        <p>When a situation naturally has several possible responses, the system can show two to four generated actions. A character may ask where to go, what to do, or what outfit to choose. These controls reduce cognitive load and give the conversation the rhythm of a game.</p>
+        <p>The free text field never disappears. Buttons are suggestions, not rails. The player can always write a custom response or action.</p>
+
+        <h2>A dialogue model is not enough</h2>
+        <p>The project needs a scene director alongside the character voice. The model may propose dialogue, choices, events, memory candidates, and a structured <code>scene_patch</code>, but it does not mutate the world directly. A deterministic state manager validates the change and decides whether the frontend should replace a sprite, change the background, start a complete CG generation, or do nothing visual at all.</p>
+        <p>This separation should prevent familiar inconsistencies such as a character talking about a shop while the room still shows a kitchen, or changing clothes only in the text.</p>
+
+        <h2>Music must remember the world too</h2>
+        <p>While preparing the first visual concepts, another essential layer became obvious: music. The best examples I remember from games such as <em>Epic Seven</em> and the <em>Final Fantasy</em> series use music not merely to fill silence, but to give places, characters, and events their own identity.</p>
+        <p>The project will therefore treat music, ambience, interface sounds, and future character voice as parts of the scene state. A character theme may have daytime, evening, calm, romantic, tense, and cinematic variations while preserving the same recognizable motif.</p>
+        <p>The compositions can be produced with Suno, local music generators, a DAW, and manual arrangement. Generation is a production tool, not a runtime dependency: selected and edited tracks become normal game assets with loop points, stems, metadata, and clear licensing.</p>
+
+        <h2>Local, hybrid, and cloud execution</h2>
+        <p>The same game core should support three execution models:</p>
+        <ul>
+          <li><strong>Local:</strong> the language model, ComfyUI, memory, and assets run on the player's computer.</li>
+          <li><strong>Hybrid:</strong> individual components can be routed independently, for example local chat with cloud image generation.</li>
+          <li><strong>Cloud:</strong> remote inference is paid according to actual usage.</li>
+        </ul>
+        <p>The desktop and Steam version is the natural primary target because a large scene, local models, long stories, and a game-like interface reveal the idea better than a narrow browser chat. A web version remains possible because the client can combine a DOM interface with Canvas or WebGL rendering.</p>
+
+        <h2>Three development phases</h2>
+        <ol>
+          <li><strong>MVP:</strong> one convincing character, a polished interface, several locations, interactive choices, memory, layered and cinematic modes, and a small but coherent soundtrack.</li>
+          <li><strong>Game and visual engine:</strong> a full scene director, wardrobe, schedules, events, several characters, richer memory, asset caching, dynamic music, and expanded ComfyUI workflows.</li>
+          <li><strong>Public release:</strong> desktop/Steam and web distribution, authentication where needed, payments for cloud computation, Docker infrastructure, licensing, privacy, and operational reliability.</li>
+        </ol>
+
+        <h2>Current status</h2>
+        <p>The implementation has not yet reached the playable MVP. At this stage I have prepared the project structure, product and subsystem manifestos, documentation workflow, visual direction, scene concepts, and the first audio principles. The next step is targeted research and small prototypes before fixing the final stack in a plan and implementation checklist.</p>
+        <p>The documentation is available in the <a href="https://github.com/Lotargo/visual-novel" target="_blank" rel="noreferrer">Visual Novel repository</a>. I will publish further architectural decisions and working fragments as the project develops.</p>
+      </div>
+
+      <div data-lang-content="ru">
+        <h1>Visual Novel: начинаю разработку AI-игры, которая ломает четвёртую стену</h1>
+        <p class="post-lead">Я приступил к проектированию нового проекта на границе AI-чата, визуальной новеллы и игры с постоянным состоянием. Основная идея проста: пользователь не должен чувствовать, что открыл окно переписки. Он должен чувствовать, что вошёл в живое пространство персонажа и продолжил общую историю.</p>
+
+        <h2>Не очередной чат с персонажем</h2>
+        <p>Большинство приложений для общения с AI-персонажами всё ещё наследуют структуру мессенджера: портрет, лента сообщений и поле ввода. Изображения обычно остаются декоративными вложениями. Здесь я хочу перевернуть эту иерархию. На первом месте находится сцена, а диалог становится одним из способов взаимодействия с ней.</p>
+        <p>Персонаж сможет помнить прошлые посещения, встречать пользователя первым, ссылаться на общие события, перемещаться между локациями, менять одежду или настроение и предлагать уместные действия в виде кнопок. Проактивность останется управляемой: можно будет отдельно отключить первые сообщения, автоматические переходы, долговременную память, визуальные обновления и варианты выбора.</p>
+
+        <blockquote><p>Центральный объект системы — не история сообщений, а текущее состояние сцены.</p></blockquote>
+
+        <h2>Вход в комнату вместо открытия треда</h2>
+        <p>При входе в комнату персонажа приложение восстанавливает память, отношения, текущую локацию, время суток, одежду, настроение и незавершённые события. Пока это происходит, интерфейс может показывать атмосферные потоковые статусы вместо пустого экрана загрузки.</p>
+        <p>Если проактивный диалог включён, первая реплика генерируется на основе легенды персонажа, легенды пользователя и прошлых встреч. Это не заготовленное приветствие. Персонаж сможет заметить, что пользователь давно не заходил, или рассказать, чем занят именно сейчас.</p>
+
+        <h2>Два визуальных режима одной непрерывной сцены</h2>
+        <p>Обычный режим визуальной новеллы использует независимые слои: повторно используемый фон, персонажа с прозрачностью, эффекты, диалог и варианты выбора. Это позволяет быстро менять локацию, позу, эмоцию и интерфейс, не перегенерируя весь кадр.</p>
+        <p>Для важных, сложных или эмоционально насыщенных моментов игра переключается в cinematic-режим. ComfyUI генерирует персонажа и окружение как единую согласованную иллюстрацию. После завершения эпизода приложение возвращается к составной сцене, не сбрасывая диалог и состояние мира.</p>
+
+        <h2>Сгенерированный выбор без потери свободы</h2>
+        <p>Когда ситуация естественно допускает несколько вариантов, система сможет показать от двух до четырёх сгенерированных действий. Персонаж может спросить, куда пойти, что сделать или какой наряд выбрать. Такие элементы снижают когнитивную нагрузку и придают разговору игровой ритм.</p>
+        <p>Свободный ввод при этом не исчезает. Кнопки являются предложениями, а не рельсами. Пользователь всегда может написать собственную реплику или действие.</p>
+
+        <h2>Одной диалоговой модели недостаточно</h2>
+        <p>Помимо голоса персонажа проекту нужен режиссёр сцены. Модель может предлагать реплику, варианты, события, кандидаты в память и структурированный <code>scene_patch</code>, но не должна напрямую менять мир. Детерминированный менеджер состояния проверяет изменение и решает, нужно ли заменить спрайт, сменить фон, запустить цельную CG-генерацию или вообще не обновлять визуал.</p>
+        <p>Такое разделение должно предотвращать привычные рассинхроны, когда персонаж рассказывает о магазине на фоне кухни или меняет одежду только в тексте.</p>
+
+        <h2>Музыка тоже должна помнить мир</h2>
+        <p>Во время подготовки первых визуальных концептов проявился ещё один обязательный слой: музыка. Самые удачные примеры, которые мне вспоминаются в <em>Epic Seven</em> и серии <em>Final Fantasy</em>, используют музыку не для заполнения тишины, а для создания идентичности мест, персонажей и событий.</p>
+        <p>Поэтому музыка, ambience, интерфейсные звуки и будущий голос персонажа будут частью состояния сцены. У темы персонажа могут быть дневная, вечерняя, спокойная, романтическая, напряжённая и cinematic-вариации, сохраняющие один узнаваемый мотив.</p>
+        <p>Композиции можно производить через Suno, локальные музыкальные генераторы, DAW и ручную аранжировку. Генерация здесь является инструментом производства, а не runtime-зависимостью: отобранные и доработанные треки становятся обычными ассетами игры с loop-точками, stems, метаданными и понятной лицензией.</p>
+
+        <h2>Локальный, гибридный и облачный запуск</h2>
+        <p>Одно игровое ядро должно поддерживать три модели выполнения:</p>
+        <ul>
+          <li><strong>Local:</strong> языковая модель, ComfyUI, память и ассеты работают на компьютере пользователя.</li>
+          <li><strong>Hybrid:</strong> отдельные компоненты маршрутизируются независимо, например локальный чат и облачная генерация изображений.</li>
+          <li><strong>Cloud:</strong> удалённые вычисления оплачиваются по фактическому использованию.</li>
+        </ul>
+        <p>Desktop и Steam выглядят естественной основной целью: большая сцена, локальные модели, длинные истории и игровой интерфейс раскрывают идею лучше узкого браузерного чата. Web-версия тоже остаётся возможной, потому что клиент может сочетать DOM-интерфейс с Canvas или WebGL.</p>
+
+        <h2>Три фазы разработки</h2>
+        <ol>
+          <li><strong>MVP:</strong> один убедительный персонаж, законченный интерфейс, несколько локаций, интерактивный выбор, память, составной и cinematic-режимы, небольшой связный саундтрек.</li>
+          <li><strong>Игровой и визуальный движок:</strong> полноценный режиссёр сцены, гардероб, расписание, события, несколько персонажей, расширенная память, кэш ассетов, динамическая музыка и дополнительные ComfyUI workflow.</li>
+          <li><strong>Публичный выпуск:</strong> desktop/Steam и web, авторизация там, где она нужна, оплата облачных вычислений, Docker-инфраструктура, лицензирование, приватность и эксплуатационная надёжность.</li>
+        </ol>
+
+        <h2>Текущий статус</h2>
+        <p>Реализация пока не дошла до игрового MVP. Сейчас подготовлены структура проекта, продуктовый и подсистемные манифесты, порядок ведения документации, визуальное направление, концепты сцен и первые принципы аудиосистемы. Следующий шаг — целевая разведка решений и небольшие прототипы, после которых можно будет зафиксировать стек в плане и перевести его в чеклист реализации.</p>
+        <p>Документация доступна в репозитории <a href="https://github.com/Lotargo/visual-novel" target="_blank" rel="noreferrer">Visual Novel</a>. По мере развития проекта я буду публиковать следующие архитектурные решения и рабочие фрагменты.</p>
+      </div>
+
+      <nav class="post-pagination" aria-label="Post navigation" data-i18n-aria="post-pagination-aria">
+        <span class="post-page-link is-disabled" aria-disabled="true"><span data-i18n="post-prev">Previous</span><strong data-i18n="post-prev-none">No earlier post</strong></span>
+        <span class="post-page-link is-disabled" aria-disabled="true"><span data-i18n="post-next">Next</span><strong data-i18n="post-next-none">No later post</strong></span>
+      </nav>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <span>Oleg Boyko / Lotargo</span>
+    <span>Blog · AI systems · verification</span>
+  </footer>
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/blog-post.js"></script>
+</body>
+</html>

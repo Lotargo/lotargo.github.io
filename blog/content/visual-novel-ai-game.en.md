@@ -22,7 +22,7 @@ I have started designing a project at the boundary between an AI chat, a visual 
 
 > The central object is not the message history. It is the current state of the scene.
 
-**Every image in this article was generated specifically for this project as an early concept asset. These are not screenshots or assets taken from an existing game.**
+*The illustrations below are early visual concepts generated specifically for this project.*
 
 ![AI-generated main menu concept](../assets/visual-novel-ai-game/images/main-menu.avif)
 

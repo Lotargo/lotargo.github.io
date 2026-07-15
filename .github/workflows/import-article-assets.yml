@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - '.asset-import/**/bundle.b64'
+      - '.asset-import/**/READY'
 
 permissions:
   contents: write

@@ -1,0 +1,71 @@
+{
+  "article": "visual-novel-ai-game",
+  "asset_count": 7,
+  "source": "Seven AI-generated project concept images",
+  "usage": "Public blog article concepts; repository implementation remains private.",
+  "assets": [
+    {
+      "file": "cinematic-cafe.avif",
+      "width": 1672,
+      "height": 941,
+      "format": "avif",
+      "size_bytes": 73070,
+      "sha256": "62bbc645e962c8fb778152ae81580e063e3f3eb04d13dd5d1ca95a628b667820",
+      "provenance": "AI-generated specifically for the Visual Novel project; not taken from an existing game."
+    },
+    {
+      "file": "cinematic-library.avif",
+      "width": 1672,
+      "height": 941,
+      "format": "avif",
+      "size_bytes": 89476,
+      "sha256": "82d82f2c282100c2f3df709a661034a6412c99ab851ced9c6a56379d8935ccbf",
+      "provenance": "AI-generated specifically for the Visual Novel project; not taken from an existing game."
+    },
+    {
+      "file": "cinematic-rainy-city.avif",
+      "width": 1672,
+      "height": 941,
+      "format": "avif",
+      "size_bytes": 109079,
+      "sha256": "e19131a6f7a6d0bd24461bebe49e8263d032d697d0eea834b3b6b41c9cf75ac5",
+      "provenance": "AI-generated specifically for the Visual Novel project; not taken from an existing game."
+    },
+    {
+      "file": "layered-apartment.avif",
+      "width": 1672,
+      "height": 941,
+      "format": "avif",
+      "size_bytes": 68071,
+      "sha256": "d8c468e896fcedffb736a4b03a01215f99c7661dd4bf1fc982a9ab2fcd48bf7a",
+      "provenance": "AI-generated specifically for the Visual Novel project; not taken from an existing game."
+    },
+    {
+      "file": "layered-classroom.avif",
+      "width": 1672,
+      "height": 941,
+      "format": "avif",
+      "size_bytes": 72954,
+      "sha256": "2d3986a841cc4a0366e3b72d8c11692a84f9b27493a759cadabbe133d2b188a3",
+      "provenance": "AI-generated specifically for the Visual Novel project; not taken from an existing game."
+    },
+    {
+      "file": "layered-park.avif",
+      "width": 1672,
+      "height": 941,
+      "format": "avif",
+      "size_bytes": 108159,
+      "sha256": "957fd4b0682a4fac3d532a1644086b5201274e7aee0ecfcb80d78de4cfe7a65c",
+      "provenance": "AI-generated specifically for the Visual Novel project; not taken from an existing game."
+    },
+    {
+      "file": "main-menu.avif",
+      "width": 1672,
+      "height": 941,
+      "format": "avif",
+      "size_bytes": 89762,
+      "sha256": "fa65cc2fb5387d814907990c70bdce6a51e8af84df4a3b587bc32a07820b6839",
+      "provenance": "AI-generated specifically for the Visual Novel project; not taken from an existing game."
+    }
+  ]
+}

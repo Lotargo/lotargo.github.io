@@ -1,9 +1,7 @@
-(async function () {
+(function () {
   if (window.__LOTARGO_IMAGE_VIEWER__) return;
   window.__LOTARGO_IMAGE_VIEWER__ = true;
 
-  const currentScript = document.currentScript;
-  const scriptUrl = currentScript && currentScript.src ? currentScript.src : '../../assets/js/image-viewer.js';
   const labels = {
     en: {
       dialog: 'Image viewer',
@@ -23,86 +21,15 @@
     }
   };
 
-  function language() {
-    return document.documentElement.lang === 'ru' ? 'ru' : 'en';
-  }
-
-  async function fetchText(path) {
-    const response = await fetch(new URL(path, scriptUrl), { cache: 'force-cache' });
-    if (!response.ok) throw new Error(`Failed to load ${path}`);
-    return response.text();
-  }
-
-  async function hydrateVisualNovelImages() {
-    if (!window.location.pathname.endsWith('/visual-novel-ai-game.html')) return;
-
-    const mainImage = document.querySelector('img[src$="/visual-novel/main-menu.svg"]');
-    const sceneImage = document.querySelector('img[src$="/visual-novel/scene-modes.svg"]');
-
-    try {
-      const [mainBase64, scenePart0, scenePart1] = await Promise.all([
-        fetchText('../../blog/assets/visual-novel/hires/main-menu.b64'),
-        fetchText('../../blog/assets/visual-novel/hires/scene-modes-0.b64'),
-        fetchText('../../blog/assets/visual-novel/hires/scene-modes-1.b64')
-      ]);
-
-      if (mainImage) {
-        const src = `data:image/avif;base64,${mainBase64.trim()}`;
-        mainImage.src = src;
-        mainImage.dataset.fullSrc = src;
-      }
-
-      if (sceneImage) {
-        const src = `data:image/avif;base64,${scenePart0.trim()}${scenePart1.trim()}`;
-        sceneImage.src = src;
-        sceneImage.dataset.fullSrc = src;
-      }
-    } catch (error) {
-      console.warn('High-resolution concepts could not be loaded; using previews.', error);
-    }
-  }
-
-  function arrangeVisualNovelArticle() {
-    if (!window.location.pathname.endsWith('/visual-novel-ai-game.html')) return;
-
-    const lang = language();
-    const contentBlocks = Array.from(document.querySelectorAll(`[data-lang-content="${lang}"]`));
-    const intro = contentBlocks.find((block) => block.querySelector('.post-lead'));
-    if (!intro) return;
-
-    const heroFigure = document.querySelector('.post-figure[data-gallery="visual-novel-concepts"]');
-    const sceneGallery = document.querySelector('.post-gallery[data-gallery="visual-novel-concepts"]');
-
-    if (heroFigure) {
-      heroFigure.classList.add('post-figure--editorial');
-      const anchor = intro.querySelector('blockquote') || intro.querySelector('.post-lead');
-      if (anchor) anchor.insertAdjacentElement('afterend', heroFigure);
-    }
-
-    if (sceneGallery) {
-      sceneGallery.classList.add('post-gallery--editorial');
-      const headings = Array.from(intro.querySelectorAll('h2'));
-      const visualHeading = headings[2];
-      if (visualHeading) {
-        let insertionPoint = visualHeading;
-        let cursor = visualHeading.nextElementSibling;
-        while (cursor && cursor.tagName !== 'H2') {
-          insertionPoint = cursor;
-          cursor = cursor.nextElementSibling;
-        }
-        insertionPoint.insertAdjacentElement('afterend', sceneGallery);
-      }
-    }
-  }
-
-  await hydrateVisualNovelImages();
-  arrangeVisualNovelArticle();
-
   const allImages = Array.from(document.querySelectorAll('[data-lightbox], .post-figure img, [data-gallery] img'));
   if (!allImages.length) return;
 
   const groups = new Map();
   let generatedGroupId = 0;
+
+  function language() {
+    return document.documentElement.lang === 'ru' ? 'ru' : 'en';
+  }
 
   function groupKey(image) {
     const gallery = image.closest('[data-gallery]');
@@ -128,6 +55,7 @@
   const records = allImages.map((image) => {
     const record = {
       image,
+      src: image.dataset.fullSrc || image.currentSrc || image.src,
       alt: image.alt || '',
       group: groupKey(image)
     };
@@ -175,16 +103,16 @@
     closeButton.setAttribute('aria-label', text.close);
     previousButton.setAttribute('aria-label', text.previous);
     nextButton.setAttribute('aria-label', text.next);
-    records.forEach(({ image }) => image.setAttribute('aria-label', text.open));
   }
 
   function render() {
     const record = activeGroup[activeIndex];
     if (!record) return;
-    const src = record.image.dataset.fullSrc || record.image.currentSrc || record.image.src;
-    modalImage.src = src;
+
+    modalImage.src = record.src;
     modalImage.alt = record.alt;
     caption.textContent = captionFor(record.image);
+
     const total = activeGroup.length;
     counter.textContent = labels[language()].counter(activeIndex + 1, total);
     previousButton.hidden = total < 2;
@@ -195,7 +123,7 @@
     [previous, next].forEach((item) => {
       if (!item || item === record) return;
       const preload = new Image();
-      preload.src = item.image.dataset.fullSrc || item.image.currentSrc || item.image.src;
+      preload.src = item.src;
     });
   }
 
@@ -234,14 +162,18 @@
     const image = record.image;
     const trigger = image.closest('button, a') || image;
     image.classList.add('image-viewer-trigger');
+
     if (trigger === image) {
       image.tabIndex = 0;
       image.setAttribute('role', 'button');
+      image.setAttribute('aria-label', labels[language()].open);
     }
+
     trigger.addEventListener('click', (event) => {
       if (trigger.tagName === 'A') event.preventDefault();
       open(record, trigger);
     });
+
     if (trigger === image) {
       trigger.addEventListener('keydown', (event) => {
         if (event.key === 'Enter' || event.key === ' ') {
@@ -264,8 +196,12 @@
   });
 
   new MutationObserver(() => {
-    arrangeVisualNovelArticle();
     updateLabels();
+    records.forEach(({ image }) => {
+      if (image.getAttribute('role') === 'button') {
+        image.setAttribute('aria-label', labels[language()].open);
+      }
+    });
     if (!viewer.hidden) render();
   }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
 

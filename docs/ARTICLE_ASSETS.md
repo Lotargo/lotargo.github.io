@@ -44,23 +44,20 @@ Images sharing the same `data-gallery` value are navigated as one gallery.
 When the connected GitHub tool cannot upload binary files directly, use the repository-side importer:
 
 ```text
-.asset-import/<bundle>/bundle.b64
-# or multipart transport:
 .asset-import/<bundle>/part-*.b64
 .asset-import/<bundle>/READY
-
 scripts/import_asset_bundle.py
 .github/workflows/import-article-assets.yml
 ```
 
-A single `bundle.b64` upload starts the workflow automatically. Multipart bundles are assembled in filename order and activated by a final `READY` marker. The workflow validates and decodes the archive, extracts real binary files into the repository, removes the staging transport, and commits the result.
+The bundle is split into ordered base64 text chunks. Creating `READY` starts the workflow, which validates and decodes the archive, extracts real binary files into the repository, removes the staging chunks, and commits the result.
 
-The base64 representation is only a temporary transport envelope. Published pages reference only the extracted binary assets.
+This staging format is temporary. Published pages reference only the extracted binary assets.
 
 ## Rules
 
 1. Preserve original dimensions unless a deliberate crop is documented.
-2. Use high-quality AVIF, WebP, PNG, JPEG, or SVG according to the source material.
+2. Use high-quality AVIF, PNG, AVIF, or SVG according to the source material.
 3. Use ASCII, kebab-case filenames.
 4. Record whether the asset is original, generated, licensed, or third-party.
 5. State AI generation clearly when readers could mistake a concept for a screenshot from an existing product.
@@ -76,4 +73,4 @@ The `visual-novel-ai-game` article uses seven original-dimension 1672×941 AVIF 
 - three layered scene concepts;
 - three cinematic scene concepts.
 
-All seven were generated specifically for the project, are not taken from an existing game, and are opened directly from repository files by the lightbox.
+All seven were generated for the project and are opened directly from repository files by the lightbox.

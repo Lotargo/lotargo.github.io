@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lotargo.github.io/schemas/article-bundle.schema.json",
+  "title": "Lotargo Article Bundle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format_version",
+    "slug",
+    "date",
+    "html",
+    "sources",
+    "post"
+  ],
+  "properties": {
+    "format_version": {
+      "const": 1
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "html": {
+      "type": "string",
+      "default": "article.html"
+    },
+    "sources": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "\\.md$"
+      }
+    },
+    "assets": {
+      "type": ["string", "null"],
+      "default": "assets"
+    },
+    "post": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "title",
+        "shortTitle",
+        "description",
+        "notify"
+      ],
+      "properties": {
+        "notificationId": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/$defs/localized"
+        },
+        "title": {
+          "$ref": "#/$defs/localized"
+        },
+        "shortTitle": {
+          "$ref": "#/$defs/localized"
+        },
+        "description": {
+          "$ref": "#/$defs/localized"
+        },
+        "notificationTitle": {
+          "$ref": "#/$defs/localized"
+        },
+        "notificationText": {
+          "$ref": "#/$defs/localized"
+        },
+        "notify": {
+          "type": "boolean"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "localized": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  }
+}

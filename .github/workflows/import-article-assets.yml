@@ -28,14 +28,19 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
       - name: Import standard article bundles
         run: |
-          python3 scripts/article_bundle.py import-staged .article-import --root . --allow-empty
+          python scripts/article_bundle.py import-staged .article-import --root . --allow-empty
 
       - name: Import legacy Visual Novel asset bundle when present
         run: |
           if [ -d .asset-import/visual-novel-ai-game ]; then
-            python3 scripts/import_asset_bundle.py .asset-import/visual-novel-ai-game
+            python scripts/import_asset_bundle.py .asset-import/visual-novel-ai-game
           else
             echo "No legacy asset bundle"
           fi

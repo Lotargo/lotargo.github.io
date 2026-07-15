@@ -170,6 +170,38 @@ window.BLOG_POSTS = [
       ru: 'Практическая карта GitHub-коннекторов, тестов в песочнице, Chromium и границы, после которой действительно нужен Codex.'
     },
     notify: true
+  },
+  {
+    slug: 'visual-novel-ai-game',
+    date: '2026-07-15',
+    notificationId: '2026-07-15-visual-novel-ai-game',
+    href: './visual-novel-ai-game.html',
+    url: './blog/posts/visual-novel-ai-game.html',
+    type: {
+      en: 'AI game development',
+      ru: 'Разработка AI-игры'
+    },
+    title: {
+      en: 'Visual Novel: Starting an AI Game That Breaks the Fourth Wall',
+      ru: 'Visual Novel: начинаю разработку AI-игры, которая ломает четвёртую стену'
+    },
+    shortTitle: {
+      en: 'Starting Visual Novel',
+      ru: 'Начинаю Visual Novel'
+    },
+    notificationTitle: {
+      en: 'A new AI visual novel project',
+      ru: 'Новый проект AI-визуальной новеллы'
+    },
+    description: {
+      en: 'A new project combining free AI dialogue, persistent character memory, dynamic visual scenes, interactive choices, ComfyUI generation, and adaptive music.',
+      ru: 'Новый проект, объединяющий свободный диалог с ИИ, память персонажа, динамические визуальные сцены, интерактивный выбор, генерацию через ComfyUI и адаптивную музыку.'
+    },
+    notificationText: {
+      en: 'The first public concept note: scene-first UX, layered and cinematic modes, music, memory, and the path from MVP to Steam.',
+      ru: 'Первая публичная концепция: scene-first UX, составной и cinematic-режимы, музыка, память и путь от MVP до Steam.'
+    },
+    notify: true
   }
 ];
 

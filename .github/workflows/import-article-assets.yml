@@ -1,9 +1,14 @@
-name: Import article assets
+name: Import article bundles
 
 on:
   workflow_dispatch:
   push:
     paths:
+      - '.article-import/**/bundle.zip'
+      - '.article-import/**/bundle.tar.gz'
+      - '.article-import/**/bundle.tgz'
+      - '.article-import/**/bundle.b64'
+      - '.article-import/**/READY'
       - '.asset-import/**/bundle.b64'
       - '.asset-import/**/READY'
 
@@ -11,11 +16,11 @@ permissions:
   contents: write
 
 concurrency:
-  group: article-asset-import
+  group: article-bundle-import
   cancel-in-progress: false
 
 jobs:
-  import-assets:
+  import-articles:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -23,13 +28,24 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Decode staged asset bundle
+      - name: Import standard article bundles
         run: |
-          python3 scripts/import_asset_bundle.py .asset-import/visual-novel-ai-game
+          python3 scripts/article_bundle.py import-staged .article-import --root . --allow-empty
+
+      - name: Import legacy Visual Novel asset bundle when present
+        run: |
+          if [ -d .asset-import/visual-novel-ai-game ]; then
+            python3 scripts/import_asset_bundle.py .asset-import/visual-novel-ai-game
+          else
+            echo "No legacy asset bundle"
+          fi
+
+      - name: Remove obsolete transport leftovers
+        run: |
           rm -f docs/.asset-pipeline-test*.txt docs/test.bin
           rm -rf blog/assets/visual-novel/hires
 
-      - name: Commit extracted binaries
+      - name: Commit installed publication files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -38,5 +54,5 @@ jobs:
             echo "No changes to commit"
             exit 0
           fi
-          git commit -m "Import Visual Novel article assets"
+          git commit -m "Import staged article bundle"
           git push

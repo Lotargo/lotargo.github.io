@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Example article bundle page." />
+  <meta name="theme-color" content="#000000" />
+  <title>Example Article · Lotargo Blog</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+</head>
+<body data-title-en="Example Article · Lotargo Blog" data-title-ru="Пример статьи · Блог Lotargo">
+  <header class="site-header" data-js="header">
+    <a class="brand" href="../../" aria-label="Back to landing">
+      <span class="brand-mark" aria-hidden="true">LØ</span>
+      <span class="brand-text">Lotargo</span>
+    </a>
+    <div class="header-controls">
+      <nav class="nav" aria-label="Post navigation">
+        <a href="../../" data-i18n="blog-nav-home">Home</a>
+        <a href="../" data-i18n="nav-blog">Blog</a>
+        <a href="../../#projects" data-i18n="nav-projects">Projects</a>
+      </nav>
+      <button class="theme-toggle" type="button" data-js="theme-toggle" aria-label="Switch color theme"><span data-js="theme-label">Theme</span></button>
+      <button class="lang-toggle" type="button" data-js="lang-toggle" aria-label="Switch language"><span data-js="lang-label">EN</span></button>
+    </div>
+  </header>
+
+  <main id="top" class="post-shell">
+    <article class="post-article">
+      <div class="post-toolbar">
+        <a class="post-back" href="../" data-i18n="post-back-blog">Back to blog</a>
+        <div class="post-meta">
+          <span>2026-07-15</span>
+          <span data-lang-content="en">Example</span>
+          <span data-lang-content="ru">Пример</span>
+        </div>
+      </div>
+
+      <div data-lang-content="en">
+        <h1>Example Article</h1>
+        <p class="post-lead">This is the minimal rendered HTML shape expected inside an article bundle.</p>
+        <h2>First section</h2>
+        <p>Replace this text with the actual article while preserving the shared page structure.</p>
+      </div>
+
+      <div data-lang-content="ru">
+        <h1>Пример статьи</h1>
+        <p class="post-lead">Это минимальная структура HTML, ожидаемая внутри article bundle.</p>
+        <h2>Первый раздел</h2>
+        <p>Замените этот текст настоящей статьёй, сохранив общую структуру страницы.</p>
+      </div>
+
+      <nav class="post-pagination" aria-label="Post navigation" data-i18n-aria="post-pagination-aria">
+        <span class="post-page-link is-disabled" aria-disabled="true"><span data-i18n="post-prev">Previous</span><strong data-i18n="post-prev-none">No earlier post</strong></span>
+        <span class="post-page-link is-disabled" aria-disabled="true"><span data-i18n="post-next">Next</span><strong data-i18n="post-next-none">No later post</strong></span>
+      </nav>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <span>Oleg Boyko / Lotargo</span>
+    <span>Blog · AI systems · verification</span>
+  </footer>
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/blog-post.js"></script>
+</body>
+</html>

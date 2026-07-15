@@ -28,9 +28,37 @@
       "type": "string",
       "default": "article.html"
     },
+    "render": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "engine": {
+          "const": "markdown",
+          "default": "markdown"
+        },
+        "template": {
+          "const": "default",
+          "default": "default"
+        }
+      },
+      "default": {
+        "engine": "markdown",
+        "template": "default"
+      }
+    },
     "sources": {
       "type": "object",
-      "minProperties": 1,
+      "required": ["en", "ru"],
+      "properties": {
+        "en": {
+          "type": "string",
+          "pattern": "\\.md$"
+        },
+        "ru": {
+          "type": "string",
+          "pattern": "\\.md$"
+        }
+      },
       "additionalProperties": {
         "type": "string",
         "pattern": "\\.md$"
@@ -81,7 +109,17 @@
   "$defs": {
     "localized": {
       "type": "object",
-      "minProperties": 1,
+      "required": ["en", "ru"],
+      "properties": {
+        "en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ru": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
       "additionalProperties": {
         "type": "string",
         "minLength": 1

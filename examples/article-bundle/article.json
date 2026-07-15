@@ -3,6 +3,10 @@
   "slug": "example-article",
   "date": "2026-07-15",
   "html": "article.html",
+  "render": {
+    "engine": "markdown",
+    "template": "default"
+  },
   "sources": {
     "ru": "content/ru.md",
     "en": "content/en.md"
@@ -23,8 +27,8 @@
       "en": "Example article"
     },
     "description": {
-      "ru": "Минимальный пример article bundle для копирования.",
-      "en": "A minimal article bundle example that can be copied."
+      "ru": "Минимальный Markdown-first article bundle для копирования.",
+      "en": "A minimal Markdown-first Article Bundle that can be copied."
     },
     "notificationTitle": {
       "ru": "Новая статья",

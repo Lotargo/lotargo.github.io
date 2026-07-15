@@ -1,11 +1,11 @@
 ---
 name: publish-binary-bundle
-description: Prepare and deliver a complete blog article as ZIP, TAR.GZ, TGZ, or Base64 for CI import.
+description: Prepare and deliver a complete Markdown-first blog article as ZIP, TAR.GZ, TGZ, or Base64 for CI import.
 ---
 
 # Publish A Binary Article Bundle
 
-Use this skill when an article, its Markdown sources, rendered HTML, metadata, and assets should be delivered as one package.
+Use this skill when an article, its Markdown sources, metadata, and assets should be delivered as one package. The publishing CLI generates the final HTML before packaging or during CI import.
 
 ## Goal
 
@@ -28,13 +28,14 @@ bundle.b64
 
 ```text
 article.json
-article.html
 content/
-  ru.md
   en.md
+  ru.md
 assets/
   ...ordinary binary assets...
 ```
+
+`article.html` is generated automatically. A packaged bundle may contain it, but it is not a hand-authored prerequisite.
 
 The exact source and asset paths must match `article.json`.
 
@@ -51,52 +52,60 @@ Base64 is a transport wrapper, not a publication format. Never leave Base64 imag
 ## Procedure
 
 1. Read `docs/ARTICLE_BUNDLE_STANDARD.md`.
-2. Validate the slug, date, localized metadata, article paths, alt text, and image references.
-3. Ensure `article.html` loads the normal site scripts.
+2. Read `instructions/skills/render-markdown-article/SKILL.md`.
+3. Validate slug, date, localized metadata, headings, alt text, captions, and image references.
 4. Ensure every referenced asset exists inside `assets/`.
-5. Validate the expanded bundle:
+5. Install publishing dependencies:
 
 ```bash
-python scripts/article_bundle.py validate ./my-article
+python -m pip install -r requirements-publishing.txt
 ```
 
-6. Pack the preferred transport:
+6. Render and validate the expanded bundle:
 
 ```bash
-python scripts/article_bundle.py pack ./my-article \
+python scripts/publish_article.py render ./my-article
+python scripts/publish_article.py validate ./my-article
+```
+
+7. Pack the preferred transport:
+
+```bash
+python scripts/publish_article.py pack ./my-article \
   --archive-format zip \
   --transport binary \
   --output ./bundle.zip
 ```
 
-7. Validate the resulting transport again:
+8. Validate the resulting transport again:
 
 ```bash
-python scripts/article_bundle.py validate ./bundle.zip
+python scripts/publish_article.py validate ./bundle.zip
 ```
 
-8. Upload only the resulting transport file to `.article-import/<slug>/` and commit it to `main`.
-9. Wait for the `Import article bundle` workflow.
-10. Confirm that CI removed the temporary staging directory and committed ordinary files to `blog/posts/`, `blog/content/`, and `blog/assets/<slug>/`.
+9. Upload only the resulting transport file to `.article-import/<slug>/` and commit it to `main`.
+10. Wait for the `Import article bundles` workflow.
+11. Confirm that CI removed the temporary staging directory and committed ordinary files to `blog/posts/`, `blog/content/`, and `blog/assets/<slug>/`.
 
 ## Base64 Packaging
 
 ```bash
-python scripts/article_bundle.py pack ./my-article \
+python scripts/publish_article.py pack ./my-article \
   --archive-format zip \
   --transport b64 \
   --output ./bundle.b64
 ```
 
-Do not manually concatenate Base64 chunks unless a tool enforces a message-size limit. When chunking is unavoidable, reconstruct one valid `bundle.b64` before uploading it to the staging directory.
+Do not manually concatenate Base64 chunks unless a tool enforces a message-size limit. When chunking is unavoidable, reconstruct one valid `bundle.b64` before uploading it.
 
 ## Do Not
 
 - do not upload both ZIP and Base64 for the same staged article;
-- do not place multiple bundle files in one slug directory;
+- do not place multiple transports in one slug directory;
+- do not hand-edit generated HTML as the primary source;
 - do not embed raster images inside SVG wrappers;
-- do not store the temporary transport package permanently;
-- do not publish links to private repositories without explicit approval;
+- do not store the temporary transport permanently;
+- do not publish private repository links without explicit approval;
 - do not add `AGENTS.md`.
 
 ## Completion Criteria
@@ -105,7 +114,7 @@ The task is complete only when:
 
 - CI succeeds;
 - the staging package disappears;
-- the article exists as ordinary HTML and Markdown;
+- the article exists as ordinary generated HTML and Markdown;
 - assets exist as ordinary binary files;
 - the blog index and Previous/Next navigation include the article;
 - the public page passes the review skill.

@@ -1,6 +1,7 @@
 (function () {
   const currentScript = document.currentScript;
   const scriptUrl = currentScript && currentScript.src ? currentScript.src : '../../assets/js/blog-post.js';
+  const imageViewerVersion = '20260715-2';
 
   function loadScript(src, errorMessage) {
     return new Promise((resolve, reject) => {
@@ -46,10 +47,11 @@
   }
 
   function loadImageViewer() {
-    if (!document.querySelector('link[href$="image-viewer.css"]')) {
+    if (!document.querySelector('link[data-image-viewer-styles]')) {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
-      link.href = new URL('../css/image-viewer.css', scriptUrl).href;
+      link.dataset.imageViewerStyles = 'true';
+      link.href = new URL(`../css/image-viewer.css?v=${imageViewerVersion}`, scriptUrl).href;
       document.head.appendChild(link);
     }
 
@@ -57,7 +59,10 @@
       return Promise.resolve();
     }
 
-    return loadScript(new URL('image-viewer.js', scriptUrl).href, 'Failed to load image viewer');
+    return loadScript(
+      new URL(`image-viewer.js?v=${imageViewerVersion}`, scriptUrl).href,
+      'Failed to load image viewer'
+    );
   }
 
   function loadBlogPostsManifest() {

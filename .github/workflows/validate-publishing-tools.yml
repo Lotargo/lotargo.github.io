@@ -1,0 +1,37 @@
+name: Validate publishing tools
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'scripts/article_bundle.py'
+      - 'tests/test_article_bundle.py'
+      - 'schemas/article-bundle.schema.json'
+      - '.github/workflows/validate-publishing-tools.yml'
+  pull_request:
+    paths:
+      - 'scripts/article_bundle.py'
+      - 'tests/test_article_bundle.py'
+      - 'schemas/article-bundle.schema.json'
+      - '.github/workflows/validate-publishing-tools.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Compile publishing CLI
+        run: python -m py_compile scripts/article_bundle.py
+
+      - name: Run article bundle tests
+        run: python -m unittest tests.test_article_bundle -v

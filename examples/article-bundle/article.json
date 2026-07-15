@@ -1,0 +1,39 @@
+{
+  "format_version": 1,
+  "slug": "example-article",
+  "date": "2026-07-15",
+  "html": "article.html",
+  "sources": {
+    "ru": "content/ru.md",
+    "en": "content/en.md"
+  },
+  "assets": null,
+  "post": {
+    "notificationId": "2026-07-15-example-article",
+    "type": {
+      "ru": "Пример",
+      "en": "Example"
+    },
+    "title": {
+      "ru": "Пример новой статьи",
+      "en": "Example Article"
+    },
+    "shortTitle": {
+      "ru": "Пример статьи",
+      "en": "Example article"
+    },
+    "description": {
+      "ru": "Минимальный пример article bundle для копирования.",
+      "en": "A minimal article bundle example that can be copied."
+    },
+    "notificationTitle": {
+      "ru": "Новая статья",
+      "en": "New article"
+    },
+    "notificationText": {
+      "ru": "Опубликован новый материал.",
+      "en": "A new article has been published."
+    },
+    "notify": false
+  }
+}

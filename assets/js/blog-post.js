@@ -45,6 +45,21 @@
     document.head.appendChild(link);
   }
 
+  function loadImageViewer() {
+    if (!document.querySelector('link[href$="image-viewer.css"]')) {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = new URL('../css/image-viewer.css', scriptUrl).href;
+      document.head.appendChild(link);
+    }
+
+    if (!document.querySelector('[data-lightbox], .post-figure img, [data-gallery] img')) {
+      return Promise.resolve();
+    }
+
+    return loadScript(new URL('image-viewer.js', scriptUrl).href, 'Failed to load image viewer');
+  }
+
   function loadBlogPostsManifest() {
     if (Array.isArray(window.BLOG_POSTS)) return Promise.resolve();
     return loadScript(new URL('blog-posts.js', scriptUrl).href, 'Failed to load blog posts manifest');
@@ -119,6 +134,7 @@
   }
 
   loadRenderFixes();
+  loadImageViewer().catch(() => {});
   loadBlogPostsManifest().then(normalizePostPagination).catch(() => {});
 
   const memoryHero = document.querySelector('.memory-hero');

@@ -11,6 +11,9 @@ import tarfile
 from pathlib import Path
 
 
+IMAGE_SUFFIXES = {".avif", ".webp", ".png", ".jpg", ".jpeg"}
+
+
 def safe_members(archive: tarfile.TarFile, root: Path):
     root = root.resolve()
     for member in archive.getmembers():
@@ -22,6 +25,20 @@ def safe_members(archive: tarfile.TarFile, root: Path):
         yield member
 
 
+def read_encoded_bundle(bundle_dir: Path) -> bytes:
+    single_bundle = bundle_dir / "bundle.b64"
+    if single_bundle.exists():
+        return single_bundle.read_bytes().strip()
+
+    parts = sorted(bundle_dir.glob("part-*.b64"))
+    if parts:
+        return b"".join(part.read_bytes().strip() for part in parts)
+
+    raise SystemExit(
+        f"No bundle.b64 or part-*.b64 files found in {bundle_dir}"
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("bundle_dir", type=Path)
@@ -30,13 +47,10 @@ def main() -> None:
 
     bundle_dir = args.bundle_dir.resolve()
     root = args.root.resolve()
-    parts = sorted(bundle_dir.glob("part-*.b64"))
-    if not parts:
-        raise SystemExit(f"No part-*.b64 files found in {bundle_dir}")
     if not (bundle_dir / "READY").exists():
         raise SystemExit(f"Missing READY marker in {bundle_dir}")
 
-    encoded = b"".join(part.read_bytes().strip() for part in parts)
+    encoded = read_encoded_bundle(bundle_dir)
     archive_bytes = base64.b64decode(encoded, validate=True)
 
     with tarfile.open(fileobj=io.BytesIO(archive_bytes), mode="r:gz") as archive:
@@ -44,7 +58,11 @@ def main() -> None:
         archive.extractall(root, members=members, filter="data")
 
     expected = root / "blog" / "assets" / "visual-novel-ai-game" / "images"
-    images = sorted(expected.glob("*.webp"))
+    images = sorted(
+        path
+        for path in expected.iterdir()
+        if path.is_file() and path.suffix.lower() in IMAGE_SUFFIXES
+    )
     if len(images) != 7:
         raise SystemExit(f"Expected 7 Visual Novel images, found {len(images)}")
 

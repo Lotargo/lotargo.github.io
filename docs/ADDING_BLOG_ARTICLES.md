@@ -1,231 +1,280 @@
 # Adding Blog Articles
 
-This guide describes the current static publishing workflow for `lotargo.github.io`.
+This repository supports three publication routes:
 
-The site is static-first. There is no build step yet. Articles are still written as HTML pages, with optional Markdown/source copies in `blog/content/`. Automation is handled by a shared JavaScript manifest.
+1. Article Bundle through CI.
+2. Direct installation through the CLI.
+3. Manual repository editing.
 
-## Source of Truth
+The published result is always static HTML, Markdown source, ordinary binary assets, and one shared blog metadata entry.
 
-Article metadata lives in:
+## Choose A Route
 
-```text
-assets/js/blog-posts.js
-```
+### Article Bundle Through CI
 
-This manifest controls three things:
+Best for AI-assisted publication, tools with limited GitHub operations, and delivering a complete article as one artifact.
 
-1. Blog index cards on `blog/index.html`.
-2. Previous / Next navigation on every article page.
-3. Landing-page notifications for posts with `notify: true`.
-
-Do not manually add blog cards to `blog/index.html` and do not manually duplicate article notifications in `assets/js/notifications.js`.
-
-## Folder Layout
+Read:
 
 ```text
-blog/posts/      Rendered article HTML files
-blog/content/    Markdown/source copies for article content
-blog/assets/     Article images, diagrams, hero banners
-assets/js/       Shared manifests and rendering scripts
+docs/ARTICLE_BUNDLE_STANDARD.md
+instructions/skills/publish-binary-bundle/SKILL.md
 ```
 
-## Minimum Checklist
-
-For a new article with slug `my-new-article`:
-
-1. Create the rendered article page:
+Upload one file to:
 
 ```text
-blog/posts/my-new-article.html
+.article-import/<slug>/bundle.zip
+.article-import/<slug>/bundle.tar.gz
+.article-import/<slug>/bundle.tgz
+.article-import/<slug>/bundle.b64
 ```
 
-2. Optional, but recommended: create source copies:
+GitHub Actions installs and commits the article automatically.
+
+### CLI Installation
+
+Best for local clones, coding agents, and sandboxes with terminal and filesystem access.
+
+Read:
 
 ```text
-blog/content/my-new-article.en.md
-blog/content/my-new-article.ru.md
+instructions/skills/publish-with-cli/SKILL.md
 ```
 
-3. Add assets if needed:
+Typical flow:
 
-```text
-blog/assets/my-new-article.svg
-blog/assets/my-new-article-mobile.svg
-blog/assets/my-new-article-tablet.svg
-```
-
-4. Add one manifest entry in:
-
-```text
-assets/js/blog-posts.js
-```
-
-5. Preview locally:
-
-```powershell
+```bash
+python scripts/article_bundle.py validate ./work/my-article
+python scripts/article_bundle.py install ./work/my-article --root .
 python -m http.server 4173
 ```
 
-6. Check:
+### Manual Publication
+
+Best for small edits and environments where direct repository editing is simpler than packaging.
+
+Read:
 
 ```text
-http://127.0.0.1:4173/blog/
-http://127.0.0.1:4173/blog/posts/my-new-article.html
+instructions/skills/publish-manually/SKILL.md
 ```
 
-7. Test language switching and Previous / Next navigation.
+## Installed Article Layout
 
-## Manifest Entry Template
+For slug `my-article`:
 
-Add new posts at the end of `window.BLOG_POSTS`. The array order is chronological: oldest first, newest last. This order is used for Previous / Next navigation.
+```text
+blog/posts/my-article.html
+blog/content/my-article.ru.md
+blog/content/my-article.en.md
+blog/content/my-article.article.json
+blog/assets/my-article/
+```
 
-```js
+Metadata is inserted or updated in:
+
+```text
+assets/js/blog-posts.js
+```
+
+## Source Of Truth
+
+Markdown is the semantic source of the article. HTML is the deterministic publication artifact.
+
+The shared runtime metadata manifest controls:
+
+1. Blog index cards.
+2. Previous/Next navigation.
+3. Landing-page notifications for posts with `notify: true`.
+
+Do not manually duplicate blog cards in `blog/index.html`. Do not duplicate article notifications in `assets/js/notifications.js`.
+
+## Article Bundle Layout
+
+```text
+my-article/
+├── article.json
+├── article.html
+├── content/
+│   ├── ru.md
+│   └── en.md
+└── assets/
+    ├── cover.avif
+    ├── gallery-01.avif
+    └── diagram.svg
+```
+
+Minimal `article.json`:
+
+```json
 {
-  slug: 'my-new-article',
-  date: '2026-07-08',
-  href: './my-new-article.html',
-  url: './blog/posts/my-new-article.html',
-  type: {
-    en: 'Article category',
-    ru: 'Категория статьи'
+  "format_version": 1,
+  "slug": "my-article",
+  "date": "2026-07-15",
+  "html": "article.html",
+  "sources": {
+    "ru": "content/ru.md",
+    "en": "content/en.md"
   },
-  title: {
-    en: 'Full English Article Title',
-    ru: 'Полный русский заголовок статьи'
-  },
-  shortTitle: {
-    en: 'Short title',
-    ru: 'Короткий заголовок'
-  },
-  description: {
-    en: 'Short English description for the blog index.',
-    ru: 'Короткое русское описание для индекса блога.'
-  },
-  notificationTitle: {
-    en: 'Optional notification title',
-    ru: 'Опциональный заголовок уведомления'
-  },
-  notificationText: {
-    en: 'Optional notification text.',
-    ru: 'Опциональный текст уведомления.'
-  },
-  notify: true
+  "assets": "assets",
+  "post": {
+    "type": {
+      "ru": "Разработка",
+      "en": "Development"
+    },
+    "title": {
+      "ru": "Полный заголовок",
+      "en": "Full title"
+    },
+    "shortTitle": {
+      "ru": "Короткий заголовок",
+      "en": "Short title"
+    },
+    "description": {
+      "ru": "Описание для блога.",
+      "en": "Blog description."
+    },
+    "notify": true
+  }
 }
 ```
 
-## Field Rules
-
-### `slug`
-
-Must match the article HTML filename without `.html`.
+Machine-readable schema:
 
 ```text
-blog/posts/my-new-article.html -> slug: 'my-new-article'
+schemas/article-bundle.schema.json
 ```
 
-### `href`
+## CLI Reference
 
-Path used from inside `blog/posts/` for Previous / Next navigation.
+Validate:
 
-```js
-href: './my-new-article.html'
+```bash
+python scripts/article_bundle.py validate ./my-article
+python scripts/article_bundle.py validate ./bundle.zip
+python scripts/article_bundle.py validate ./bundle.b64
 ```
 
-### `url`
+Pack ZIP:
 
-Path used from the landing page root for notifications.
-
-```js
-url: './blog/posts/my-new-article.html'
+```bash
+python scripts/article_bundle.py pack ./my-article \
+  --archive-format zip \
+  --transport binary \
+  --output ./bundle.zip
 ```
 
-### `title`
+Pack TAR.GZ:
 
-Full title used on the blog index.
-
-### `shortTitle`
-
-Compact title used in Previous / Next navigation.
-
-### `description`
-
-Short summary used on the blog index.
-
-### `notificationTitle` and `notificationText`
-
-Optional. If omitted, notifications fall back to `shortTitle`, `title`, and `description`.
-
-### `notify`
-
-Use:
-
-```js
-notify: true
+```bash
+python scripts/article_bundle.py pack ./my-article \
+  --archive-format tar.gz \
+  --transport binary \
+  --output ./bundle.tar.gz
 ```
 
-when the article should appear in the landing-page notification center.
+Pack Base64:
 
-Use:
-
-```js
-notify: false
+```bash
+python scripts/article_bundle.py pack ./my-article \
+  --archive-format zip \
+  --transport b64 \
+  --output ./bundle.b64
 ```
 
-for quiet archival posts.
+Install:
+
+```bash
+python scripts/article_bundle.py install ./bundle.zip --root .
+```
 
 ## Article Page Requirements
 
-Each article page should include the normal article scripts at the end:
+Each rendered HTML page must:
+
+- use the standard site header and footer;
+- contain `.post-article`;
+- include a `.post-pagination` element;
+- load the normal scripts at the end;
+- use valid relative asset paths;
+- place the title and lead before major illustrations.
+
+Required scripts:
 
 ```html
 <script src="../../assets/js/main.js"></script>
 <script src="../../assets/js/blog-post.js"></script>
 ```
 
-`blog-post.js` loads `blog-posts.js` automatically and then normalizes Previous / Next navigation.
+## Images And Galleries
 
-Each page should also keep a `post-pagination` element, even if the fallback links are stale. The JavaScript will replace it using the manifest.
+Read:
 
-```html
-<nav class="post-pagination" aria-label="Post navigation" data-i18n-aria="post-pagination-aria">
-  <span class="post-page-link is-disabled" aria-disabled="true">
-    <span data-i18n="post-prev">Previous</span>
-    <strong data-i18n="post-prev-none">No earlier post</strong>
-  </span>
-  <span class="post-page-link is-disabled" aria-disabled="true">
-    <span data-i18n="post-next">Next</span>
-    <strong data-i18n="post-next-none">No later post</strong>
-  </span>
-</nav>
+```text
+docs/IMAGE_GALLERIES.md
+instructions/skills/prepare-article-images/SKILL.md
 ```
 
-## Responsive Hero Assets
+Use real binary assets in `blog/assets/<slug>/`. Do not embed low-resolution raster data in SVG or HTML.
 
-For articles with hero banners, prefer a desktop/tablet/mobile split:
+For preview plus full-resolution viewing:
 
 ```html
-<picture>
-  <source media="(max-width: 640px)" srcset="../assets/article-mobile.svg" />
-  <source media="(max-width: 1024px)" srcset="../assets/article-tablet.svg" />
-  <img src="../assets/article.svg" alt="Article hero diagram" />
-</picture>
+<img
+  src="preview.avif"
+  data-full-src="full.avif"
+  alt="Useful description"
+/>
 ```
 
-Keep text inside SVGs large enough for mobile. Avoid tiny labels in the desktop asset if it will be reused on narrow screens.
+## Writing Instructions
 
-## Current Automation Boundary
+Read:
 
-Automated now:
+```text
+instructions/skills/write-blog-article/SKILL.md
+```
 
-- blog index cards;
-- Previous / Next navigation;
-- article notifications.
+Key rules:
 
-Still manual for now:
+- one H1;
+- H2 for major sections;
+- honest distinction between implemented work and plans;
+- illustrations integrated near relevant text;
+- no large defensive disclaimers;
+- no private repository links unless explicitly approved;
+- Russian and English versions should remain semantically aligned.
 
-- converting Markdown to HTML;
-- generating the article HTML file;
-- generating responsive hero assets;
-- RSS/sitemap updates.
+## Preview And Review
 
-The next layer can be a real build script that reads Markdown frontmatter and generates HTML, the manifest, RSS, and sitemap automatically.
+Start a local server:
+
+```bash
+python -m http.server 4173
+```
+
+Open:
+
+```text
+http://127.0.0.1:4173/blog/
+http://127.0.0.1:4173/blog/posts/<slug>.html
+```
+
+Then follow:
+
+```text
+instructions/skills/review-publication/SKILL.md
+```
+
+Review desktop, mobile, both themes, both languages, image sharpness, fullscreen gallery navigation, console errors, and public GitHub Pages output.
+
+## AI Instruction Layout
+
+Task-specific instructions live in:
+
+```text
+instructions/skills/
+```
+
+This repository intentionally does not use `AGENTS.md`.

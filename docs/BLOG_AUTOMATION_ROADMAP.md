@@ -1,249 +1,203 @@
 # Blog Automation Roadmap
 
-This roadmap captures the intended evolution of the `lotargo.github.io` blog tooling.
+This roadmap describes the evolution of the `lotargo.github.io` publishing system.
 
-The guiding principle is simple: keep the public site static and GitHub Pages-friendly, but make article publishing harder to break. The next improvements should add typed metadata, validation, and small CLI helpers before introducing any heavy build system.
+The guiding principle remains unchanged:
+
+> Keep the public site static and GitHub Pages-friendly, while making article creation, asset delivery, validation, and publication increasingly difficult to break.
 
 ## Current Baseline
 
-Already implemented:
+Implemented:
 
-- `assets/js/blog-posts.js` is the shared article metadata manifest.
-- `blog/index.html` renders article cards from the manifest through `assets/js/blog-index.js`.
-- article pages normalize Previous / Next navigation through `assets/js/blog-post.js`.
-- landing-page notifications are generated from the manifest through `assets/js/notifications.js`.
-- `docs/ADDING_BLOG_ARTICLES.md` documents the current manual publishing workflow.
+- static HTML/CSS/JavaScript runtime with no backend;
+- Markdown source copies in `blog/content/`;
+- rendered article HTML in `blog/posts/`;
+- per-article binary assets in `blog/assets/<slug>/`;
+- shared metadata in `assets/js/blog-posts.js`;
+- generated blog index cards;
+- Previous/Next article navigation;
+- landing-page notifications;
+- reusable image galleries and fullscreen viewer;
+- Article Bundle manifest and JSON Schema;
+- bundle transports through ZIP, TAR.GZ, TGZ, and Base64;
+- Python CLI for validation, packing, installation, and staged imports;
+- GitHub Actions bundle installation;
+- automated bundle tests;
+- task-specific publishing skills for humans and AI assistants;
+- manual, CLI, and CI publication routes.
 
-Current manual parts:
-
-- writing article HTML;
-- keeping optional Markdown source copies;
-- generating responsive SVG/image assets;
-- checking links and required fields by hand;
-- RSS and sitemap updates.
-
-## Decision: no real API layer yet
-
-Do not add a server API, database, serverless routes, or backend CMS at this stage.
-
-For this repository, the better next layer is:
-
-```text
-CLI + validation + static manifests
-```
-
-This keeps the site deployable as plain GitHub Pages while still giving us a safer authoring workflow.
-
-A static data layer is allowed later, for example:
+Current standard:
 
 ```text
-assets/data/blog-posts.json
-assets/data/projects.json
-assets/data/site-updates.json
+docs/ARTICLE_BUNDLE_STANDARD.md
+schemas/article-bundle.schema.json
+scripts/article_bundle.py
+instructions/skills/
 ```
 
-But it should remain static data, not a runtime backend.
+## Architectural Decision
 
-## Phase 1: Lightweight typing for the manifest
+Do not add a runtime API, database, server-side CMS, or framework migration merely to publish articles.
 
-Goal: make `assets/js/blog-posts.js` safer to edit without adding a build step.
-
-Recommended implementation:
-
-- add JSDoc typedefs directly in `assets/js/blog-posts.js`;
-- optionally add `types/blog.d.ts` for editor support;
-- keep runtime output as plain JavaScript.
-
-Target shape:
-
-```ts
-type LangText = {
-  en: string;
-  ru: string;
-};
-
-type BlogPost = {
-  slug: string;
-  date: string;
-  href: string;
-  url: string;
-  type: LangText;
-  title: LangText;
-  shortTitle?: LangText;
-  description: LangText;
-  notificationId?: string;
-  notificationTitle?: LangText;
-  notificationText?: LangText;
-  notify: boolean;
-};
-```
-
-Acceptance criteria:
-
-- editors show autocomplete for article entries;
-- obvious field mistakes such as `notifiy` are easier to catch;
-- no build step is introduced;
-- GitHub Pages still serves files directly.
-
-## Phase 2: Blog validator CLI
-
-Goal: catch broken article metadata before pushing.
-
-Create:
+The preferred architecture is:
 
 ```text
-scripts/validate-blog.mjs
+Markdown + rendered HTML + static assets
+                ↓
+Article Bundle contract
+                ↓
+CLI validation / CI installation
+                ↓
+plain GitHub Pages output
 ```
 
-Add package script:
+The archive or Base64 file is only a transport container. The public repository output remains ordinary static files.
 
-```json
-{
-  "scripts": {
-    "blog:validate": "node scripts/validate-blog.mjs"
-  }
-}
-```
+## Completed Phase: Portable Article Bundles
 
-The validator should check:
-
-- every `slug` is unique;
-- every `date` uses `YYYY-MM-DD`;
-- every article has `title.en`, `title.ru`, `description.en`, `description.ru`;
-- `notify` is a boolean;
-- `href` equals `./<slug>.html`;
-- `url` equals `./blog/posts/<slug>.html`;
-- `blog/posts/<slug>.html` exists;
-- article pages include `post-pagination`;
-- article pages include `../../assets/js/main.js`;
-- article pages include `../../assets/js/blog-post.js`;
-- optional Markdown source files are reported as missing warnings, not hard errors;
-- manifest order is chronological from oldest to newest.
-
-Acceptance criteria:
-
-- `npm run blog:validate` exits with non-zero code on broken required fields;
-- warnings are visible but do not block publishing;
-- validation output is short and readable.
-
-## Phase 3: package.json and local workflow commands
-
-Goal: standardize local commands without turning the repo into a framework project.
-
-Create minimal `package.json`:
-
-```json
-{
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "preview": "npx --yes http-server . -p 4173 -c-1",
-    "blog:validate": "node scripts/validate-blog.mjs"
-  }
-}
-```
-
-No dependency lockfile is required at this phase unless we add real dependencies.
-
-Acceptance criteria:
-
-- `npm run preview` serves the site locally;
-- `npm run blog:validate` validates the blog;
-- README references the commands.
-
-## Phase 4: New article CLI
-
-Goal: reduce repetitive file creation.
-
-Create:
+The publication unit now contains:
 
 ```text
-scripts/new-blog-post.mjs
+article.json
+article.html
+content/*.md
+assets/*
 ```
+
+Supported transports:
+
+```text
+expanded directory
+ZIP
+TAR.GZ / TGZ
+Base64-wrapped ZIP or TAR.GZ
+```
+
+Completed properties:
+
+- one package can carry article text, translations, HTML, metadata, and binary assets;
+- CI validates paths and rejects archive traversal and links;
+- installed assets are real files rather than Base64 embedded in HTML/SVG;
+- an existing slug can be updated idempotently;
+- the shared blog manifest is updated automatically;
+- temporary staging files are removed after import.
+
+## Completed Phase: Publishing Skills
+
+Task-specific instructions live under:
+
+```text
+instructions/skills/
+```
+
+Current skills cover:
+
+- binary bundle delivery;
+- terminal and CLI workflows;
+- manual repository editing;
+- article writing;
+- image preparation;
+- final publication review.
+
+The repository intentionally does not use `AGENTS.md`. Narrow task instructions are easier for an AI assistant to load and follow without inheriting irrelevant context.
+
+## Next Phase 1: Deterministic Markdown Renderer
+
+Goal: make the relationship between Markdown source and rendered HTML fully reproducible.
+
+Current bundles already preserve both forms, but an AI assistant or editor still prepares `article.html` before packaging.
+
+Possible implementation:
+
+```text
+scripts/render_article.py
+or
+scripts/build-blog.mjs
+```
+
+Inputs:
+
+```text
+article.json
+content/ru.md
+content/en.md
+article template
+```
+
+Outputs:
+
+```text
+article.html
+```
+
+Required features:
+
+- shared article header/footer;
+- bilingual content blocks;
+- headings, paragraphs, lists, code, and blockquotes;
+- image figures and captions;
+- gallery directives;
+- article-specific optional CSS;
+- deterministic output;
+- compatibility with manually authored legacy articles.
+
+Do not introduce a heavy framework merely for Markdown rendering.
+
+## Next Phase 2: Full Blog Validation
+
+The current bundle validator checks the publication being imported. A repository-wide validator should additionally check all existing articles.
+
+Planned checks:
+
+- unique slugs;
+- chronological manifest order;
+- matching HTML/source/manifest files;
+- broken local links;
+- missing image files;
+- invalid Previous/Next runtime metadata;
+- missing alt text;
+- missing article scripts;
+- oversized assets;
+- private repository URLs in public content;
+- orphaned files in `blog/assets/`;
+- stale article manifests.
 
 Target command:
 
 ```bash
-npm run blog:new -- my-new-article
+python scripts/article_bundle.py validate-repository --root .
 ```
 
-The CLI should create:
+## Next Phase 3: Static Metadata Source
 
-```text
-blog/posts/my-new-article.html
-blog/content/my-new-article.en.md
-blog/content/my-new-article.ru.md
-```
+Goal: stop treating executable JavaScript as the easiest format for tools to modify.
 
-Optional later flags:
-
-```bash
-npm run blog:new -- my-new-article --notify
-npm run blog:new -- my-new-article --type "AI systems" --type-ru "AI системы"
-```
-
-The first version does not need to fully edit `assets/js/blog-posts.js`. It can print the manifest snippet to paste manually. Later it can insert the entry automatically.
-
-Acceptance criteria:
-
-- new article skeleton is created from the current post template;
-- generated HTML includes header, footer, script includes, and fallback pagination;
-- CLI refuses to overwrite existing files;
-- validator passes after the user fills required metadata and content.
-
-## Phase 5: JSON Schema validation
-
-Goal: formalize metadata shape beyond JSDoc.
-
-Create:
-
-```text
-schemas/blog-post.schema.json
-```
-
-Use it from `scripts/validate-blog.mjs`.
-
-Possible validator options:
-
-- custom lightweight validator with no dependencies;
-- later: Ajv, if the schema grows enough to justify a dependency.
-
-Acceptance criteria:
-
-- metadata shape is documented as machine-readable schema;
-- `BlogPost` fields are validated consistently;
-- schema errors point to the failing `slug` and field name.
-
-## Phase 6: Static data layer
-
-Goal: separate data from runtime JavaScript while still serving a static site.
-
-Introduce:
+Possible canonical input:
 
 ```text
 assets/data/blog-posts.json
-assets/data/site-notifications.json
 ```
 
-Generate or maintain:
+Generated compatibility output:
 
 ```text
 assets/js/blog-posts.js
 ```
 
-The runtime site can keep using the JS file for compatibility. The JSON files become cleaner inputs for scripts, agents, and future generators.
+Benefits:
 
-Acceptance criteria:
+- simpler schema validation;
+- safer editing by AI assistants;
+- easier RSS and sitemap generation;
+- deterministic sorting;
+- less JavaScript parsing in tooling.
 
-- JSON becomes the preferred source for scripts;
-- JS manifest is either generated or kept in sync by validation;
-- runtime behavior remains unchanged.
+Migration should preserve the current runtime until the JSON path is proven stable.
 
-## Phase 7: RSS, sitemap, and llms.txt
+## Next Phase 4: RSS, Sitemap, And `llms.txt`
 
-Goal: make the site easier to index and easier for tools to understand.
-
-Add generated or manually maintained:
+Add generated static discovery files:
 
 ```text
 rss.xml
@@ -251,30 +205,25 @@ sitemap.xml
 llms.txt
 ```
 
-Recommended order:
+Order:
 
-1. `sitemap.xml`
-2. `rss.xml`
-3. `llms.txt`
+1. sitemap;
+2. RSS;
+3. `llms.txt`.
 
-Acceptance criteria:
+All should derive from the same article metadata source.
 
-- all public articles appear in sitemap;
-- RSS includes newest posts first;
-- `llms.txt` summarizes the site structure and key project/blog links.
+## Next Phase 5: OpenGraph And Share Assets
 
-## Phase 8: OpenGraph and article share assets
+Extend article metadata with optional fields:
 
-Goal: make links look better in Telegram, Discord, social previews, and search snippets.
-
-For each article, support metadata fields:
-
-```js
+```text
 ogImage
 ogDescription
+canonicalUrl
 ```
 
-Article pages should include:
+Rendered articles should support:
 
 ```html
 <meta property="og:title" content="..." />
@@ -283,73 +232,75 @@ Article pages should include:
 <meta property="og:type" content="article" />
 ```
 
-Acceptance criteria:
+Missing OpenGraph images should produce a warning, not block publication.
 
-- article links have useful preview cards;
-- missing `ogImage` is warned by the validator, not a hard error;
-- default fallback image exists.
+## Next Phase 6: Asset Derivatives
 
-## Phase 9: Real static generator
-
-Goal: stop writing article HTML by hand once the manual cost becomes annoying.
-
-Possible build script:
+For large source images, the publishing CLI may generate:
 
 ```text
-scripts/build-blog.mjs
+preview.avif
+full.avif
+mobile.avif
+social-preview.avif
 ```
 
-Inputs:
+Potential checks:
+
+- dimensions;
+- aspect ratios;
+- file size budgets;
+- alpha-channel preservation;
+- visible compression artifacts;
+- preview/full source matching.
+
+The source image should never be silently replaced by a low-resolution derivative.
+
+## Next Phase 7: Draft And Scheduled Publication
+
+Possible future metadata:
+
+```json
+{
+  "status": "draft",
+  "publish_at": "2026-08-01T12:00:00Z"
+}
+```
+
+A scheduled workflow could install or expose the article at the requested time while keeping the public runtime static.
+
+Do not add this until regular publication volume makes scheduling useful.
+
+## Next Phase 8: Editorial History
+
+For larger articles, preserve lightweight provenance:
 
 ```text
-blog/content/*.en.md
-blog/content/*.ru.md
-assets/data/blog-posts.json
+created_by
+updated_by
+source_revision
+asset_manifest
 ```
 
-Outputs:
+This should describe the publication process without exposing private prompts, hidden reasoning, credentials, or internal repository links.
 
-```text
-blog/posts/*.html
-blog/index.html
-assets/js/blog-posts.js
-rss.xml
-sitemap.xml
-llms.txt
-```
+## Explicit Non-Goals
 
-This phase is intentionally later. Do not introduce it until manual HTML becomes a real bottleneck.
+- no backend CMS at the current scale;
+- no database for article publication;
+- no serverless API merely to write files;
+- no required Next.js, Astro, Vite, or React migration;
+- no archive or Base64 payloads served to readers;
+- no `AGENTS.md`;
+- no automatic publication without validation and review;
+- no claim that generated concepts are finished product screenshots.
 
-Acceptance criteria:
+## Recommended Next Work
 
-- Markdown frontmatter drives article metadata;
-- generated HTML matches the current visual system;
-- old manually written posts can still be migrated safely;
-- build output is deterministic.
+1. Use the new bundle standard for the next real article.
+2. Fix issues discovered through real publication rather than theoretical expansion.
+3. Add repository-wide validation.
+4. Build deterministic Markdown rendering only after two or three bundle publications confirm the desired article conventions.
+5. Add sitemap and RSS after metadata becomes fully deterministic.
 
-## Recommended implementation order
-
-1. Add JSDoc types to `assets/js/blog-posts.js`.
-2. Add `scripts/validate-blog.mjs`.
-3. Add minimal `package.json` with `preview` and `blog:validate`.
-4. Add `scripts/new-blog-post.mjs` skeleton generator.
-5. Add JSON Schema if validation logic starts growing.
-6. Move canonical data to `assets/data/*.json` only when scripts need it.
-7. Add sitemap, RSS, and `llms.txt`.
-8. Add OpenGraph fields and validator warnings.
-9. Build a full static generator only after the manual article HTML workflow becomes too slow.
-
-## Explicit non-goals for now
-
-- no backend CMS;
-- no database;
-- no serverless API routes;
-- no Next.js/Vite/Astro migration yet;
-- no required TypeScript build step;
-- no heavy dependency chain unless validation/generation becomes painful without it.
-
-## Why this order
-
-The profile site is already good enough as a public portfolio. The next work should reduce mistakes, not expand architecture for its own sake.
-
-The best near-term upgrade is therefore validation and small CLI helpers. That gives most of the benefit of a CMS while preserving the simplicity of static GitHub Pages.
+The current system already provides most of the useful properties of a small static CMS while retaining direct ownership of every published file.

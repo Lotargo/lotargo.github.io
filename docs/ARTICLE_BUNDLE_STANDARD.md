@@ -2,13 +2,23 @@
 
 This document defines the portable publication unit used by `lotargo.github.io`.
 
-The goal is simple: an article prepared by a person, an AI assistant, a local script, or another editor should arrive as one predictable package. CI validates the package, installs ordinary static files, updates the blog manifest, and removes the temporary transport bundle.
+The standard now supports a complete Markdown-first flow:
 
-The published repository does not serve Base64 blobs or archives. After import it contains normal HTML, Markdown, AVIF/WebP/PNG/SVG, audio, video, and JSON files.
+```text
+article.json + bilingual Markdown + assets
+                    ↓
+          deterministic HTML renderer
+                    ↓
+          bundle validation and import
+                    ↓
+             static GitHub Pages files
+```
+
+The public repository never serves Base64 wrappers or transport archives. After import it contains normal HTML, Markdown, AVIF/WebP/PNG/SVG, audio, video, and JSON files.
 
 ## Supported Transport Formats
 
-An article bundle may be delivered as:
+An Article Bundle may be delivered as:
 
 ```text
 expanded directory
@@ -18,24 +28,25 @@ bundle.tgz
 bundle.b64
 ```
 
-`bundle.b64` must contain a Base64-encoded ZIP or TAR.GZ archive. Base64 remains supported for tools that can only transmit text, but binary ZIP or TAR.GZ is preferred when direct binary upload is available.
+`bundle.b64` contains a Base64-encoded ZIP or TAR.GZ archive. Base64 remains supported for tools that can transmit only text. ZIP or TAR.GZ is preferred when direct binary upload is available.
 
-## Canonical Bundle Layout
+## Canonical Markdown-First Layout
 
 ```text
 my-article/
 ├── article.json
-├── article.html
 ├── content/
-│   ├── ru.md
-│   └── en.md
+│   ├── en.md
+│   └── ru.md
 └── assets/
     ├── cover.avif
     ├── gallery-01.avif
     └── diagram.svg
 ```
 
-Only `article.json` must have a fixed name. Other paths are declared inside the manifest.
+`article.html` is generated before validation, packing, or installation. A generated bundle may therefore contain it, but authors do not need to create it manually.
+
+Legacy bundles may still provide a hand-authored `article.html` and omit the `render` field.
 
 ## `article.json`
 
@@ -45,61 +56,225 @@ Only `article.json` must have a fixed name. Other paths are declared inside the 
   "slug": "my-article",
   "date": "2026-07-15",
   "html": "article.html",
+  "render": {
+    "engine": "markdown",
+    "template": "default"
+  },
   "sources": {
-    "ru": "content/ru.md",
-    "en": "content/en.md"
+    "en": "content/en.md",
+    "ru": "content/ru.md"
   },
   "assets": "assets",
   "post": {
     "notificationId": "2026-07-15-my-article",
     "type": {
-      "ru": "Разработка",
-      "en": "Development"
+      "en": "Development",
+      "ru": "Разработка"
     },
     "title": {
-      "ru": "Полный заголовок статьи",
-      "en": "Full article title"
+      "en": "Full Article Title",
+      "ru": "Полный заголовок статьи"
     },
     "shortTitle": {
-      "ru": "Короткий заголовок",
-      "en": "Short title"
+      "en": "Short title",
+      "ru": "Короткий заголовок"
     },
     "description": {
-      "ru": "Описание для индекса блога.",
-      "en": "Description for the blog index."
+      "en": "Description for the blog index.",
+      "ru": "Описание для индекса блога."
     },
     "notificationTitle": {
-      "ru": "Новая статья",
-      "en": "New article"
+      "en": "New article",
+      "ru": "Новая статья"
     },
     "notificationText": {
-      "ru": "Короткий текст уведомления.",
-      "en": "Short notification text."
+      "en": "Short notification text.",
+      "ru": "Короткий текст уведомления."
     },
     "notify": true
   }
 }
 ```
 
-The machine-readable schema is stored at:
+Machine-readable validation is defined in:
 
 ```text
 schemas/article-bundle.schema.json
 ```
 
+## Canonical Metadata
+
+`article.json` is the source of truth for:
+
+- slug;
+- publication date;
+- article category;
+- English and Russian titles;
+- index descriptions;
+- notification data;
+- rendering mode;
+- source and asset paths.
+
+Markdown frontmatter is tolerated and removed by the renderer, but it does not override `article.json`.
+
+## Markdown Renderer
+
+Install the publishing-only dependency:
+
+```bash
+python -m pip install -r requirements-publishing.txt
+```
+
+Render an expanded bundle:
+
+```bash
+python scripts/publish_article.py render ./my-article
+```
+
+The default renderer uses:
+
+```text
+scripts/render_article.py
+templates/article.html
+```
+
+It generates:
+
+- the complete article shell;
+- metadata toolbar;
+- canonical English and Russian H1 headings;
+- bilingual `data-lang-content` blocks;
+- site header and footer;
+- fallback Previous/Next navigation;
+- shared site scripts;
+- editorial image figures and galleries.
+
+The first Markdown H1 is removed because `post.title` supplies the canonical page title. The first normal paragraph becomes `.post-lead`.
+
+Supported Markdown features include:
+
+- headings;
+- paragraphs;
+- emphasis and links;
+- ordered and unordered lists;
+- blockquotes;
+- tables;
+- fenced code blocks;
+- footnotes;
+- standalone images.
+
+Raw HTML should not be used for layout. Dangerous tags, event attributes, and unsafe URL schemes are rejected.
+
+## Image Rendering
+
+Use bundle-relative paths:
+
+```md
+![Main screen](assets/main-screen.avif "Main screen concept")
+```
+
+The installed HTML receives:
+
+```text
+../assets/<slug>/main-screen.avif
+```
+
+Rules:
+
+- optional image title becomes the caption;
+- alt text becomes the caption when no title is supplied;
+- one standalone image becomes an editorial figure;
+- consecutive standalone images become a responsive gallery;
+- generated figures join the fullscreen lightbox;
+- image placement follows the Markdown narrative order.
+
+Example gallery:
+
+```md
+![Apartment](assets/apartment.avif "Evening apartment")
+
+![Classroom](assets/classroom.avif "Daytime classroom")
+
+![Park](assets/park.avif "Park at sunset")
+```
+
+Do not embed large raster images as Base64 in Markdown, HTML, or SVG.
+
+## High-Level CLI
+
+Use `scripts/publish_article.py` for new Markdown-first work.
+
+Validate a directory or archive:
+
+```bash
+python scripts/publish_article.py validate ./my-article
+python scripts/publish_article.py validate ./bundle.zip
+python scripts/publish_article.py validate ./bundle.b64
+```
+
+Pack ZIP:
+
+```bash
+python scripts/publish_article.py pack ./my-article \
+  --archive-format zip \
+  --transport binary \
+  --output ./bundle.zip
+```
+
+Pack TAR.GZ:
+
+```bash
+python scripts/publish_article.py pack ./my-article \
+  --archive-format tar.gz \
+  --transport binary \
+  --output ./bundle.tar.gz
+```
+
+Pack Base64:
+
+```bash
+python scripts/publish_article.py pack ./my-article \
+  --archive-format zip \
+  --transport b64 \
+  --output ./bundle.b64
+```
+
+Install into a local checkout:
+
+```bash
+python scripts/publish_article.py install ./bundle.zip --root .
+```
+
+The lower-level `scripts/article_bundle.py` remains available for legacy bundles that already contain final HTML.
+
+## Automatic Rendering Rules
+
+The high-level CLI regenerates HTML when:
+
+- `article.json` contains a `render` object; or
+- the declared HTML file is missing.
+
+Use `--render` to force regeneration for a bundle without explicit render configuration:
+
+```bash
+python scripts/publish_article.py validate ./legacy-bundle --render
+```
+
+Generated HTML should not be treated as the primary editable source. Change Markdown or the shared template and render again.
+
 ## Installation Mapping
 
-During installation the bundle is mapped to the repository:
+During installation:
 
 ```text
 article.html
   -> blog/posts/<slug>.html
 
-content/ru.md
-  -> blog/content/<slug>.ru.md
-
 content/en.md
   -> blog/content/<slug>.en.md
+
+content/ru.md
+  -> blog/content/<slug>.ru.md
 
 article.json
   -> blog/content/<slug>.article.json
@@ -108,17 +283,17 @@ assets/*
   -> blog/assets/<slug>/*
 ```
 
-The importer also inserts or updates the matching entry in:
+The importer inserts or updates the matching entry in:
 
 ```text
 assets/js/blog-posts.js
 ```
 
-This keeps the blog index, Previous/Next navigation, and landing-page notifications synchronized.
+This synchronizes the blog index, Previous/Next navigation, and landing-page notifications.
 
-## Staging Directory
+## CI Staging
 
-For CI import, upload one transport file into:
+Upload exactly one transport into:
 
 ```text
 .article-import/<slug>/
@@ -133,29 +308,32 @@ bundle.tgz
 bundle.b64
 ```
 
-An already-expanded bundle is also supported when its directory contains:
+An expanded bundle is accepted when it contains both:
 
 ```text
 article.json
 READY
 ```
 
-The staging directory name must exactly match the manifest `slug`.
+The staging directory name must match the manifest slug.
+
+The CI workflow installs dependencies, renders Markdown, validates the result, installs files, removes staging content, and commits the generated publication.
 
 ## Validation Rules
 
-The importer rejects a bundle when:
+A bundle is rejected when:
 
 - `article.json` is missing or invalid;
-- the slug is not lowercase kebab-case;
-- the date is not `YYYY-MM-DD`;
-- rendered HTML or declared Markdown sources are missing;
+- slug is not lowercase kebab-case;
+- date is not `YYYY-MM-DD`;
+- English or Russian Markdown is missing;
 - paths escape the bundle directory;
-- archives contain symlinks, hard links, or device files;
+- archives contain links or device files;
 - an individual file exceeds 95 MB;
-- the complete expanded bundle exceeds 500 MB;
-- assets use an unsupported extension;
-- the rendered article omits required site scripts and article structure.
+- the expanded bundle exceeds 500 MB;
+- assets use unsupported extensions;
+- rendered HTML omits required site structure or scripts;
+- Markdown produces unsafe or structurally invalid HTML.
 
 ## Supported Asset Types
 
@@ -166,81 +344,43 @@ The importer rejects a bundle when:
 .json .txt
 ```
 
-Large binary media should remain below GitHub's practical file limit. For significantly larger media, use external object storage and store only a poster or preview in the repository.
-
-## CLI
-
-Validate an expanded directory or transport archive:
-
-```bash
-python scripts/article_bundle.py validate ./my-article
-python scripts/article_bundle.py validate ./bundle.zip
-python scripts/article_bundle.py validate ./bundle.b64
-```
-
-Create a ZIP:
-
-```bash
-python scripts/article_bundle.py pack ./my-article \
-  --archive-format zip \
-  --transport binary \
-  --output ./bundle.zip
-```
-
-Create TAR.GZ:
-
-```bash
-python scripts/article_bundle.py pack ./my-article \
-  --archive-format tar.gz \
-  --transport binary \
-  --output ./bundle.tar.gz
-```
-
-Create a Base64 transport package:
-
-```bash
-python scripts/article_bundle.py pack ./my-article \
-  --archive-format zip \
-  --transport b64 \
-  --output ./bundle.b64
-```
-
-Install directly into a local repository checkout:
-
-```bash
-python scripts/article_bundle.py install ./bundle.zip --root .
-```
-
-Import every ready package in the staging directory:
-
-```bash
-python scripts/article_bundle.py import-staged .article-import --root .
-```
+For significantly larger media, use external object storage and keep only posters or previews in the repository.
 
 ## Update Semantics
 
-Publishing a bundle with an existing slug updates that article:
+Publishing an existing slug updates the same article:
 
-- rendered HTML is replaced;
-- localized Markdown source files are replaced;
-- the article asset directory is replaced;
-- the installed article manifest is replaced;
-- the matching `BLOG_POSTS` entry is replaced.
+- HTML is regenerated or replaced;
+- Markdown sources are replaced;
+- article assets are replaced;
+- installed manifest is replaced;
+- matching `BLOG_POSTS` entry is replaced without duplication.
 
-Use a new slug only when the publication should become a separate article.
+Use a new slug only for a separate publication.
 
-## Source and Rendered Output
+## AI Contract
 
-Markdown is the semantic source. HTML is the rendered publication artifact.
+An AI assistant should normally produce only:
 
-The Markdown may stay compact and readable, while the rendered page uses the shared design system, galleries, lightbox, responsive layout, localization, navigation, and article-specific components. Both are kept because they serve different purposes:
+```text
+article.json
+content/en.md
+content/ru.md
+assets/*
+```
 
-- Markdown is easy to write, review, translate, and regenerate;
-- HTML is deterministic and immediately publishable by GitHub Pages.
+It should then run the renderer and validator rather than assembling the article shell manually.
 
-## AI Usage
+Before packaging, verify:
 
-AI assistants should treat this standard as a strict output contract. They may draft and revise content freely, but before packaging they must validate filenames, paths, translations, alt text, captions, manifest metadata, article scripts, and asset references.
+- metadata and slug;
+- both translations;
+- heading structure;
+- image filenames and references;
+- alt text and captions;
+- no private repository links;
+- no detached images before the title;
+- desktop, mobile, theme, language, and lightbox behavior.
 
 Operational instructions live in:
 
@@ -248,4 +388,4 @@ Operational instructions live in:
 instructions/skills/
 ```
 
-No `AGENTS.md` file is required or expected for this repository.
+No `AGENTS.md` file is required or expected.

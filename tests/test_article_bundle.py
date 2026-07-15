@@ -89,6 +89,19 @@ class ArticleBundleTests(unittest.TestCase):
             self.assertIn('"slug": "test-article"', blog_posts)
             self.assertIn('"notify": true', blog_posts)
 
+    def test_install_updates_existing_slug_without_duplicate_entry(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            bundle = self.create_bundle(root)
+            repository = self.create_repository(root)
+            manifest = load_manifest(bundle)
+
+            install_bundle(manifest, repository)
+            install_bundle(manifest, repository)
+
+            blog_posts = (repository / "assets/js/blog-posts.js").read_text(encoding="utf-8")
+            self.assertEqual(blog_posts.count('"slug": "test-article"'), 1)
+
     def test_zip_transport(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

@@ -1,6 +1,6 @@
 ---
 name: write-blog-article
-description: Draft, structure, translate, and revise technical or project-development articles for the Lotargo portfolio blog.
+description: Draft, structure, translate, and revise Markdown-first technical or project-development articles for the Lotargo portfolio blog.
 ---
 
 # Write A Blog Article
@@ -35,7 +35,7 @@ Avoid:
 ## Recommended Structure
 
 ```text
-H1 title
+H1 title in the source, optional but useful for readability
 lead paragraph
 problem or motivation
 central idea
@@ -48,14 +48,14 @@ next steps
 publication plan or conclusion
 ```
 
-The title and lead must appear before any major image.
+The title and lead must appear before any major image. The generated page uses the canonical title from `article.json`; the renderer removes the first Markdown H1 to avoid duplication.
 
 ## Markdown Contract
 
-Use one H1 and H2 headings for major sections.
+Use H2 headings for major sections. A source H1 is allowed but not required.
 
 ```md
-# Full article title
+# Full source title
 
 Opening paragraph that explains why the article exists.
 
@@ -65,14 +65,31 @@ Normal paragraphs.
 
 > One central thesis, used sparingly.
 
-![Concise alt text](../assets/<slug>/image.avif)
+![Concise alt text](assets/image.avif "Visible image caption")
 ```
 
-Use lists only where the reader benefits from enumeration. Do not convert every paragraph into bullets.
+Use `assets/<filename>` inside an Article Bundle. The renderer rewrites that path to the installed `blog/assets/<slug>/` location.
+
+The first normal paragraph automatically becomes the visual lead. Use lists only where enumeration genuinely helps the reader.
+
+Supported elements include:
+
+- paragraphs and headings;
+- emphasis and links;
+- ordered and unordered lists;
+- blockquotes;
+- tables;
+- fenced code blocks;
+- footnotes;
+- standalone images.
+
+Do not write raw HTML for layout. The site template and renderer own presentation.
 
 ## Images Inside The Narrative
 
 Images must support the section that discusses them. Do not place a large gallery before the title or make visual assets look detached from the article.
+
+One standalone image becomes an editorial figure. Consecutive standalone images become a responsive gallery and fullscreen lightbox group.
 
 A small note such as the following is enough when generated concepts need attribution:
 
@@ -94,6 +111,13 @@ Check:
 - neither language contains extra claims absent from the other;
 - titles are natural in each language;
 - English does not read like literal machine translation.
+
+The default renderer requires:
+
+```text
+content/en.md
+content/ru.md
+```
 
 ## Technical Accuracy
 
@@ -128,4 +152,11 @@ Do not publish:
 
 ## Completion Criteria
 
-Before rendering HTML, the Markdown should already be coherent when read as plain text. Styling should improve the article, not rescue an unclear draft.
+Before rendering, Markdown should already be coherent as plain text. Styling should improve the article, not rescue an unclear draft.
+
+Then run:
+
+```bash
+python scripts/publish_article.py render ./path/to/bundle
+python scripts/publish_article.py validate ./path/to/bundle
+```

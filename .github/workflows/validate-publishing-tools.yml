@@ -5,14 +5,24 @@ on:
   push:
     paths:
       - 'scripts/article_bundle.py'
+      - 'scripts/render_article.py'
+      - 'scripts/publish_article.py'
+      - 'templates/article.html'
       - 'tests/test_article_bundle.py'
+      - 'tests/test_render_article.py'
       - 'schemas/article-bundle.schema.json'
+      - 'requirements-publishing.txt'
       - '.github/workflows/validate-publishing-tools.yml'
   pull_request:
     paths:
       - 'scripts/article_bundle.py'
+      - 'scripts/render_article.py'
+      - 'scripts/publish_article.py'
+      - 'templates/article.html'
       - 'tests/test_article_bundle.py'
+      - 'tests/test_render_article.py'
       - 'schemas/article-bundle.schema.json'
+      - 'requirements-publishing.txt'
       - '.github/workflows/validate-publishing-tools.yml'
 
 permissions:
@@ -30,8 +40,20 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Compile publishing CLI
-        run: python -m py_compile scripts/article_bundle.py
+      - name: Install publishing dependencies
+        run: python -m pip install --disable-pip-version-check -r requirements-publishing.txt
 
-      - name: Run article bundle tests
-        run: python -m unittest tests.test_article_bundle -v
+      - name: Compile publishing tools
+        run: |
+          python -m py_compile scripts/article_bundle.py
+          python -m py_compile scripts/render_article.py
+          python -m py_compile scripts/publish_article.py
+
+      - name: Run publishing tests
+        run: python -m unittest tests.test_article_bundle tests.test_render_article -v
+
+      - name: Render and validate example bundle
+        run: |
+          rm -f examples/article-bundle/article.html
+          python scripts/publish_article.py render examples/article-bundle
+          python scripts/publish_article.py validate examples/article-bundle

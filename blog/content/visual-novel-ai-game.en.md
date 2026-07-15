@@ -47,7 +47,7 @@ The project needs a scene director alongside the character voice. The model may 
 
 ## Music must remember the world too
 
-Music should provide identity to places, characters, relationships, and events, following the narrative role found in strong RPG soundtracks such as *Epic Seven* and the *Final Fantasy* series without copying their compositions.
+Music should provide identity to places, characters, relationships, and events, following the narrative role found in strong RPG soundtracks such as _Epic Seven_ and the _Final Fantasy_ series without copying their compositions.
 
 Character themes may have daytime, evening, calm, romantic, tense, and cinematic variations while preserving the same recognizable motif. Music can be produced with Suno, local generators, a DAW, and manual arrangement. Final tracks become normal licensed game assets with loops, stems, and metadata.
 
@@ -68,5 +68,3 @@ Desktop and Steam are the natural primary targets, while a web version remains p
 ## Current status
 
 The project has not yet reached a playable MVP. The repository currently contains the documentation structure, product and subsystem manifestos, visual direction, scene concepts, and initial audio principles. The next step is targeted research and small prototypes before fixing the stack in a plan and implementation checklist.
-
-Project documentation: [Lotargo/visual-novel](https://github.com/Lotargo/visual-novel)

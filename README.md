@@ -10,14 +10,14 @@ https://lotargo.github.io
 
 The public runtime remains static-first: plain HTML, CSS, JavaScript, Markdown source copies, and ordinary binary assets served by GitHub Pages. No backend or client-side framework is required.
 
-For publishing, the repository now also includes an optional Article Bundle pipeline. A person or AI assistant can prepare one portable package, upload it to a staging directory, and let GitHub Actions validate and install the article as normal static files.
+The publishing toolchain can now take bilingual Markdown, metadata, and assets, generate deterministic article HTML, package the result, and install it through GitHub Actions.
 
 ## Repository Structure
 
 ```text
 index.html                         Main portfolio landing page
 blog/index.html                    Blog index page
-blog/posts/                        Rendered static HTML articles
+blog/posts/                        Generated or legacy static HTML articles
 blog/content/                      Markdown sources and installed article manifests
 blog/assets/                       Per-article images, diagrams, audio, and video
 assets/css/styles.css              Main visual system
@@ -30,8 +30,12 @@ assets/js/blog-index.js            Blog index renderer
 assets/js/blog-post.js             Article helpers and Previous/Next navigation
 assets/js/image-viewer.js          Reusable lightbox and gallery navigation
 assets/js/notifications.js         Notification builder from the blog manifest
-scripts/article_bundle.py          Standard bundle validator, packer, and installer
+scripts/render_article.py          Markdown-to-HTML renderer
+scripts/publish_article.py         High-level render/validate/pack/install CLI
+scripts/article_bundle.py          Low-level bundle validator and installer
 scripts/import_asset_bundle.py     Legacy Base64 asset importer
+templates/article.html             Shared bilingual article template
+requirements-publishing.txt        Pinned publishing-only dependency
 schemas/article-bundle.schema.json Machine-readable bundle manifest schema
 instructions/                      Task-specific human and AI publishing skills
 docs/                              Publishing standards and project documentation
@@ -42,20 +46,45 @@ v0_PROMPT.md                       Historical reference prompt
 
 ## The Blog As A Publishing Engine
 
-Markdown is treated as the semantic source of an article. Rendered HTML is the deterministic publication artifact.
+Markdown is the semantic source of an article. HTML is a generated publication artifact.
 
-A compact source document can become a full editorial page with:
+```text
+article.json + ru.md + en.md + assets
+                  ↓
+        deterministic renderer
+                  ↓
+       styled bilingual article.html
+                  ↓
+      bundle validation and import
+                  ↓
+        plain GitHub Pages output
+```
 
-- shared typography and spacing;
-- dark and light themes;
-- Russian and English content;
-- responsive layouts;
-- image galleries and fullscreen lightbox;
-- Previous/Next navigation;
-- blog index cards;
-- landing-page notifications.
+The renderer applies the existing site design and automatically creates:
 
-The design system stays in the site. The article source focuses on ideas, structure, images, captions, code, and evidence.
+- the article shell, toolbar, header, footer, and metadata;
+- Russian and English content blocks;
+- the canonical H1 from `article.json`;
+- a lead paragraph from the first Markdown paragraph;
+- headings, lists, blockquotes, tables, fenced code, links, and footnotes;
+- editorial figures from standalone Markdown images;
+- lightbox galleries from consecutive standalone images;
+- article asset URLs from simple `assets/<file>` Markdown paths;
+- fallback Previous/Next navigation later normalized by the shared manifest.
+
+A source file may still contain frontmatter or its own H1. The renderer removes those duplicate presentation elements and uses `article.json` as the canonical metadata source.
+
+Legacy hand-authored HTML remains supported. A bundle is rendered automatically when it contains a `render` object or when its declared HTML file is missing.
+
+## Install Publishing Dependencies
+
+The dependency is used only by the publishing tools, not by the public website:
+
+```bash
+python -m pip install -r requirements-publishing.txt
+```
+
+The renderer uses the pinned Python-Markdown package with its maintained extensions for tables, fenced code, footnotes, attribute lists, and related Markdown features.
 
 ## Article Bundle Standard
 
@@ -71,12 +100,11 @@ bundle.b64
 
 Base64 remains supported for text-only tools. When normal binary upload is possible, ZIP or TAR.GZ is preferred.
 
-Canonical expanded layout:
+Canonical Markdown-first layout:
 
 ```text
 my-article/
 ├── article.json
-├── article.html
 ├── content/
 │   ├── ru.md
 │   └── en.md
@@ -86,12 +114,78 @@ my-article/
     └── diagram.svg
 ```
 
-Full standard:
+`article.html` is generated before validation, packing, or installation.
+
+Minimal render configuration:
+
+```json
+{
+  "html": "article.html",
+  "render": {
+    "engine": "markdown",
+    "template": "default"
+  }
+}
+```
+
+Full standard and example:
 
 ```text
 docs/ARTICLE_BUNDLE_STANDARD.md
 schemas/article-bundle.schema.json
+examples/article-bundle/
 ```
+
+## Publishing CLI
+
+Render an expanded bundle:
+
+```bash
+python scripts/publish_article.py render ./my-article
+```
+
+Render when needed and validate:
+
+```bash
+python scripts/publish_article.py validate ./my-article
+python scripts/publish_article.py validate ./bundle.zip
+python scripts/publish_article.py validate ./bundle.b64
+```
+
+Pack ZIP:
+
+```bash
+python scripts/publish_article.py pack ./my-article \
+  --archive-format zip \
+  --transport binary \
+  --output ./bundle.zip
+```
+
+Pack TAR.GZ:
+
+```bash
+python scripts/publish_article.py pack ./my-article \
+  --archive-format tar.gz \
+  --transport binary \
+  --output ./bundle.tar.gz
+```
+
+Pack Base64 for a text-only transport:
+
+```bash
+python scripts/publish_article.py pack ./my-article \
+  --archive-format zip \
+  --transport b64 \
+  --output ./bundle.b64
+```
+
+Install directly into a local checkout:
+
+```bash
+python scripts/publish_article.py install ./bundle.zip --root .
+```
+
+The lower-level `scripts/article_bundle.py` remains available for legacy bundles that already contain final HTML and do not need rendering.
 
 ## Automated Bundle Publishing
 
@@ -106,59 +200,44 @@ Upload one package to:
 
 The `Import article bundles` GitHub Actions workflow:
 
-1. validates the transport and archive paths;
-2. reads `article.json`;
-3. installs rendered HTML into `blog/posts/`;
-4. installs Markdown and the manifest into `blog/content/`;
-5. installs normal binary assets into `blog/assets/<slug>/`;
-6. inserts or updates the post in `assets/js/blog-posts.js`;
-7. removes the temporary staging package;
-8. commits the resulting static files.
+1. installs the publishing dependency;
+2. safely extracts the transport;
+3. generates `article.html` from Markdown when required;
+4. validates the rendered result and manifest;
+5. installs HTML into `blog/posts/`;
+6. installs Markdown and the manifest into `blog/content/`;
+7. installs binary assets into `blog/assets/<slug>/`;
+8. inserts or updates the article in `assets/js/blog-posts.js`;
+9. removes the staging package;
+10. commits the resulting static files.
 
-The published site never serves the transport archive or Base64 wrapper.
+The public site never serves the transport archive or Base64 wrapper.
 
-## Article Bundle CLI
+## Markdown Image Rules
 
-Validate:
+Use ordinary Markdown and keep images where they belong in the narrative:
 
-```bash
-python scripts/article_bundle.py validate ./my-article
-python scripts/article_bundle.py validate ./bundle.zip
-python scripts/article_bundle.py validate ./bundle.b64
+```md
+## Visual direction
+
+The first screen should immediately feel like a game.
+
+![Main screen concept](assets/main-screen.avif "Main screen concept")
 ```
 
-Pack ZIP:
+One standalone image becomes an editorial figure. Consecutive standalone images become a responsive gallery:
 
-```bash
-python scripts/article_bundle.py pack ./my-article \
-  --archive-format zip \
-  --transport binary \
-  --output ./bundle.zip
+```md
+![Apartment](assets/apartment.avif "Evening apartment")
+
+![Classroom](assets/classroom.avif "Daytime classroom")
+
+![Park](assets/park.avif "Park at sunset")
 ```
 
-Pack TAR.GZ:
+The optional Markdown image title becomes the visible caption. When no title is supplied, alt text is used as the caption.
 
-```bash
-python scripts/article_bundle.py pack ./my-article \
-  --archive-format tar.gz \
-  --transport binary \
-  --output ./bundle.tar.gz
-```
-
-Pack Base64 for a text-only transport:
-
-```bash
-python scripts/article_bundle.py pack ./my-article \
-  --archive-format zip \
-  --transport b64 \
-  --output ./bundle.b64
-```
-
-Install directly into a local checkout:
-
-```bash
-python scripts/article_bundle.py install ./bundle.zip --root .
-```
+Store real binary images in the bundle. Do not embed large raster images as Base64 inside published HTML or SVG.
 
 ## Publishing Skills
 
@@ -171,6 +250,7 @@ instructions/skills/
 Available skills:
 
 ```text
+render-markdown-article Render Markdown into the shared bilingual article template
 publish-binary-bundle  Package and upload ZIP/TAR.GZ/TGZ/Base64
 publish-with-cli       Work from a terminal or coding-agent checkout
 publish-manually       Edit repository files without the importer
@@ -185,21 +265,17 @@ Start with:
 instructions/README.md
 ```
 
-The repository intentionally does not use `AGENTS.md`. Task-specific skills provide narrower and more useful operational context.
+The repository intentionally does not use `AGENTS.md`. Task-specific skills provide narrower operational context.
 
 ## Blog Metadata Automation
 
-`assets/js/blog-posts.js` is the runtime source of truth for static article metadata.
-
-It drives:
+`assets/js/blog-posts.js` is the runtime source of truth for static article metadata. It drives:
 
 - blog index cards;
 - Previous/Next article navigation;
 - landing-page notifications for posts with `notify: true`.
 
-When using an Article Bundle, the importer updates this file automatically.
-
-When publishing manually, add one entry to `window.BLOG_POSTS`. Do not manually duplicate cards in `blog/index.html` or notifications in `assets/js/notifications.js`.
+The bundle importer updates this file automatically. Manual publishers add one entry to `window.BLOG_POSTS`; they do not duplicate cards in `blog/index.html` or notifications in `assets/js/notifications.js`.
 
 Manual checklist:
 
@@ -209,7 +285,7 @@ docs/ADDING_BLOG_ARTICLES.md
 
 ## Image Galleries
 
-Blog images can open in a reusable fullscreen viewer with keyboard, touch, captions, counters, and gallery navigation.
+Blog images open in a reusable fullscreen viewer with keyboard controls, captions, counters, and gallery navigation.
 
 Documentation:
 
@@ -217,8 +293,6 @@ Documentation:
 docs/IMAGE_GALLERIES.md
 instructions/skills/prepare-article-images/SKILL.md
 ```
-
-Store real binary images in the repository. Do not embed low-resolution raster images inside SVG or Base64 payloads in published HTML.
 
 ## Editing Project Cards
 
@@ -244,23 +318,11 @@ demoUrl
 docsUrl
 ```
 
-Project images are normally stored in:
-
-```text
-assets/img/
-```
-
-Use relative paths from the site root:
-
-```js
-image: "./assets/img/project-name.png"
-```
+Project images are normally stored in `assets/img/` and use relative paths from the site root.
 
 ## Local Preview And Testing
 
-A local static server is better than opening HTML directly because it catches path, asset, caching, and browser-loading problems.
-
-### Python
+A local static server catches path, asset, caching, and browser-loading problems.
 
 ```powershell
 python -m http.server 4173
@@ -272,6 +334,12 @@ Windows launcher:
 py -m http.server 4173
 ```
 
+Or Node.js:
+
+```powershell
+npx --yes http-server . -p 4173 -c-1
+```
+
 Open:
 
 ```text
@@ -280,19 +348,7 @@ http://127.0.0.1:4173/blog/
 http://127.0.0.1:4173/blog/posts/<slug>.html
 ```
 
-### Node.js
-
-```powershell
-npx --yes http-server . -p 4173 -c-1
-```
-
-The `-c-1` flag disables caching, which is useful when checking CSS, JavaScript, and image updates.
-
-Use the full review procedure:
-
-```text
-instructions/skills/review-publication/SKILL.md
-```
+Use the full review procedure in `instructions/skills/review-publication/SKILL.md`.
 
 ## Deployment Through GitHub Pages
 
@@ -304,8 +360,8 @@ instructions/skills/review-publication/SKILL.md
 
 ## Profile README Button
 
-`PROFILE_README_SNIPPET.md` contains the badge/snippet intended for the `Lotargo/Lotargo` profile README. It points profile visitors to this landing page.
+`PROFILE_README_SNIPPET.md` contains the badge/snippet intended for the `Lotargo/Lotargo` profile README.
 
 ## Future Migration Note
 
-`v0_PROMPT.md` is kept only as a reference in case this static page is ever rebuilt as a Next.js/Vercel project. The current site does not depend on it.
+`v0_PROMPT.md` is kept only as a historical reference. The current site does not depend on Next.js, Vite, Astro, Vercel, or another application framework.

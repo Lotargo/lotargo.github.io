@@ -202,7 +202,40 @@ window.BLOG_POSTS = [
       ru: 'Первая публичная концепция: scene-first UX, составной и cinematic-режимы, музыка, память и путь от MVP до Steam.'
     },
     notify: true
+  },
+  {
+    "slug": "chatgpt-remote-pc-plugin",
+    "date": "2026-07-19",
+    "href": "./chatgpt-remote-pc-plugin.html",
+    "url": "./blog/posts/chatgpt-remote-pc-plugin.html",
+    "type": {
+      "en": "AI infrastructure",
+      "ru": "Инфраструктура ИИ"
+    },
+    "title": {
+      "en": "A ChatGPT Plugin for Remote Access to a User PC",
+      "ru": "Плагин для удалённого доступа ChatGPT к пользовательскому ПК"
+    },
+    "shortTitle": {
+      "en": "ChatGPT Remote PC Plugin",
+      "ru": "Плагин удалённого ПК"
+    },
+    "description": {
+      "en": "An architecture concept for connecting regular ChatGPT to a remote Windows PC through App/MCP, Cloudflare Tunnel, and a local agent.",
+      "ru": "Архитектурный концепт плагина, который связывает обычный ChatGPT с удалённым Windows-ПК через App/MCP, Cloudflare Tunnel и локальный агент."
+    },
+    "notificationId": "2026-07-19-chatgpt-remote-pc-plugin",
+    "notificationTitle": {
+      "en": "New infrastructure concept",
+      "ru": "Новая инфраструктурная концепция"
+    },
+    "notificationText": {
+      "en": "Plugin, MCP, Cloudflare Tunnel, and a Windows agent: a path from regular ChatGPT to a real user PC.",
+      "ru": "Плагин, MCP, Cloudflare Tunnel и Windows-агент: как дать обычному ChatGPT реальный доступ к пользовательскому ПК."
+    },
+    "notify": true
   }
+
 ];
 
 window.BLOG_SITE_NOTIFICATIONS = [

@@ -55,3 +55,68 @@ body::after {
   color: var(--fg);
   -webkit-text-stroke: 0;
 }
+
+/*
+  Large Cyrillic headings need more vertical room than the original Latin-first
+  typography. Do not split words at arbitrary letters: resize or move the
+  surrounding layout instead.
+*/
+.section h2 {
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+  text-wrap: balance;
+}
+
+html[lang="ru"] .section h2 {
+  line-height: 1.06;
+  letter-spacing: -0.025em;
+}
+
+/*
+  At laptop and small desktop widths the project filters and evidence panel
+  previously squeezed headings into a narrow column. Stack these areas before
+  the text starts breaking inside words.
+*/
+@media (max-width: 1180px) {
+  .section,
+  .section-heading-row,
+  .evidence-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .section-label {
+    padding-top: 0;
+  }
+
+  .section-heading-row,
+  .evidence-grid {
+    align-items: start;
+  }
+
+  .filter-bar {
+    justify-content: flex-start;
+    max-width: none;
+  }
+
+  .section h2 {
+    max-width: 100%;
+    font-size: clamp(42px, 7.2vw, 76px);
+  }
+}
+
+@media (max-width: 640px) {
+  .section h2 {
+    font-size: clamp(34px, 12.5vw, 58px);
+    line-height: 1.04;
+    letter-spacing: -0.03em;
+    text-wrap: pretty;
+  }
+
+  html[lang="ru"] .section h2 {
+    line-height: 1.08;
+    letter-spacing: -0.015em;
+  }
+}

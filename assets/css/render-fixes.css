@@ -76,6 +76,15 @@ html[lang="ru"] .section h2 {
 }
 
 /*
+  The engineering-approach heading shares its row with a fixed-width panel.
+  Keep the type large, but cap it to the actual width of the text column so
+  long Cyrillic words do not render underneath the neighbouring panel.
+*/
+.evidence-grid h2 {
+  font-size: clamp(40px, 3.8vw, 58px);
+}
+
+/*
   At laptop and small desktop widths the project filters and evidence panel
   previously squeezed headings into a narrow column. Stack these areas before
   the text starts breaking inside words.

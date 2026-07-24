@@ -15,7 +15,7 @@
     const link = document.createElement('link');
     link.rel = 'stylesheet';
     link.dataset.telegramUiStyles = 'true';
-    link.href = new URL('../css/telegram.css?v=20260724-1', scriptUrl).href;
+    link.href = new URL('../css/telegram.css?v=20260724-2', scriptUrl).href;
     document.head.appendChild(link);
   }
 
@@ -191,7 +191,6 @@
     try {
       const response = await fetch(stateUrl, { cache: 'no-store' });
       if (!response.ok) return;
-
       const state = await response.json();
       const postUrl = safeTelegramPostUrl(state?.posts?.[slug]?.post_url);
       if (postUrl) addArticlePostLink(article, postUrl);

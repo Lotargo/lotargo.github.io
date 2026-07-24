@@ -8,6 +8,16 @@
       "message_id": 3,
       "post_url": "https://t.me/lotargo_blog/3",
       "source_hash": "sha256:75c425241cea4e69dad869d62557edde6c4bec08253f50be8165c98d705016bb"
+    },
+    "telegram-editions-two-formats": {
+      "article_url": "https://lotargo.github.io/blog/posts/telegram-editions-two-formats.html",
+      "channel_id": -1004375080506,
+      "channel_username": "lotargo_blog",
+      "message_id": 4,
+      "post_url": "https://t.me/lotargo_blog/4",
+      "presentation": "photo-caption",
+      "source_hash": "sha256:0614fe52634f78e69db067c7101309e9aac43a7324573a08dfac9f7842112c4d",
+      "telegram_source": "telegram-editions-two-formats.tg-RU.md"
     }
   }
 }

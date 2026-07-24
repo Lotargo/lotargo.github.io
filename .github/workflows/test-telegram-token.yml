@@ -1,4 +1,4 @@
-name: Telegram bot token check
+name: Telegram integration check
 
 on:
   workflow_dispatch:
@@ -12,63 +12,140 @@ permissions:
   contents: read
 
 jobs:
-  verify-token:
-    name: Verify TELEGRAM_BOT_TOKEN
+  verify-telegram:
+    name: Verify bot and channel access
     runs-on: ubuntu-latest
     timeout-minutes: 2
 
     steps:
-      - name: Call Telegram getMe
+      - name: Check Telegram bot and channel permissions
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_RU_CHAT_ID: ${{ vars.TELEGRAM_RU_CHAT_ID }}
         run: |
           python - <<'PY'
           import json
           import os
           import sys
           import urllib.error
+          import urllib.parse
           import urllib.request
+
+
+          def fail(title: str, message: str) -> "NoReturn":
+              print(f"::error title={title}::{message}")
+              raise SystemExit(1)
+
+
+          def warning(title: str, message: str) -> None:
+              print(f"::warning title={title}::{message}")
+
 
           token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
           if not token:
-              print("::error title=Missing GitHub secret::TELEGRAM_BOT_TOKEN is empty or unavailable")
-              sys.exit(1)
+              fail("Missing GitHub secret", "TELEGRAM_BOT_TOKEN is empty or unavailable")
 
-          request = urllib.request.Request(
-              f"https://api.telegram.org/bot{token}/getMe",
-              headers={"User-Agent": "lotargo-telegram-token-check/1.0"},
-          )
+          raw_chat_id = os.environ.get("TELEGRAM_RU_CHAT_ID", "").strip()
+          if not raw_chat_id:
+              fail("Missing GitHub variable", "TELEGRAM_RU_CHAT_ID is empty or unavailable")
 
-          try:
-              with urllib.request.urlopen(request, timeout=20) as response:
-                  payload = json.load(response)
-          except urllib.error.HTTPError as error:
+          chat_id = raw_chat_id.rstrip("/")
+          for prefix in ("https://t.me/", "http://t.me/", "t.me/"):
+              if chat_id.startswith(prefix):
+                  chat_id = "@" + chat_id[len(prefix):]
+                  break
+          if not chat_id.startswith("@") and not chat_id.lstrip("-").isdigit():
+              chat_id = "@" + chat_id
+
+
+          def telegram(method: str, **params):
+              query = urllib.parse.urlencode(params)
+              url = f"https://api.telegram.org/bot{token}/{method}"
+              if query:
+                  url += "?" + query
+
+              request = urllib.request.Request(
+                  url,
+                  headers={"User-Agent": "lotargo-telegram-check/1.0"},
+              )
+
               try:
-                  error_payload = json.loads(error.read().decode("utf-8"))
-                  description = error_payload.get("description", f"HTTP {error.code}")
-              except (UnicodeDecodeError, json.JSONDecodeError):
-                  description = f"HTTP {error.code}"
-              print(f"::error title=Telegram authentication failed::{description}")
-              sys.exit(1)
-          except urllib.error.URLError as error:
-              print(f"::error title=Telegram API unavailable::{error.reason}")
-              sys.exit(1)
+                  with urllib.request.urlopen(request, timeout=20) as response:
+                      payload = json.load(response)
+              except urllib.error.HTTPError as error:
+                  try:
+                      error_payload = json.loads(error.read().decode("utf-8"))
+                      description = error_payload.get("description", f"HTTP {error.code}")
+                  except (UnicodeDecodeError, json.JSONDecodeError):
+                      description = f"HTTP {error.code}"
+                  fail(f"Telegram {method} failed", description)
+              except urllib.error.URLError as error:
+                  fail("Telegram API unavailable", str(error.reason))
 
-          if payload.get("ok") is not True:
-              description = payload.get("description", "Telegram returned ok=false")
-              print(f"::error title=Telegram token rejected::{description}")
-              sys.exit(1)
+              if payload.get("ok") is not True:
+                  fail(
+                      f"Telegram {method} rejected",
+                      payload.get("description", "Telegram returned ok=false"),
+                  )
+              return payload.get("result")
 
-          bot = payload.get("result") or {}
-          username = bot.get("username") or "<username is not set>"
-          first_name = bot.get("first_name") or "<name is not set>"
 
-          print("Telegram bot token is valid.")
-          print(f"Bot: {first_name} (@{username})")
-          print(f"Bot ID: {bot.get('id', '<unknown>')}")
-          print(f"Can join groups: {bot.get('can_join_groups', False)}")
-          print(
-              "Can read all group messages: "
-              f"{bot.get('can_read_all_group_messages', False)}"
-          )
+          bot = telegram("getMe") or {}
+          bot_id = bot.get("id")
+          if not bot_id:
+              fail("Invalid getMe response", "Telegram did not return the bot ID")
+
+          chat = telegram("getChat", chat_id=chat_id) or {}
+          if chat.get("type") != "channel":
+              fail(
+                  "Wrong Telegram target",
+                  f"TELEGRAM_RU_CHAT_ID resolves to {chat.get('type', '<unknown>')}, not a channel",
+              )
+
+          member = telegram("getChatMember", chat_id=chat_id, user_id=bot_id) or {}
+          status = member.get("status")
+          if status not in {"administrator", "creator"}:
+              fail(
+                  "Bot is not a channel administrator",
+                  f"Current membership status: {status or '<unknown>'}",
+              )
+
+          if status == "administrator" and member.get("can_post_messages") is not True:
+              fail(
+                  "Missing publication permission",
+                  "The bot does not have can_post_messages in the channel",
+              )
+
+          if status == "administrator" and member.get("can_edit_messages") is not True:
+              warning(
+                  "Edit permission is disabled",
+                  "Future article corrections will require can_edit_messages",
+              )
+
+          if status == "administrator" and member.get("can_delete_messages") is not True:
+              warning(
+                  "Delete permission is disabled",
+                  "Automatic rollback of a failed publication will not be available",
+              )
+
+          channel_username = chat.get("username")
+          channel_label = f"@{channel_username}" if channel_username else str(chat.get("id"))
+          bot_username = bot.get("username") or "<username is not set>"
+
+          print("Telegram integration check passed.")
+          print(f"Bot: {bot.get('first_name', '<name is not set>')} (@{bot_username})")
+          print(f"Channel: {chat.get('title', '<title is not set>')} ({channel_label})")
+          print(f"Membership: {status}")
+          print(f"Can post messages: {member.get('can_post_messages', status == 'creator')}")
+          print(f"Can edit messages: {member.get('can_edit_messages', status == 'creator')}")
+          print(f"Can delete messages: {member.get('can_delete_messages', status == 'creator')}")
+
+          linked_chat_id = chat.get("linked_chat_id")
+          if linked_chat_id:
+              print(f"Discussion group is linked: yes ({linked_chat_id})")
+          else:
+              warning(
+                  "No discussion group detected",
+                  "Telegram getChat did not return linked_chat_id for the channel",
+              )
           PY

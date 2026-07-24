@@ -4,6 +4,20 @@
 */
 
 (function () {
+  const currentScript = document.currentScript;
+
+  function loadTelegramUi() {
+    if (window.__LOTARGO_TELEGRAM_UI__ || document.querySelector('script[data-telegram-ui-loader]')) return;
+
+    const script = document.createElement('script');
+    script.dataset.telegramUiLoader = 'true';
+    script.src = new URL('telegram-ui.js?v=20260724-1', currentScript?.src || window.location.href).href;
+    script.async = true;
+    document.head.appendChild(script);
+  }
+
+  loadTelegramUi();
+
   const list = document.querySelector('[data-js="blog-post-list"]');
   if (!list) return;
 

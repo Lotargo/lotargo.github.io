@@ -42,6 +42,28 @@ jobs:
       - name: Install publishing dependencies
         run: python -m pip install --disable-pip-version-check -r requirements-publishing.txt
 
+      - name: Decode staged text assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64
+          from pathlib import Path
+
+          for encoded in Path('.article-import').glob('**/*.b64asset'):
+              target = encoded.with_suffix('')
+              try:
+                  target.write_bytes(base64.b64decode(encoded.read_text(encoding='ascii'), validate=True))
+              except Exception as exc:
+                  print(
+                      f"::error file={encoded.as_posix()},title=Invalid staged binary asset::"
+                      f"Cannot decode {encoded.name}: {exc}"
+                  )
+                  raise SystemExit(2)
+              encoded.unlink()
+              print(f"Decoded staged asset: {target}")
+          PY
+
       - name: Test Telegram edition tools
         run: |
           python -m unittest scripts/test_telegram_preview.py

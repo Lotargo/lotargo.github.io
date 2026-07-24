@@ -166,6 +166,10 @@
   prepareVisualNovelArticle();
   loadImageViewer().catch(() => {});
   loadBlogPostsManifest().then(normalizePostPagination).catch(() => {});
+  loadScript(
+    new URL('telegram-ui.js?v=20260724-1', scriptUrl).href,
+    'Failed to load Telegram UI'
+  ).catch(() => {});
 
   const memoryHero = document.querySelector('.memory-hero');
   if (memoryHero) {

@@ -6,9 +6,15 @@ on:
       - main
     paths:
       - "blog/content/*.article.json"
+      - "blog/content/telegram-publications.json"
       - ".github/workflows/publish-blog-to-telegram.yml"
       - "scripts/publish_telegram.py"
       - "scripts/test_publish_telegram.py"
+      - "assets/js/telegram-ui.js"
+      - "assets/js/landing-copy.js"
+      - "assets/js/blog-index.js"
+      - "assets/js/blog-post.js"
+      - "assets/css/telegram.css"
   workflow_dispatch:
     inputs:
       slug:
@@ -47,6 +53,13 @@ jobs:
 
       - name: Test Telegram publisher
         run: python -m unittest scripts/test_publish_telegram.py
+
+      - name: Check Telegram UI JavaScript
+        run: |
+          node --check assets/js/telegram-ui.js
+          node --check assets/js/landing-copy.js
+          node --check assets/js/blog-index.js
+          node --check assets/js/blog-post.js
 
       - name: Find changed article manifests
         if: github.event_name == 'push'

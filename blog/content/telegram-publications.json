@@ -1,4 +1,13 @@
 {
   "format_version": 1,
-  "posts": {}
+  "posts": {
+    "telegram-blog-publishing": {
+      "article_url": "https://lotargo.github.io/blog/posts/telegram-blog-publishing.html",
+      "channel_id": -1004375080506,
+      "channel_username": "lotargo_blog",
+      "message_id": 3,
+      "post_url": "https://t.me/lotargo_blog/3",
+      "source_hash": "sha256:75c425241cea4e69dad869d62557edde6c4bec08253f50be8165c98d705016bb"
+    }
+  }
 }

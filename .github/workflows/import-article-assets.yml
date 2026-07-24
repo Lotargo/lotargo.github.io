@@ -15,6 +15,8 @@ on:
       - 'scripts/publish_article.py'
       - 'scripts/telegram_preview.py'
       - 'scripts/test_telegram_preview.py'
+      - 'scripts/publish_telegram_article.py'
+      - 'scripts/test_publish_telegram_article.py'
 
 permissions:
   contents: write
@@ -40,8 +42,10 @@ jobs:
       - name: Install publishing dependencies
         run: python -m pip install --disable-pip-version-check -r requirements-publishing.txt
 
-      - name: Test Telegram edition guard
-        run: python -m unittest scripts/test_telegram_preview.py
+      - name: Test Telegram edition tools
+        run: |
+          python -m unittest scripts/test_telegram_preview.py
+          python -m unittest scripts/test_publish_telegram_article.py
 
       - name: Render and import standard article bundles
         run: |
@@ -93,7 +97,8 @@ jobs:
         run: |
           set -euo pipefail
           python -m unittest scripts/test_publish_telegram.py
-          python scripts/publish_telegram.py \
+          python -m unittest scripts/test_publish_telegram_article.py
+          python scripts/publish_telegram_article.py \
             --root . \
             --changed-file-list "$RUNNER_TEMP/telegram-changed-files"
 

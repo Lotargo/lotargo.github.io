@@ -1,0 +1,74 @@
+name: Telegram bot token check
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/test-telegram-token.yml
+
+permissions:
+  contents: read
+
+jobs:
+  verify-token:
+    name: Verify TELEGRAM_BOT_TOKEN
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - name: Call Telegram getMe
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import sys
+          import urllib.error
+          import urllib.request
+
+          token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
+          if not token:
+              print("::error title=Missing GitHub secret::TELEGRAM_BOT_TOKEN is empty or unavailable")
+              sys.exit(1)
+
+          request = urllib.request.Request(
+              f"https://api.telegram.org/bot{token}/getMe",
+              headers={"User-Agent": "lotargo-telegram-token-check/1.0"},
+          )
+
+          try:
+              with urllib.request.urlopen(request, timeout=20) as response:
+                  payload = json.load(response)
+          except urllib.error.HTTPError as error:
+              try:
+                  error_payload = json.loads(error.read().decode("utf-8"))
+                  description = error_payload.get("description", f"HTTP {error.code}")
+              except (UnicodeDecodeError, json.JSONDecodeError):
+                  description = f"HTTP {error.code}"
+              print(f"::error title=Telegram authentication failed::{description}")
+              sys.exit(1)
+          except urllib.error.URLError as error:
+              print(f"::error title=Telegram API unavailable::{error.reason}")
+              sys.exit(1)
+
+          if payload.get("ok") is not True:
+              description = payload.get("description", "Telegram returned ok=false")
+              print(f"::error title=Telegram token rejected::{description}")
+              sys.exit(1)
+
+          bot = payload.get("result") or {}
+          username = bot.get("username") or "<username is not set>"
+          first_name = bot.get("first_name") or "<name is not set>"
+
+          print("Telegram bot token is valid.")
+          print(f"Bot: {first_name} (@{username})")
+          print(f"Bot ID: {bot.get('id', '<unknown>')}")
+          print(f"Can join groups: {bot.get('can_join_groups', False)}")
+          print(
+              "Can read all group messages: "
+              f"{bot.get('can_read_all_group_messages', False)}"
+          )
+          PY

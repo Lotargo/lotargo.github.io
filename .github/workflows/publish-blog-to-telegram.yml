@@ -10,6 +10,8 @@ on:
       - ".github/workflows/publish-blog-to-telegram.yml"
       - "scripts/publish_telegram.py"
       - "scripts/test_publish_telegram.py"
+      - "scripts/publish_telegram_article.py"
+      - "scripts/test_publish_telegram_article.py"
       - "scripts/telegram_preview.py"
       - "scripts/test_telegram_preview.py"
       - "assets/js/telegram-ui.js"
@@ -24,7 +26,7 @@ on:
         required: true
         type: string
       dry_run:
-        description: "Preview the Telegram announcement without sending it"
+        description: "Preview the Telegram edition without sending it"
         required: true
         default: true
         type: boolean
@@ -43,7 +45,7 @@ concurrency:
 
 jobs:
   publish:
-    name: Publish Russian article announcement
+    name: Publish Russian Telegram edition
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -56,6 +58,7 @@ jobs:
       - name: Test Telegram publishing tools
         run: |
           python -m unittest scripts/test_publish_telegram.py
+          python -m unittest scripts/test_publish_telegram_article.py
           python -m unittest scripts/test_telegram_preview.py
 
       - name: Check Telegram UI JavaScript
@@ -83,7 +86,7 @@ jobs:
           echo "Changed article manifests:"
           cat .telegram-changed-files || true
 
-      - name: Publish article announcement
+      - name: Publish Telegram edition
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_RU_CHAT_ID: ${{ vars.TELEGRAM_RU_CHAT_ID }}
@@ -102,9 +105,9 @@ jobs:
               args+=(--force)
             fi
 
-            python scripts/publish_telegram.py "${args[@]}"
+            python scripts/publish_telegram_article.py "${args[@]}"
           else
-            python scripts/publish_telegram.py \
+            python scripts/publish_telegram_article.py \
               --root . \
               --changed-file-list .telegram-changed-files
           fi

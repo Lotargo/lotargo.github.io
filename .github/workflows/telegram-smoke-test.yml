@@ -1,0 +1,132 @@
+name: Telegram channel smoke test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish-test-message:
+    name: Publish test message
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - name: Send smoke-test post to Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_RU_CHAT_ID: ${{ vars.TELEGRAM_RU_CHAT_ID }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import sys
+          import urllib.error
+          import urllib.request
+          from pathlib import Path
+
+
+          def fail(title: str, message: str) -> "NoReturn":
+              print(f"::error title={title}::{message}")
+              raise SystemExit(1)
+
+
+          token = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
+          if not token:
+              fail("Missing GitHub secret", "TELEGRAM_BOT_TOKEN is empty or unavailable")
+
+          chat_id = os.environ.get("TELEGRAM_RU_CHAT_ID", "").strip().rstrip("/")
+          if not chat_id:
+              fail("Missing GitHub variable", "TELEGRAM_RU_CHAT_ID is empty or unavailable")
+
+          for prefix in ("https://t.me/", "http://t.me/", "t.me/"):
+              if chat_id.startswith(prefix):
+                  chat_id = "@" + chat_id[len(prefix):]
+                  break
+          if not chat_id.startswith("@") and not chat_id.lstrip("-").isdigit():
+              chat_id = "@" + chat_id
+
+          payload = {
+              "chat_id": chat_id,
+              "text": (
+                  "<b>Канал подключён</b>\n\n"
+                  "Публикации блога lotargo.github.io теперь смогут автоматически "
+                  "появляться здесь через GitHub Actions.\n\n"
+                  "Это техническая проверка интеграции."
+              ),
+              "parse_mode": "HTML",
+              "disable_web_page_preview": True,
+              "reply_markup": {
+                  "inline_keyboard": [
+                      [
+                          {
+                              "text": "Открыть блог",
+                              "url": "https://lotargo.github.io/blog/",
+                          }
+                      ]
+                  ]
+              },
+          }
+
+          request = urllib.request.Request(
+              f"https://api.telegram.org/bot{token}/sendMessage",
+              data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
+              headers={
+                  "Content-Type": "application/json; charset=utf-8",
+                  "User-Agent": "lotargo-telegram-smoke-test/1.0",
+              },
+              method="POST",
+          )
+
+          try:
+              with urllib.request.urlopen(request, timeout=20) as response:
+                  result_payload = json.load(response)
+          except urllib.error.HTTPError as error:
+              try:
+                  error_payload = json.loads(error.read().decode("utf-8"))
+                  description = error_payload.get("description", f"HTTP {error.code}")
+              except (UnicodeDecodeError, json.JSONDecodeError):
+                  description = f"HTTP {error.code}"
+              fail("Telegram sendMessage failed", description)
+          except urllib.error.URLError as error:
+              fail("Telegram API unavailable", str(error.reason))
+
+          if result_payload.get("ok") is not True:
+              fail(
+                  "Telegram rejected the publication",
+                  result_payload.get("description", "Telegram returned ok=false"),
+              )
+
+          message = result_payload.get("result") or {}
+          message_id = message.get("message_id")
+          chat = message.get("chat") or {}
+          channel_username = chat.get("username")
+
+          if not message_id:
+              fail("Invalid Telegram response", "sendMessage did not return message_id")
+
+          post_url = (
+              f"https://t.me/{channel_username}/{message_id}"
+              if channel_username
+              else None
+          )
+
+          print("Telegram smoke test passed.")
+          print(f"Channel: {chat.get('title', '<title is not set>')}")
+          print(f"Message ID: {message_id}")
+          if post_url:
+              print(f"Post URL: {post_url}")
+
+          summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
+          if summary_path:
+              lines = [
+                  "## Telegram smoke test passed",
+                  "",
+                  f"- Channel: `{chat.get('title', '<unknown>')}`",
+                  f"- Message ID: `{message_id}`",
+              ]
+              if post_url:
+                  lines.append(f"- [Open the Telegram post]({post_url})")
+              Path(summary_path).write_text("\n".join(lines) + "\n", encoding="utf-8")
+          PY

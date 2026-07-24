@@ -1,4 +1,5 @@
 (function () {
+  const currentScript = document.currentScript;
   const COPY = {
     en: {
       "nav-evidence": "Approach",
@@ -108,7 +109,18 @@
     setMeta('meta[property="og:description"]', copy['og-desc']);
   }
 
+  function loadTelegramUi() {
+    if (window.__LOTARGO_TELEGRAM_UI__ || document.querySelector('script[data-telegram-ui-loader]')) return;
+
+    const script = document.createElement('script');
+    script.dataset.telegramUiLoader = 'true';
+    script.src = new URL('telegram-ui.js?v=20260724-1', currentScript?.src || window.location.href).href;
+    script.async = true;
+    document.head.appendChild(script);
+  }
+
   applyCopy();
+  loadTelegramUi();
 
   const languageObserver = new MutationObserver((mutations) => {
     if (mutations.some((mutation) => mutation.attributeName === 'lang')) {

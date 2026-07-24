@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="How a GitHub Pages blog gained automatic Russian Telegram announcements, duplicate protection, publication state, and article backlinks without an always-on service." />
+  <meta name="theme-color" content="#000000" />
+  <title>Static Blog to Telegram: Publishing Without a Backend · Lotargo Blog</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem('lotargo-theme');
+        document.documentElement.dataset.theme = savedTheme || 'dark';
+      } catch (error) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    })();
+  </script>
+</head>
+<body data-title-en="Static Blog to Telegram: Publishing Without a Backend · Lotargo Blog" data-title-ru="Статический блог в Telegram: публикация без отдельного бэкенда · Блог Lotargo">
+  <header class="site-header" data-js="header">
+    <a class="brand" href="../../" aria-label="Back to landing">
+      <span class="brand-mark" aria-hidden="true">LØ</span>
+      <span class="brand-text">Lotargo</span>
+    </a>
+    <div class="header-controls">
+      <nav class="nav" aria-label="Post navigation">
+        <a href="../../" data-i18n="blog-nav-home">Home</a>
+        <a href="../" data-i18n="nav-blog">Blog</a>
+        <a href="../../#projects" data-i18n="nav-projects">Projects</a>
+      </nav>
+      <button class="theme-toggle" type="button" data-js="theme-toggle" aria-label="Switch color theme">
+        <span data-js="theme-label">Theme</span>
+      </button>
+      <button class="lang-toggle" type="button" data-js="lang-toggle" aria-label="Switch language">
+        <span data-js="lang-label">EN</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top" class="post-shell">
+    <article class="post-article" data-generated-from-markdown="true" data-article-slug="telegram-blog-publishing">
+      <div class="post-toolbar">
+        <a class="post-back" href="../" data-i18n="post-back-blog">Back to blog</a>
+        <div class="post-meta">
+          <span>2026-07-24</span>
+          <span data-lang-content="en">Publishing infrastructure</span>
+          <span data-lang-content="ru">Инфраструктура публикации</span>
+        </div>
+      </div>
+
+      <div data-lang-content="en">
+        <h1>Static Blog to Telegram: Publishing Without a Backend</h1>
+        <p class="post-lead">The blog already had a deterministic Article Bundle pipeline, so Telegram did not need a separate application server. It became another distribution adapter executed by GitHub Actions after an article is installed.</p>
+
+        <h2 id="the-publishing-path">The publishing path</h2>
+
+        <p>The production flow now looks like this:</p>
+
+        <pre><code class="language-text">Article Bundle
+            ↓
+        Markdown renderer
+            ↓
+        Static GitHub Pages files
+            ↓
+        Telegram announcement
+            ↓
+        Publication state and backlink
+        </code></pre>
+
+        <p>The Telegram publisher reads the installed article manifest and Russian Markdown source. It builds a compact announcement from the Russian title and description, then adds a button pointing to the canonical article page.</p>
+
+        <h2 id="why-this-remains-static-first">Why this remains static-first</h2>
+
+        <p>There is no always-on bot process, database server, admin panel, or queue worker. GitHub Actions provides the execution environment only when a publication event occurs.</p>
+
+        <p>The bot token stays in GitHub Secrets. The public channel identifier stays in an Actions variable. The repository itself stores only non-secret publication metadata.</p>
+
+        <h2 id="duplicate-protection">Duplicate protection</h2>
+
+        <p>After Telegram accepts a post, the workflow records the message identifier, public post URL, article URL, and source hash in <code>telegram-publications.json</code>.</p>
+
+        <p>A normal retry sees the existing slug and skips it. This makes workflow restarts safe and prevents accidental duplicate announcements.</p>
+
+        <h2 id="linking-both-directions">Linking both directions</h2>
+
+        <p>The Telegram message contains a button to the full article. Once the returned message identifier is saved, the article page can show a second link back to its Telegram publication and discussion thread.</p>
+
+        <p>That closes the distribution loop:</p>
+
+        <pre><code class="language-text">Telegram announcement → full article → Telegram discussion
+        </code></pre>
+
+        <h2 id="the-useful-boundary">The useful boundary</h2>
+
+        <p>The first production version publishes a compact announcement rather than trying to reproduce every Markdown construct inside Telegram. This keeps the delivery path predictable while leaving room for later support for galleries, long-form splitting, and media groups.</p>
+
+        <p>The important part is already complete: one source article now feeds both the website and the Russian Telegram channel without introducing a second content system.</p>
+      </div>
+
+      <div data-lang-content="ru">
+        <h1>Статический блог в Telegram: публикация без отдельного бэкенда</h1>
+        <p class="post-lead">У блога уже был детерминированный конвейер Article Bundle, поэтому для Telegram не понадобился отдельный сервер приложения. Он стал ещё одним адаптером распространения, который запускается через GitHub Actions после установки статьи.</p>
+
+        <h2 id="_1">Путь публикации</h2>
+
+        <p>Теперь production-цепочка выглядит так:</p>
+
+        <pre><code class="language-text">Article Bundle
+            ↓
+        рендер Markdown
+            ↓
+        статические файлы GitHub Pages
+            ↓
+        анонс в Telegram
+            ↓
+        состояние публикации и обратная ссылка
+        </code></pre>
+
+        <p>Telegram-издатель читает установленный манифест статьи и русский Markdown-исходник. Из русского заголовка и описания он формирует компактный анонс, а затем добавляет кнопку на каноническую страницу статьи.</p>
+
+        <h2 id="static-first">Почему архитектура остаётся static-first</h2>
+
+        <p>Здесь нет постоянно работающего процесса бота, отдельной базы данных, админ-панели или очереди задач. GitHub Actions предоставляет среду исполнения только в момент публикации.</p>
+
+        <p>Токен бота хранится в GitHub Secrets. Публичный идентификатор канала находится в Actions Variable. В самом репозитории сохраняются только несекретные метаданные публикации.</p>
+
+        <h2 id="_2">Защита от дублей</h2>
+
+        <p>После успешной отправки Telegram workflow записывает идентификатор сообщения, публичную ссылку на пост, адрес статьи и хеш исходника в <code>telegram-publications.json</code>.</p>
+
+        <p>При обычном повторном запуске скрипт видит уже зарегистрированный slug и пропускает его. Поэтому перезапуск workflow безопасен и не создаёт случайных дублей.</p>
+
+        <h2 id="_3">Ссылки в обе стороны</h2>
+
+        <p>В Telegram-посте есть кнопка на полную статью. После сохранения возвращённого <code>message_id</code> страница статьи может показать обратную ссылку на Telegram-публикацию и связанную ветку обсуждения.</p>
+
+        <p>Получается замкнутый маршрут распространения:</p>
+
+        <pre><code class="language-text">анонс в Telegram → полная статья → обсуждение в Telegram
+        </code></pre>
+
+        <h2 id="_4">Практичная граница первой версии</h2>
+
+        <p>Первая production-версия публикует компактный анонс, а не пытается полностью воспроизвести в Telegram каждую конструкцию Markdown. Так доставка остаётся предсказуемой, а поддержку галерей, длинных публикаций и media group можно добавлять отдельно.</p>
+
+        <p>Главное уже работает: одна исходная статья теперь питает и сайт, и русскоязычный Telegram-канал, не создавая вторую независимую систему контента.</p>
+      </div>
+
+      <nav class="post-pagination" aria-label="Post navigation" data-i18n-aria="post-pagination-aria">
+        <span class="post-page-link is-disabled" aria-disabled="true">
+          <span data-i18n="post-prev">Previous</span>
+          <strong data-i18n="post-prev-none">No earlier post</strong>
+        </span>
+        <span class="post-page-link is-disabled" aria-disabled="true">
+          <span data-i18n="post-next">Next</span>
+          <strong data-i18n="post-next-none">No later post</strong>
+        </span>
+      </nav>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <span>Oleg Boyko / Lotargo</span>
+    <span>Blog · AI systems · verification</span>
+  </footer>
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/blog-post.js"></script>
+</body>
+</html>

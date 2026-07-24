@@ -202,7 +202,40 @@ window.BLOG_POSTS = [
       ru: 'Первая публичная концепция: scene-first UX, составной и cinematic-режимы, музыка, память и путь от MVP до Steam.'
     },
     notify: true
+  },
+  {
+    "slug": "telegram-blog-publishing",
+    "date": "2026-07-24",
+    "href": "./telegram-blog-publishing.html",
+    "url": "./blog/posts/telegram-blog-publishing.html",
+    "type": {
+      "en": "Publishing infrastructure",
+      "ru": "Инфраструктура публикации"
+    },
+    "title": {
+      "en": "Static Blog to Telegram: Publishing Without a Backend",
+      "ru": "Статический блог в Telegram: публикация без отдельного бэкенда"
+    },
+    "shortTitle": {
+      "en": "Static Blog to Telegram",
+      "ru": "Блог в Telegram"
+    },
+    "description": {
+      "en": "How a GitHub Pages blog gained automatic Russian Telegram announcements, duplicate protection, publication state, and article backlinks without an always-on service.",
+      "ru": "Как блог на GitHub Pages получил автоматические русскоязычные анонсы в Telegram, защиту от дублей, состояние публикаций и обратные ссылки без постоянно работающего сервера."
+    },
+    "notificationId": "2026-07-24-telegram-blog-publishing",
+    "notificationTitle": {
+      "en": "Telegram publishing is live",
+      "ru": "Публикация в Telegram запущена"
+    },
+    "notificationText": {
+      "en": "A practical note about turning Telegram into another output adapter of the static article pipeline.",
+      "ru": "Практическая заметка о том, как Telegram стал ещё одним выходным адаптером статического конвейера статей."
+    },
+    "notify": true
   }
+
 ];
 
 window.BLOG_SITE_NOTIFICATIONS = [

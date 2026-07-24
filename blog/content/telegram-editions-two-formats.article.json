@@ -14,6 +14,14 @@
     "tg-RU": "content/telegram/ru.md"
   },
   "assets": "assets",
+  "distribution": {
+    "telegram": {
+      "ru": {
+        "presentation": "link-preview",
+        "cover": null
+      }
+    }
+  },
   "post": {
     "notificationId": "2026-07-24-telegram-editions-two-formats",
     "type": {
@@ -30,7 +38,7 @@
     },
     "description": {
       "en": "Why the blog now keeps complete bilingual articles while Telegram receives a separate compact edition with its own formatting, cover, and discussion thread.",
-      "ru": "Почему блог теперь хранит полные двуязычные статьи, а Telegram получает отдельную компактную редакцию со своим форматированием, обложкой и веткой обсуждения."
+      "ru": "Почему блог теперь хранит полные двуязычные статьи, а Telegram получает отдельную компактную редакцию со своим форматированием и веткой обсуждения."
     },
     "notificationTitle": {
       "en": "Telegram editions are now independent",

@@ -6,7 +6,9 @@ on:
       - main
     paths:
       - "blog/content/*.article.json"
+      - "blog/content/*.md"
       - "blog/content/telegram-publications.json"
+      - "blog/assets/**"
       - ".github/workflows/publish-blog-to-telegram.yml"
       - "scripts/publish_telegram.py"
       - "scripts/test_publish_telegram.py"
@@ -31,7 +33,7 @@ on:
         default: true
         type: boolean
       force:
-        description: "Publish even when the slug is already recorded"
+        description: "Republish as a new post and remove the previously recorded message"
         required: true
         default: false
         type: boolean
@@ -45,7 +47,7 @@ concurrency:
 
 jobs:
   publish:
-    name: Publish Russian Telegram edition
+    name: Publish or update Russian Telegram edition
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -68,7 +70,7 @@ jobs:
           node --check assets/js/blog-index.js
           node --check assets/js/blog-post.js
 
-      - name: Find changed article manifests
+      - name: Find changed article content and assets
         if: github.event_name == 'push'
         shell: bash
         run: |
@@ -77,16 +79,18 @@ jobs:
 
           if [[ -z "$before" || "$before" =~ ^0+$ ]] || ! git cat-file -e "${before}^{commit}" 2>/dev/null; then
             git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" -- \
-              'blog/content/*.article.json' > .telegram-changed-files
+              'blog/content/*' \
+              'blog/assets/**' > .telegram-changed-files
           else
             git diff --name-only "$before" "$GITHUB_SHA" -- \
-              'blog/content/*.article.json' > .telegram-changed-files
+              'blog/content/*' \
+              'blog/assets/**' > .telegram-changed-files
           fi
 
-          echo "Changed article manifests:"
+          echo "Changed Telegram publication inputs:"
           cat .telegram-changed-files || true
 
-      - name: Publish Telegram edition
+      - name: Publish or update Telegram edition
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_RU_CHAT_ID: ${{ vars.TELEGRAM_RU_CHAT_ID }}

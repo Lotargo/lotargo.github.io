@@ -3,10 +3,7 @@
   "slug": "telegram-blog-publishing",
   "date": "2026-07-24",
   "html": "article.html",
-  "render": {
-    "engine": "markdown",
-    "template": "default"
-  },
+  "render": { "engine": "markdown", "template": "default" },
   "sources": {
     "en": "content/en.md",
     "ru": "content/ru.md"

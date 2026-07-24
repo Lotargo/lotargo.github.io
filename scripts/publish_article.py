@@ -25,6 +25,10 @@ from article_bundle import (
     open_bundle,
 )
 from render_article import RenderError, render_bundle
+from telegram_preview import (
+    TelegramPreviewError,
+    validate_bundle_telegram_editions,
+)
 
 
 class PublishError(RuntimeError):
@@ -48,6 +52,16 @@ def read_raw_manifest(bundle_root: Path) -> dict:
     return value
 
 
+def validate_telegram_editions(bundle_root: Path) -> None:
+    editions = validate_bundle_telegram_editions(bundle_root)
+    for edition in editions:
+        print(
+            "Valid Telegram edition: "
+            f"{edition.language} / {edition.presentation} / "
+            f"{edition.rendered_characters}/{edition.project_limit} characters"
+        )
+
+
 def prepare_bundle(bundle_root: Path, force: bool = False) -> Path:
     raw = read_raw_manifest(bundle_root)
     html_value = raw.get("html", "article.html")
@@ -56,12 +70,14 @@ def prepare_bundle(bundle_root: Path, force: bool = False) -> Path:
     html_path = bundle_root / html_value
     should_render = force or "render" in raw or not html_path.is_file()
     if should_render:
-        return render_bundle(bundle_root)
+        html_path = render_bundle(bundle_root)
+    validate_telegram_editions(bundle_root)
     return html_path
 
 
 def render_command(args: argparse.Namespace) -> None:
     output = render_bundle(args.bundle_dir, args.template)
+    validate_telegram_editions(args.bundle_dir)
     print(f"Rendered article: {output}")
 
 
@@ -89,7 +105,10 @@ def pack_command(args: argparse.Namespace) -> None:
     output = args.output.resolve()
     output.parent.mkdir(parents=True, exist_ok=True)
     if args.transport == "b64":
-        output.write_text(base64.b64encode(data).decode("ascii") + "\n", encoding="ascii")
+        output.write_text(
+            base64.b64encode(data).decode("ascii") + "\n",
+            encoding="ascii",
+        )
     else:
         output.write_bytes(data)
     print(f"Packed {manifest.slug}: {output}")
@@ -137,31 +156,54 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    render = subparsers.add_parser("render", help="Render article.html from Markdown sources")
+    render = subparsers.add_parser(
+        "render",
+        help="Render article.html from Markdown sources",
+    )
     render.add_argument("bundle_dir", type=Path)
     render.add_argument("--template", type=Path, default=None)
     render.set_defaults(func=render_command)
 
-    validate = subparsers.add_parser("validate", help="Render when needed and validate a bundle")
+    validate = subparsers.add_parser(
+        "validate",
+        help="Render when needed and validate a bundle",
+    )
     validate.add_argument("bundle", type=Path)
     add_render_flag(validate)
     validate.set_defaults(func=validate_command)
 
-    install = subparsers.add_parser("install", help="Render and install a bundle into a checkout")
+    install = subparsers.add_parser(
+        "install",
+        help="Render and install a bundle into a checkout",
+    )
     install.add_argument("bundle", type=Path)
     install.add_argument("--root", type=Path, default=Path.cwd())
     add_render_flag(install)
     install.set_defaults(func=install_command)
 
-    pack = subparsers.add_parser("pack", help="Render and pack an expanded bundle")
+    pack = subparsers.add_parser(
+        "pack",
+        help="Render and pack an expanded bundle",
+    )
     pack.add_argument("bundle_dir", type=Path)
-    pack.add_argument("--archive-format", choices=("zip", "tar.gz"), default="zip")
-    pack.add_argument("--transport", choices=("binary", "b64"), default="binary")
+    pack.add_argument(
+        "--archive-format",
+        choices=("zip", "tar.gz"),
+        default="zip",
+    )
+    pack.add_argument(
+        "--transport",
+        choices=("binary", "b64"),
+        default="binary",
+    )
     pack.add_argument("--output", type=Path, required=True)
     add_render_flag(pack)
     pack.set_defaults(func=pack_command)
 
-    staged = subparsers.add_parser("import-staged", help="Render and import staged bundles")
+    staged = subparsers.add_parser(
+        "import-staged",
+        help="Render and import staged bundles",
+    )
     staged.add_argument("staging_root", type=Path)
     staged.add_argument("--root", type=Path, default=Path.cwd())
     staged.add_argument("--allow-empty", action="store_true")
@@ -175,6 +217,10 @@ def main() -> int:
     try:
         args.func(args)
         return 0
+    except TelegramPreviewError as exc:
+        print(exc.github_annotation(), file=sys.stderr)
+        print(f"publish-article: {exc}", file=sys.stderr)
+        return 2
     except (PublishError, BundleError, RenderError) as exc:
         print(f"publish-article: {exc}", file=sys.stderr)
         return 2

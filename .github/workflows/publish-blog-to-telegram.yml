@@ -6,6 +6,9 @@ on:
       - main
     paths:
       - "blog/content/*.article.json"
+      - ".github/workflows/publish-blog-to-telegram.yml"
+      - "scripts/publish_telegram.py"
+      - "scripts/test_publish_telegram.py"
   workflow_dispatch:
     inputs:
       slug:

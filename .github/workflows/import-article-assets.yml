@@ -53,14 +53,55 @@ jobs:
           rm -f docs/.asset-pipeline-test*.txt docs/test.bin
           rm -rf blog/assets/visual-novel/hires
 
-      - name: Commit installed publication files
+      - name: Find installed article manifests
+        shell: bash
         run: |
+          set -euo pipefail
+          git ls-files --modified --others --exclude-standard -- \
+            'blog/content/*.article.json' > "$RUNNER_TEMP/telegram-changed-files"
+
+          echo "Installed article manifests:"
+          cat "$RUNNER_TEMP/telegram-changed-files" || true
+
+      - name: Commit installed publication files
+        shell: bash
+        run: |
+          set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           if git diff --cached --quiet; then
-            echo "No changes to commit"
+            echo "No publication files to commit"
+          else
+            git commit -m "Render and import staged article bundle"
+            git push
+          fi
+
+      - name: Publish installed articles to Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_RU_CHAT_ID: ${{ vars.TELEGRAM_RU_CHAT_ID }}
+          BLOG_SITE_URL: https://lotargo.github.io
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest scripts/test_publish_telegram.py
+          python scripts/publish_telegram.py \
+            --root . \
+            --changed-file-list "$RUNNER_TEMP/telegram-changed-files"
+
+      - name: Commit Telegram publication state
+        shell: bash
+        run: |
+          set -euo pipefail
+          state_file="blog/content/telegram-publications.json"
+
+          if [[ ! -f "$state_file" ]] || [[ -z "$(git status --porcelain -- "$state_file")" ]]; then
+            echo "No Telegram publication state changes to commit."
             exit 0
           fi
-          git commit -m "Render and import staged article bundle"
-          git push
+
+          git add "$state_file"
+          git commit -m "Record Telegram article publication"
+          git pull --rebase origin main
+          git push origin HEAD:main

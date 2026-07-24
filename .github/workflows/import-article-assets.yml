@@ -11,6 +11,10 @@ on:
       - '.article-import/**/READY'
       - '.asset-import/**/bundle.b64'
       - '.asset-import/**/READY'
+      - '.github/workflows/import-article-assets.yml'
+      - 'scripts/publish_article.py'
+      - 'scripts/telegram_preview.py'
+      - 'scripts/test_telegram_preview.py'
 
 permissions:
   contents: write
@@ -35,6 +39,9 @@ jobs:
 
       - name: Install publishing dependencies
         run: python -m pip install --disable-pip-version-check -r requirements-publishing.txt
+
+      - name: Test Telegram edition guard
+        run: python -m unittest scripts/test_telegram_preview.py
 
       - name: Render and import standard article bundles
         run: |

@@ -1,0 +1,107 @@
+name: Publish blog articles to Telegram
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "blog/content/*.article.json"
+  workflow_dispatch:
+    inputs:
+      slug:
+        description: "Article slug from blog/content/<slug>.article.json"
+        required: true
+        type: string
+      dry_run:
+        description: "Preview the Telegram announcement without sending it"
+        required: true
+        default: true
+        type: boolean
+      force:
+        description: "Publish even when the slug is already recorded"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: telegram-article-publishing
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish Russian article announcement
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Test Telegram publisher
+        run: python -m unittest scripts/test_publish_telegram.py
+
+      - name: Find changed article manifests
+        if: github.event_name == 'push'
+        shell: bash
+        run: |
+          set -euo pipefail
+          before="${{ github.event.before }}"
+
+          if [[ -z "$before" || "$before" =~ ^0+$ ]] || ! git cat-file -e "${before}^{commit}" 2>/dev/null; then
+            git diff-tree --no-commit-id --name-only -r "$GITHUB_SHA" -- \
+              'blog/content/*.article.json' > .telegram-changed-files
+          else
+            git diff --name-only "$before" "$GITHUB_SHA" -- \
+              'blog/content/*.article.json' > .telegram-changed-files
+          fi
+
+          echo "Changed article manifests:"
+          cat .telegram-changed-files || true
+
+      - name: Publish article announcement
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_RU_CHAT_ID: ${{ vars.TELEGRAM_RU_CHAT_ID }}
+          BLOG_SITE_URL: https://lotargo.github.io
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            args=(--root . --slug "${{ inputs.slug }}")
+
+            if [[ "${{ inputs.dry_run }}" == "true" ]]; then
+              args+=(--dry-run)
+            fi
+            if [[ "${{ inputs.force }}" == "true" ]]; then
+              args+=(--force)
+            fi
+
+            python scripts/publish_telegram.py "${args[@]}"
+          else
+            python scripts/publish_telegram.py \
+              --root . \
+              --changed-file-list .telegram-changed-files
+          fi
+
+      - name: Commit Telegram publication state
+        shell: bash
+        run: |
+          set -euo pipefail
+          state_file="blog/content/telegram-publications.json"
+
+          if [[ ! -f "$state_file" ]] || git diff --quiet -- "$state_file"; then
+            echo "No Telegram publication state changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$state_file"
+          git commit -m "Record Telegram article publication"
+          git push

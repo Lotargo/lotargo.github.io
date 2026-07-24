@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="How a GitHub Pages blog gained automatic Russian Telegram announcements, duplicate protection, publication state, and article backlinks without an always-on service." />
+  <meta name="description" content="How one Article Bundle pipeline publishes complete bilingual pages and a separate Telegram edition with validation, duplicate protection, and discussion backlinks." />
   <meta name="theme-color" content="#000000" />
-  <title>Static Blog to Telegram: Publishing Without a Backend · Lotargo Blog</title>
+  <title>Blog and Telegram Without a Separate Backend · Lotargo Blog</title>
   <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg" />
   <link rel="stylesheet" href="../../assets/css/styles.css" />
   <script>
@@ -19,7 +19,7 @@
     })();
   </script>
 </head>
-<body data-title-en="Static Blog to Telegram: Publishing Without a Backend · Lotargo Blog" data-title-ru="Статический блог в Telegram: публикация без отдельного бэкенда · Блог Lotargo">
+<body data-title-en="Blog and Telegram Without a Separate Backend · Lotargo Blog" data-title-ru="Блог и Telegram без отдельного бэкенда · Блог Lotargo">
   <header class="site-header" data-js="header">
     <a class="brand" href="../../" aria-label="Back to landing">
       <span class="brand-mark" aria-hidden="true">LØ</span>
@@ -52,101 +52,117 @@
       </div>
 
       <div data-lang-content="en">
-        <h1>Static Blog to Telegram: Publishing Without a Backend</h1>
-        <p class="post-lead">The blog already had a deterministic Article Bundle pipeline, so Telegram did not need a separate application server. It became another distribution adapter executed by GitHub Actions after an article is installed.</p>
+        <h1>Blog and Telegram Without a Separate Backend</h1>
+        <p class="post-lead">Telegram is connected to the blog neither as a second CMS nor as an always-running service. It became another output of the existing Article Bundle pipeline: one topic is prepared once and then receives different editorial forms for the website and the channel.</p>
 
-        <h2 id="the-publishing-path">The publishing path</h2>
+        <h2 id="one-source-two-publishing-forms">One source, two publishing forms</h2>
 
-        <p>The production flow now looks like this:</p>
+        <p>The website keeps complete Russian and English editions. They support large images, galleries, tables, code, responsive layout, and navigation between articles.</p>
 
-        <pre><code class="language-text">Article Bundle
-            ↓
-        Markdown renderer
-            ↓
-        Static GitHub Pages files
-            ↓
-        Telegram announcement
-            ↓
-        Publication state and backlink
-        </code></pre>
+        <p>Telegram receives a separate edition. It is not an automatic cut from the first paragraphs, but an independent Markdown source adapted for reading inside a messenger.</p>
 
-        <p>The Telegram publisher reads the installed article manifest and Russian Markdown source. It builds a compact announcement from the Russian title and description, then adds a button pointing to the canonical article page.</p>
+        <blockquote>
+        <p>The Telegram edition should contain enough substance to be read without leaving the app, while the complete canonical version remains in the blog.</p>
+        </blockquote>
 
-        <h2 id="why-this-remains-static-first">Why this remains static-first</h2>
+        <h2 id="the-publication-path">The publication path</h2>
 
-        <p>There is no always-on bot process, database server, admin panel, or queue worker. GitHub Actions provides the execution environment only when a publication event occurs.</p>
+        <ol>
+        <li>An Article Bundle contains the complete Russian and English article editions.</li>
+        <li>Optional <code>tg-RU</code> and <code>tg-EN</code> editions can be included for Telegram.</li>
+        <li>GitHub Actions validates the bundle structure, Markdown, Telegram text length, and required files.</li>
+        <li>The renderer creates the static HTML page and updates the blog index.</li>
+        <li>The Telegram publisher sends the prepared edition and adds a button to the complete article.</li>
+        <li>The returned <code>message_id</code> and public URL are stored in <code>telegram-publications.json</code>.</li>
+        <li>The article page gains a backlink to the Telegram publication and its discussion thread.</li>
+        </ol>
 
-        <p>The bot token stays in GitHub Secrets. The public channel identifier stays in an Actions variable. The repository itself stores only non-secret publication metadata.</p>
+        <h2 id="failure-protection">Failure protection</h2>
 
-        <h2 id="duplicate-protection">Duplicate protection</h2>
+        <p>The pipeline does not silently repair dangerous situations. A problem stops publication before deployment and before a Telegram message is sent.</p>
 
-        <p>After Telegram accepts a post, the workflow records the message identifier, public post URL, article URL, and source hash in <code>telegram-publications.json</code>.</p>
+        <p>The checks cover:</p>
 
-        <p>A normal retry sees the existing slug and skips it. This makes workflow restarts safe and prevents accidental duplicate announcements.</p>
+        <ul>
+        <li>the bot token and Telegram API access;</li>
+        <li>the bot's channel membership and permissions to post, edit, and delete messages;</li>
+        <li>the linked discussion group;</li>
+        <li>Article Bundle validity and safe file paths;</li>
+        <li>the recommended 3600-character limit for a text edition;</li>
+        <li>the recommended 900-character limit for a photo caption;</li>
+        <li>duplicate publication of an already recorded article slug.</li>
+        </ul>
 
-        <h2 id="linking-both-directions">Linking both directions</h2>
+        <p>When a Telegram edition is too long, GitHub Actions reports the language, rendered length, allowed limit, source path, and the exact number of characters that must be removed.</p>
 
-        <p>The Telegram message contains a button to the full article. Once the returned message identifier is saved, the article page can show a second link back to its Telegram publication and discussion thread.</p>
+        <h2 id="why-the-discussion-group-repeats-the-post">Why the discussion group repeats the post</h2>
 
-        <p>That closes the distribution loop:</p>
+        <p>A linked Telegram group is not an independent comment feed. Every channel post is copied into the group automatically and becomes the root of its own discussion thread.</p>
 
-        <pre><code class="language-text">Telegram announcement → full article → Telegram discussion
-        </code></pre>
+        <p>The duplication is therefore expected. The useful change is that the copied item is now a meaningful compact publication rather than a service-like notification.</p>
 
-        <h2 id="the-useful-boundary">The useful boundary</h2>
+        <h2 id="the-boundary-between-both-editions">The boundary between both editions</h2>
 
-        <p>The first production version publishes a compact announcement rather than trying to reproduce every Markdown construct inside Telegram. This keeps the delivery path predictable while leaving room for later support for galleries, long-form splitting, and media groups.</p>
+        <p>The channel receives one standalone post with a cover or link preview, basic formatting, and one comment thread. The website keeps the complete canonical article.</p>
 
-        <p>The important part is already complete: one source article now feeds both the website and the Russian Telegram channel without introducing a second content system.</p>
+        <p>This preserves a static-first architecture without a separate application server, while Telegram becomes a proper distribution channel instead of a second independent content-management system.</p>
       </div>
 
       <div data-lang-content="ru">
-        <h1>Статический блог в Telegram: публикация без отдельного бэкенда</h1>
-        <p class="post-lead">У блога уже был детерминированный конвейер Article Bundle, поэтому для Telegram не понадобился отдельный сервер приложения. Он стал ещё одним адаптером распространения, который запускается через GitHub Actions после установки статьи.</p>
+        <h1>Блог и Telegram без отдельного бэкенда</h1>
+        <p class="post-lead">Telegram подключён к блогу не как отдельная CMS и не как постоянно работающий сервис. Он стал ещё одним выходом уже существующего конвейера Article Bundle: одна тема подготавливается один раз, а затем получает разные редакционные формы для сайта и канала.</p>
 
-        <h2 id="_1">Путь публикации</h2>
+        <h2 id="_1">Один источник, две формы публикации</h2>
 
-        <p>Теперь production-цепочка выглядит так:</p>
+        <p>Для сайта остаются полные версии статьи на русском и английском. Они поддерживают крупные изображения, галереи, таблицы, код, адаптивную вёрстку и навигацию между материалами.</p>
 
-        <pre><code class="language-text">Article Bundle
-            ↓
-        рендер Markdown
-            ↓
-        статические файлы GitHub Pages
-            ↓
-        анонс в Telegram
-            ↓
-        состояние публикации и обратная ссылка
-        </code></pre>
+        <p>Для Telegram готовится отдельная редакция. Это не автоматически обрезанные первые абзацы, а самостоятельный Markdown-текст, адаптированный под чтение внутри мессенджера.</p>
 
-        <p>Telegram-издатель читает установленный манифест статьи и русский Markdown-исходник. Из русского заголовка и описания он формирует компактный анонс, а затем добавляет кнопку на каноническую страницу статьи.</p>
+        <blockquote>
+        <p>Telegram-версия должна быть достаточно содержательной, чтобы её можно было прочитать без перехода на сайт, но полная редакция всё равно остаётся в блоге.</p>
+        </blockquote>
 
-        <h2 id="static-first">Почему архитектура остаётся static-first</h2>
+        <h2 id="_2">Как проходит публикация</h2>
 
-        <p>Здесь нет постоянно работающего процесса бота, отдельной базы данных, админ-панели или очереди задач. GitHub Actions предоставляет среду исполнения только в момент публикации.</p>
+        <ol>
+        <li>Article Bundle содержит полные русскую и английскую версии статьи.</li>
+        <li>При необходимости в пакет добавляются отдельные <code>tg-RU</code> и <code>tg-EN</code> редакции.</li>
+        <li>GitHub Actions проверяет структуру пакета, Markdown, длину Telegram-текста и доступность обязательных файлов.</li>
+        <li>Рендерер создаёт статическую HTML-страницу и обновляет индекс блога.</li>
+        <li>Telegram-издатель отправляет подготовленную редакцию в канал и добавляет кнопку на полную статью.</li>
+        <li>Полученный <code>message_id</code> и публичная ссылка сохраняются в <code>telegram-publications.json</code>.</li>
+        <li>Страница статьи показывает обратную кнопку на публикацию и обсуждение в Telegram.</li>
+        </ol>
 
-        <p>Токен бота хранится в GitHub Secrets. Публичный идентификатор канала находится в Actions Variable. В самом репозитории сохраняются только несекретные метаданные публикации.</p>
+        <h2 id="_3">Защита от ошибок</h2>
 
-        <h2 id="_2">Защита от дублей</h2>
+        <p>Конвейер не пытается исправлять опасные ситуации молча. При проблеме публикация останавливается до деплоя и отправки сообщения.</p>
 
-        <p>После успешной отправки Telegram workflow записывает идентификатор сообщения, публичную ссылку на пост, адрес статьи и хеш исходника в <code>telegram-publications.json</code>.</p>
+        <p>Проверяются:</p>
 
-        <p>При обычном повторном запуске скрипт видит уже зарегистрированный slug и пропускает его. Поэтому перезапуск workflow безопасен и не создаёт случайных дублей.</p>
+        <ul>
+        <li>токен бота и доступ к Telegram API;</li>
+        <li>статус бота в канале и право публиковать, редактировать и удалять сообщения;</li>
+        <li>наличие привязанной группы обсуждений;</li>
+        <li>корректность Article Bundle и безопасные пути к файлам;</li>
+        <li>рекомендуемый лимит 3600 символов для текстовой редакции;</li>
+        <li>рекомендуемый лимит 900 символов для подписи к изображению;</li>
+        <li>повторная публикация уже зарегистрированного <code>slug</code>.</li>
+        </ul>
 
-        <h2 id="_3">Ссылки в обе стороны</h2>
+        <p>Если Telegram-редакция слишком длинная, GitHub Actions показывает язык, фактическую длину, допустимый предел, путь к исходнику и точное количество символов, которое нужно убрать.</p>
 
-        <p>В Telegram-посте есть кнопка на полную статью. После сохранения возвращённого <code>message_id</code> страница статьи может показать обратную ссылку на Telegram-публикацию и связанную ветку обсуждения.</p>
+        <h2 id="_4">Почему группа повторяет публикацию</h2>
 
-        <p>Получается замкнутый маршрут распространения:</p>
+        <p>Связанная группа Telegram не является отдельной лентой комментариев. Каждый пост канала автоматически появляется в ней и становится корнем своей ветки обсуждения.</p>
 
-        <pre><code class="language-text">анонс в Telegram → полная статья → обсуждение в Telegram
-        </code></pre>
+        <p>Поэтому дублирование сообщения в группе ожидаемо. Практический смысл новой редакционной модели в том, что теперь дублируется не служебное уведомление, а полноценная компактная публикация, которую можно читать и обсуждать внутри Telegram.</p>
 
-        <h2 id="_4">Практичная граница первой версии</h2>
+        <h2 id="_5">Где проходит граница</h2>
 
-        <p>Первая production-версия публикует компактный анонс, а не пытается полностью воспроизвести в Telegram каждую конструкцию Markdown. Так доставка остаётся предсказуемой, а поддержку галерей, длинных публикаций и media group можно добавлять отдельно.</p>
+        <p>Канал получает одну самостоятельную публикацию с обложкой или предпросмотром ссылки, базовым форматированием и одной веткой комментариев. Сайт сохраняет каноническую полную версию материала.</p>
 
-        <p>Главное уже работает: одна исходная статья теперь питает и сайт, и русскоязычный Telegram-канал, не создавая вторую независимую систему контента.</p>
+        <p>Так блог остаётся static-first системой без отдельного сервера, а Telegram становится полноценным каналом распространения, а не второй независимой системой управления контентом.</p>
       </div>
 
       <nav class="post-pagination" aria-label="Post navigation" data-i18n-aria="post-pagination-aria">

@@ -213,16 +213,16 @@ window.BLOG_POSTS = [
       "ru": "Инфраструктура публикации"
     },
     "title": {
-      "en": "Static Blog to Telegram: Publishing Without a Backend",
-      "ru": "Статический блог в Telegram: публикация без отдельного бэкенда"
+      "en": "Blog and Telegram Without a Separate Backend",
+      "ru": "Блог и Telegram без отдельного бэкенда"
     },
     "shortTitle": {
-      "en": "Static Blog to Telegram",
-      "ru": "Блог в Telegram"
+      "en": "Blog and Telegram",
+      "ru": "Блог и Telegram"
     },
     "description": {
-      "en": "How a GitHub Pages blog gained automatic Russian Telegram announcements, duplicate protection, publication state, and article backlinks without an always-on service.",
-      "ru": "Как блог на GitHub Pages получил автоматические русскоязычные анонсы в Telegram, защиту от дублей, состояние публикаций и обратные ссылки без постоянно работающего сервера."
+      "en": "How one Article Bundle pipeline publishes complete bilingual pages and a separate Telegram edition with validation, duplicate protection, and discussion backlinks.",
+      "ru": "Как единый конвейер Article Bundle публикует двуязычные страницы и отдельную Telegram-редакцию с валидацией, защитой от дублей и обратными ссылками на обсуждение."
     },
     "notificationId": "2026-07-24-telegram-blog-publishing",
     "notificationTitle": {
@@ -230,8 +230,8 @@ window.BLOG_POSTS = [
       "ru": "Публикация в Telegram запущена"
     },
     "notificationText": {
-      "en": "A practical note about turning Telegram into another output adapter of the static article pipeline.",
-      "ru": "Практическая заметка о том, как Telegram стал ещё одним выходным адаптером статического конвейера статей."
+      "en": "The publishing pipeline now supports complete website articles and a separate Telegram editorial format.",
+      "ru": "Конвейер публикации теперь поддерживает полные статьи на сайте и отдельный редакционный формат для Telegram."
     },
     "notify": true
   },

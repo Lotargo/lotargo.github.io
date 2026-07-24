@@ -10,6 +10,8 @@ on:
       - ".github/workflows/publish-blog-to-telegram.yml"
       - "scripts/publish_telegram.py"
       - "scripts/test_publish_telegram.py"
+      - "scripts/telegram_preview.py"
+      - "scripts/test_telegram_preview.py"
       - "assets/js/telegram-ui.js"
       - "assets/js/landing-copy.js"
       - "assets/js/blog-index.js"
@@ -51,8 +53,10 @@ jobs:
         with:
           fetch-depth: 2
 
-      - name: Test Telegram publisher
-        run: python -m unittest scripts/test_publish_telegram.py
+      - name: Test Telegram publishing tools
+        run: |
+          python -m unittest scripts/test_publish_telegram.py
+          python -m unittest scripts/test_telegram_preview.py
 
       - name: Check Telegram UI JavaScript
         run: |

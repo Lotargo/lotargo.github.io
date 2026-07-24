@@ -1,0 +1,43 @@
+{
+  "format_version": 1,
+  "slug": "telegram-blog-publishing",
+  "date": "2026-07-24",
+  "html": "article.html",
+  "render": {
+    "engine": "markdown",
+    "template": "default"
+  },
+  "sources": {
+    "en": "content/en.md",
+    "ru": "content/ru.md"
+  },
+  "assets": null,
+  "post": {
+    "notificationId": "2026-07-24-telegram-blog-publishing",
+    "type": {
+      "en": "Publishing infrastructure",
+      "ru": "Инфраструктура публикации"
+    },
+    "title": {
+      "en": "Blog and Telegram Without a Separate Backend",
+      "ru": "Блог и Telegram без отдельного бэкенда"
+    },
+    "shortTitle": {
+      "en": "Blog and Telegram",
+      "ru": "Блог и Telegram"
+    },
+    "description": {
+      "en": "How one Article Bundle pipeline publishes complete bilingual pages and a separate Telegram edition with validation, duplicate protection, and discussion backlinks.",
+      "ru": "Как единый конвейер Article Bundle публикует двуязычные страницы и отдельную Telegram-редакцию с валидацией, защитой от дублей и обратными ссылками на обсуждение."
+    },
+    "notificationTitle": {
+      "en": "Telegram publishing is live",
+      "ru": "Публикация в Telegram запущена"
+    },
+    "notificationText": {
+      "en": "The publishing pipeline now supports complete website articles and a separate Telegram editorial format.",
+      "ru": "Конвейер публикации теперь поддерживает полные статьи на сайте и отдельный редакционный формат для Telegram."
+    },
+    "notify": true
+  }
+}

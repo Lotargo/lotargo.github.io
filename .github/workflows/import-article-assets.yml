@@ -86,14 +86,15 @@ jobs:
           rm -f docs/.asset-pipeline-test*.txt docs/test.bin
           rm -rf blog/assets/visual-novel/hires
 
-      - name: Find installed article manifests
+      - name: Find changed Telegram publication inputs
         shell: bash
         run: |
           set -euo pipefail
           git ls-files --modified --others --exclude-standard -- \
-            'blog/content/*.article.json' > "$RUNNER_TEMP/telegram-changed-files"
+            'blog/content/*' \
+            'blog/assets/**' > "$RUNNER_TEMP/telegram-changed-files"
 
-          echo "Installed article manifests:"
+          echo "Changed article content and assets:"
           cat "$RUNNER_TEMP/telegram-changed-files" || true
 
       - name: Commit installed publication files
@@ -110,7 +111,7 @@ jobs:
             git push
           fi
 
-      - name: Publish installed articles to Telegram
+      - name: Publish or update installed articles in Telegram
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_RU_CHAT_ID: ${{ vars.TELEGRAM_RU_CHAT_ID }}

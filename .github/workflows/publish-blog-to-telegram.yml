@@ -105,9 +105,9 @@ jobs:
               args+=(--force)
             fi
 
-            python scripts/publish_telegram_article.py "${args[@]}"
+            python -m scripts.publish_telegram_article "${args[@]}"
           else
-            python scripts/publish_telegram_article.py \
+            python -m scripts.publish_telegram_article \
               --root . \
               --changed-file-list .telegram-changed-files
           fi

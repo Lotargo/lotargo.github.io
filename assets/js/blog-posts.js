@@ -234,6 +234,38 @@ window.BLOG_POSTS = [
       "ru": "Практическая заметка о том, как Telegram стал ещё одним выходным адаптером статического конвейера статей."
     },
     "notify": true
+  },
+  {
+    "slug": "telegram-editions-two-formats",
+    "date": "2026-07-24",
+    "href": "./telegram-editions-two-formats.html",
+    "url": "./blog/posts/telegram-editions-two-formats.html",
+    "type": {
+      "en": "Publishing infrastructure",
+      "ru": "Инфраструктура публикации"
+    },
+    "title": {
+      "en": "One Topic, Two Editions: Giving Telegram Its Own Article Format",
+      "ru": "Одна тема, две редакции: отдельный формат статьи для Telegram"
+    },
+    "shortTitle": {
+      "en": "One Topic, Two Editions",
+      "ru": "Одна тема, две редакции"
+    },
+    "description": {
+      "en": "Why the blog now keeps complete bilingual articles while Telegram receives a separate compact edition with its own formatting, cover, and discussion thread.",
+      "ru": "Почему блог теперь хранит полные двуязычные статьи, а Telegram получает отдельную компактную редакцию со своим форматированием, обложкой и веткой обсуждения."
+    },
+    "notificationId": "2026-07-24-telegram-editions-two-formats",
+    "notificationTitle": {
+      "en": "Telegram editions are now independent",
+      "ru": "Telegram-редакции стали самостоятельными"
+    },
+    "notificationText": {
+      "en": "A production test of separate website and Telegram article editions inside one Article Bundle.",
+      "ru": "Production-тест отдельных редакций статьи для сайта и Telegram внутри одного Article Bundle."
+    },
+    "notify": true
   }
 
 ];

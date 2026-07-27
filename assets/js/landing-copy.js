@@ -109,6 +109,10 @@
     setMeta('meta[property="og:description"]', copy['og-desc']);
   }
 
+  function revealLocalizedPage() {
+    document.documentElement.dataset.landingCopyReady = 'true';
+  }
+
   function loadTelegramUi() {
     if (window.__LOTARGO_TELEGRAM_UI__ || document.querySelector('script[data-telegram-ui-loader]')) return;
 
@@ -120,6 +124,7 @@
   }
 
   applyCopy();
+  revealLocalizedPage();
   loadTelegramUi();
 
   const languageObserver = new MutationObserver((mutations) => {

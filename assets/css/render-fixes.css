@@ -18,6 +18,24 @@ body::after {
   mix-blend-mode: normal;
 }
 
+/*
+  Keep localized landing-page copy hidden until the final copy layer has run.
+  This prevents the static English HTML and the saved language from flashing
+  one after another during a reload. Layout is preserved because visibility,
+  rather than display, is used. The delayed animation is a no-JS fallback.
+*/
+@keyframes reveal-localized-copy-fallback {
+  to {
+    visibility: visible;
+  }
+}
+
+html:not([data-landing-copy-ready]) body:has(.hero-title) [data-i18n],
+html:not([data-landing-copy-ready]) body:has(.hero-title) [data-i18n-html] {
+  visibility: hidden;
+  animation: reveal-localized-copy-fallback 0s 1.5s forwards;
+}
+
 .memory-hero {
   background: var(--bg) !important;
   box-shadow: none !important;
@@ -46,14 +64,35 @@ body::after {
   -webkit-text-stroke: 1.5px var(--fg);
 }
 
+/*
+  The original hover target covered the entire full-screen hero. A stationary
+  cursor therefore inverted the heading while the page was still loading.
+  Neutralize that broad hover and keep the effect only on the heading itself.
+*/
 .hero:hover .hero-line.fill {
-  color: transparent;
-  -webkit-text-stroke: 1.5px var(--fg);
+  color: var(--fg);
+  -webkit-text-stroke: 0;
+  transform: none;
 }
 
 .hero:hover .hero-line.outline {
-  color: var(--fg);
-  -webkit-text-stroke: 0;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--fg);
+  transform: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hero-title:hover .hero-line.fill {
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--fg);
+    transform: translateX(-0.02em);
+  }
+
+  .hero-title:hover .hero-line.outline {
+    color: var(--fg);
+    -webkit-text-stroke: 0;
+    transform: translateX(0.03em);
+  }
 }
 
 /*

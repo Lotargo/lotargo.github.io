@@ -36,6 +36,68 @@ html:not([data-landing-copy-ready]) body:has(.hero-title) [data-i18n-html] {
   animation: reveal-localized-copy-fallback 0s 1.5s forwards;
 }
 
+/*
+  The Telegram controls used to be injected after the first paint. That made
+  GitHub move into a wrapper, Telegram appear unstyled, and the navigation jump
+  twice. Keep the affected control groups invisible until the complete shell is
+  assembled synchronously by landing-copy.js. Their layout space is preserved.
+*/
+@keyframes reveal-landing-shell-fallback {
+  to {
+    visibility: visible;
+  }
+}
+
+html:not([data-landing-shell-ready]) body:has(.hero-title) .header-controls,
+html:not([data-landing-shell-ready]) body:has(.hero-title) .hero-actions {
+  visibility: hidden;
+  animation: reveal-landing-shell-fallback 0s 1.5s forwards;
+}
+
+/* Critical Telegram geometry lives in the render-blocking stylesheet so that
+   the controls cannot flash in an unstyled state while telegram.css loads. */
+.header-socials {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.telegram-channel-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted-2);
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.13em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 220ms ease;
+}
+
+.telegram-channel-link:hover,
+.telegram-channel-link:focus-visible {
+  color: var(--fg);
+}
+
+.telegram-channel-link svg,
+.telegram-action svg {
+  display: block;
+  flex: 0 0 auto;
+  transition: transform 220ms ease;
+}
+
+.telegram-channel-link:hover svg,
+.telegram-channel-link:focus-visible svg,
+.telegram-action:hover svg,
+.telegram-action:focus-visible svg {
+  transform: translate(1px, -1px);
+}
+
+.telegram-action {
+  gap: 10px;
+}
+
 .memory-hero {
   background: var(--bg) !important;
   box-shadow: none !important;
@@ -156,6 +218,19 @@ html[lang="ru"] .section h2 {
 }
 
 @media (max-width: 640px) {
+  .header-socials {
+    gap: 10px;
+  }
+
+  .telegram-channel-link span {
+    display: none;
+  }
+
+  .telegram-channel-link {
+    min-width: 20px;
+    justify-content: center;
+  }
+
   .section h2 {
     font-size: clamp(34px, 12.5vw, 58px);
     line-height: 1.04;

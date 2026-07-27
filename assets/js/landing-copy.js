@@ -109,8 +109,102 @@
     setMeta('meta[property="og:description"]', copy['og-desc']);
   }
 
-  function revealLocalizedPage() {
+  function telegramIcon() {
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('width', '17');
+    svg.setAttribute('height', '17');
+    svg.setAttribute('fill', 'currentColor');
+    svg.setAttribute('aria-hidden', 'true');
+
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute(
+      'd',
+      'M21.7 3.3 18.5 19c-.2 1.1-.8 1.4-1.7.9l-4.8-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.8 8.8-8c.4-.4-.1-.6-.6-.2L6.3 13l-4.7-1.5c-1-.3-1-1 .2-1.5l18.4-7.1c.9-.3 1.7.2 1.5 1.4Z'
+    );
+    svg.appendChild(path);
+    return svg;
+  }
+
+  function addLocalizedLabel(parent, en, ru) {
+    const lang = document.documentElement.lang === 'ru' ? 'ru' : 'en';
+
+    const enLabel = document.createElement('span');
+    enLabel.dataset.langContent = 'en';
+    enLabel.textContent = en;
+    enLabel.hidden = lang !== 'en';
+    parent.appendChild(enLabel);
+
+    const ruLabel = document.createElement('span');
+    ruLabel.dataset.langContent = 'ru';
+    ruLabel.textContent = ru;
+    ruLabel.hidden = lang !== 'ru';
+    parent.appendChild(ruLabel);
+  }
+
+  function createTelegramLink(className, en, ru, ariaLabel) {
+    const link = document.createElement('a');
+    link.className = className;
+    link.href = 'https://t.me/lotargo_blog';
+    link.target = '_blank';
+    link.rel = 'noreferrer';
+    link.setAttribute('aria-label', ariaLabel);
+    link.dataset.telegramUi = 'true';
+    link.appendChild(telegramIcon());
+    addLocalizedLabel(link, en, ru);
+    return link;
+  }
+
+  function ensureTelegramStyles() {
+    if (document.querySelector('link[data-telegram-ui-styles]')) return;
+
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.dataset.telegramUiStyles = 'true';
+    link.href = new URL('../css/telegram.css?v=20260728-1', currentScript?.src || window.location.href).href;
+    document.head.appendChild(link);
+  }
+
+  function ensureLandingTelegramUi() {
+    const controls = document.querySelector('.header-controls');
+    const githubLink = controls?.querySelector('.github-link');
+
+    if (controls && githubLink && !controls.querySelector('[data-telegram-header-link]')) {
+      let socials = controls.querySelector('.header-socials');
+      if (!socials) {
+        socials = document.createElement('div');
+        socials.className = 'header-socials';
+        socials.dataset.telegramUi = 'true';
+        githubLink.before(socials);
+        socials.appendChild(githubLink);
+      }
+
+      const telegramLink = createTelegramLink(
+        'telegram-channel-link',
+        'Telegram',
+        'Telegram',
+        'Open the Russian Telegram channel'
+      );
+      telegramLink.dataset.telegramHeaderLink = 'true';
+      socials.appendChild(telegramLink);
+    }
+
+    const actions = document.querySelector('.hero-actions');
+    if (actions && !actions.querySelector('[data-telegram-landing-action]')) {
+      const link = createTelegramLink(
+        'button telegram-action',
+        'Telegram RU',
+        'Telegram-канал',
+        'Open the Russian Telegram channel'
+      );
+      link.dataset.telegramLandingAction = 'true';
+      actions.appendChild(link);
+    }
+  }
+
+  function revealLandingPage() {
     document.documentElement.dataset.landingCopyReady = 'true';
+    document.documentElement.dataset.landingShellReady = 'true';
   }
 
   function loadTelegramUi() {
@@ -118,13 +212,15 @@
 
     const script = document.createElement('script');
     script.dataset.telegramUiLoader = 'true';
-    script.src = new URL('telegram-ui.js?v=20260724-1', currentScript?.src || window.location.href).href;
+    script.src = new URL('telegram-ui.js?v=20260728-1', currentScript?.src || window.location.href).href;
     script.async = true;
     document.head.appendChild(script);
   }
 
+  ensureTelegramStyles();
+  ensureLandingTelegramUi();
   applyCopy();
-  revealLocalizedPage();
+  revealLandingPage();
   loadTelegramUi();
 
   const languageObserver = new MutationObserver((mutations) => {

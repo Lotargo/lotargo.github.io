@@ -36,24 +36,6 @@ html:not([data-landing-copy-ready]) body:has(.hero-title) [data-i18n-html] {
   animation: reveal-localized-copy-fallback 0s 1.5s forwards;
 }
 
-/*
-  The Telegram controls used to be injected after the first paint. That made
-  GitHub move into a wrapper, Telegram appear unstyled, and the navigation jump
-  twice. Keep the affected control groups invisible until the complete shell is
-  assembled synchronously by landing-copy.js. Their layout space is preserved.
-*/
-@keyframes reveal-landing-shell-fallback {
-  to {
-    visibility: visible;
-  }
-}
-
-html:not([data-landing-shell-ready]) body:has(.hero-title) .header-controls,
-html:not([data-landing-shell-ready]) body:has(.hero-title) .hero-actions {
-  visibility: hidden;
-  animation: reveal-landing-shell-fallback 0s 1.5s forwards;
-}
-
 /* Critical Telegram geometry lives in the render-blocking stylesheet so that
    the controls cannot flash in an unstyled state while telegram.css loads. */
 .header-socials {

@@ -1,0 +1,17 @@
+{
+  "article": "vector-search-was-dead",
+  "asset_count": 1,
+  "source": "Project hero image from the @lotargo/memory_plugin repository README",
+  "usage": "Public blog article illustration; the package itself is open source under MIT.",
+  "assets": [
+    {
+      "file": "images/memory-plugin-hero.avif",
+      "width": 1915,
+      "height": 821,
+      "format": "avif",
+      "size_bytes": 215572,
+      "sha256": "10c5a0b9d9c00fd72b732a57ea4cd0246eaff395a5d55b1748c03c2aa41fb0cc",
+      "provenance": "Original project asset created for @lotargo/memory_plugin; converted from the repository PNG to AVIF for the blog."
+    }
+  ]
+}

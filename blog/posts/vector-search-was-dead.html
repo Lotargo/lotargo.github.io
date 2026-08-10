@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="A Buffer.isBuffer() guard discarded every stored vector because node:sqlite returns BLOBs as Uint8Array. Retrieval silently fell back to BM25 for two days while twelve test suites stayed green — because all of them ran with embeddings disabled." />
+  <meta name="theme-color" content="#000000" />
+  <title>All Tests Green, Vector Search Dead: How Uint8Array Disabled Half an Engine · Lotargo Blog</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem('lotargo-theme');
+        document.documentElement.dataset.theme = savedTheme || 'dark';
+      } catch (error) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    })();
+  </script>
+</head>
+<body data-title-en="All Tests Green, Vector Search Dead: How Uint8Array Disabled Half an Engine · Lotargo Blog" data-title-ru="Все тесты зелёные, а векторный поиск мёртв: как Uint8Array отключил половину движка · Блог Lotargo">
+  <header class="site-header" data-js="header">
+    <a class="brand" href="../../" aria-label="Back to landing">
+      <span class="brand-mark" aria-hidden="true">LØ</span>
+      <span class="brand-text">Lotargo</span>
+    </a>
+    <div class="header-controls">
+      <nav class="nav" aria-label="Post navigation">
+        <a href="../../" data-i18n="blog-nav-home">Home</a>
+        <a href="../" data-i18n="nav-blog">Blog</a>
+        <a href="../../#projects" data-i18n="nav-projects">Projects</a>
+      </nav>
+      <button class="theme-toggle" type="button" data-js="theme-toggle" aria-label="Switch color theme">
+        <span data-js="theme-label">Theme</span>
+      </button>
+      <button class="lang-toggle" type="button" data-js="lang-toggle" aria-label="Switch language">
+        <span data-js="lang-label">EN</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top" class="post-shell">
+    <article class="post-article" data-generated-from-markdown="true" data-article-slug="vector-search-was-dead">
+      <div class="post-toolbar">
+        <a class="post-back" href="../" data-i18n="post-back-blog">Back to blog</a>
+        <div class="post-meta">
+          <span>2026-08-10</span>
+          <span data-lang-content="en">Debugging notes</span>
+          <span data-lang-content="ru">Разбор дефекта</span>
+        </div>
+      </div>
+
+      <div data-lang-content="en">
+        <h1>All Tests Green, Vector Search Dead: How Uint8Array Disabled Half an Engine</h1>
+        <p class="post-lead">For two days my RAG plugin searched documents without using a single vector. Twelve test suites passed the whole time, benchmarks were not run, and nobody noticed anything because BM25 kept returning reasonable results. I found it by accident — and only because a test script imported the wrong module.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="vector-search-was-dead-en-images"><img alt="Hybrid RAG memory for AI agents" src="../assets/vector-search-was-dead/images/memory-plugin-hero.avif" data-full-src="../assets/vector-search-was-dead/images/memory-plugin-hero.avif" loading="lazy" decoding="async" data-caption-en="@lotargo/memory_plugin — local hybrid memory for coding agents"><figcaption data-lang-content="en">@lotargo/memory_plugin — local hybrid memory for coding agents</figcaption></figure>
+        <h2 id="the-project">The project</h2>
+
+        <p><code>@lotargo/memory_plugin</code> is a long-term memory system for AI agents. It keeps two layers: user notes in Markdown and a RAG document store in SQLite. Retrieval is hybrid — BM25 through FTS5 and dense vectors through ONNX, combined with relative score fusion. Everything runs locally, with no external APIs.</p>
+
+        <p>The vector half is not decoration. It is what carries cross-lingual queries: ask in Russian, find it in English documentation. BM25 cannot do that at all — there is zero lexical overlap to work with.</p>
+
+        <h2 id="how-it-surfaced">How it surfaced</h2>
+
+        <p>I was finishing a project audit and verifying a small fix in the benchmark report generator. I wrote a script that imported the rendering function — and instead of a quick check I got a full ONNX benchmark run. That was a separate defect in itself: the module started measuring as an import side effect.</p>
+
+        <p>While it ran, I watched the results table. It said this:</p>
+
+        <table>
+        <thead>
+        <tr>
+        <th>Strategy</th>
+        <th style="text-align: right;">MRR@5</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td>BM25</td>
+        <td style="text-align: right;">0.6706</td>
+        </tr>
+        <tr>
+        <td>Dense Vector</td>
+        <td style="text-align: right;"><strong>0</strong></td>
+        </tr>
+        <tr>
+        <td>Hybrid RRF</td>
+        <td style="text-align: right;">0.6706</td>
+        </tr>
+        <tr>
+        <td>Hybrid RSF</td>
+        <td style="text-align: right;">0.6706</td>
+        </tr>
+        </tbody>
+        </table>
+
+        <p>Zero for vectors. All twenty-one queries MISSED. More telling: both hybrid modes returned exactly the BM25 numbers. Fusion was running fine — it simply had nothing to fuse.</p>
+
+        <h2 id="the-cause">The cause</h2>
+
+        <p>Embeddings were computed correctly; I checked that first by calling the model directly. Vectors were written to the database: 1536 bytes per chunk, exactly 384 float32 values. They were read back too. And then:</p>
+
+        <pre><code class="language-js">let vecSub = r.vector;
+        if (typeof vecSub === "string") {
+          vecSub = Buffer.from(vecSub, "base64");
+        } else if (vecSub.type === "Buffer" &amp;&amp; Array.isArray(vecSub.data)) {
+          vecSub = Buffer.from(vecSub.data);
+        } else if (Array.isArray(vecSub)) {
+          vecSub = Buffer.from(vecSub);
+        }
+        if (!Buffer.isBuffer(vecSub) || vecSub.byteLength &lt; vectorDim * 4) continue;
+        </code></pre>
+
+        <p>That last line killed retrieval. The engine runs on the built-in <code>node:sqlite</code> module, and it returns BLOB columns as <code>Uint8Array</code> — not <code>Buffer</code>. None of the three normalization branches matched, <code>Buffer.isBuffer()</code> returned <code>false</code>, and <code>continue</code> discarded the row. Every row. Every time.</p>
+
+        <blockquote>
+        <p><code>Buffer</code> extends <code>Uint8Array</code>, but not the other way round. A <code>Buffer.isBuffer()</code> check against <code>node:sqlite</code> data is a silent <code>continue</code> over the entire result set.</p>
+        </blockquote>
+
+        <p>The uncomfortable part: before that guard existed, the code worked precisely because it was simpler. <code>Uint8Array</code> fell through every branch and went straight into <code>tempView.set(vecSub.subarray(...))</code>. <code>Uint8Array</code> has <code>subarray</code>. Everything scored fine.</p>
+
+        <p>The guard arrived in a commit titled "await missing async calls, security fixes, and dead code cleanup". A defensive line written with good intentions disabled half the engine.</p>
+
+        <h2 id="why-the-tests-stayed-silent">Why the tests stayed silent</h2>
+
+        <p>This is more interesting than the bug itself.</p>
+
+        <p>The project has twelve test files: unit, integration, cloud. All green. They share one detail — every one of them does this:</p>
+
+        <pre><code class="language-js">await ingestDocument({
+          content: "...",
+          generateEmbeddings: false,
+          customDb: db,
+        });
+        </code></pre>
+
+        <p><code>generateEmbeddings: false</code>. That was a deliberate and reasonable decision: tests should not pull a two-gigabyte model or depend on the network. The whole run finishes in 41 seconds and works offline.</p>
+
+        <p>But the consequence is that the dense half of the engine was never exercised. The single <code>hybridQuery</code> call in the integration tests also ran with <code>generateEmbeddings: false</code>, and in that mode the function deliberately switches to <code>lexical_only</code>. So the "hybrid retrieval" test was testing BM25.</p>
+
+        <p>The tests confirmed that vectors were <strong>written</strong> — correct size, non-zero. That anything would later <strong>read</strong> them was never asserted.</p>
+
+        <h2 id="two-more-places">Two more places</h2>
+
+        <p>Once I understood the cause, I searched the codebase for the same mistake. It appeared twice more:</p>
+
+        <ul>
+        <li>in the cloud sync queue — <code>hybrid-sync</code> was pushing <strong>empty</strong> vectors to the cloud;</li>
+        <li>in snapshot export — snapshots were saved without vectors.</li>
+        </ul>
+
+        <p>Both repeated the same <code>if/else if</code> chain ending in <code>Buffer.isBuffer()</code>. Both failed silently: no exception, no warning in the log.</p>
+
+        <p>The fix is one normalization function shared by all three call sites:</p>
+
+        <pre><code class="language-js">export function toVectorBytes(value) {
+          if (value === null || value === undefined) return null;
+          if (typeof value === "string") return new Uint8Array(Buffer.from(value, "base64"));
+          if (value instanceof Uint8Array) return value; // covers Buffer too
+          if (ArrayBuffer.isView(value)) return new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+          if (value instanceof ArrayBuffer) return new Uint8Array(value);
+          if (value.type === "Buffer" &amp;&amp; Array.isArray(value.data)) return new Uint8Array(value.data);
+          if (Array.isArray(value)) return new Uint8Array(value);
+          return null;
+        }
+        </code></pre>
+
+        <p>Order matters: <code>value instanceof Uint8Array</code> comes before <code>ArrayBuffer.isView</code> because it already covers both <code>Buffer</code> and whatever <code>node:sqlite</code> hands back, with no extra copying.</p>
+
+        <h2 id="what-i-added-so-it-cannot-repeat">What I added so it cannot repeat</h2>
+
+        <p>A unit test on the normalization function is not enough. It verifies type conversion but never answers the question that matters: does retrieval actually work?</p>
+
+        <p>So there is now a separate smoke test with <strong>real</strong> embeddings. It is not part of <code>npm test</code> — it loads the model and that is slow. It runs before a release via <code>npm run smoke</code> and asserts what nothing else did:</p>
+
+        <pre><code class="language-js">const cosines = hits.map((h) =&gt; h.cosine_sim ?? 0);
+        assert.ok(
+          cosines.some((c) =&gt; c &gt; 0),
+          "at least one hit carries a non-zero cosine similarity — " +
+          "a zero here means the dense half of the engine is dead"
+        );
+        </code></pre>
+
+        <p>Plus a cross-lingual check: a Russian query must reach an English document. Lexical search cannot fake that — if the test passes, the vector path is alive.</p>
+
+        <p>Then I reintroduced the bug and confirmed the test fails. A regression test that has never been verified against the actual defect is an assumption, not a guarantee.</p>
+
+        <p>The test reuses the model weights already cached in the data directory, so it does not re-download two gigabytes.</p>
+
+        <h2 id="what-i-took-away">What I took away</h2>
+
+        <p><strong>Type guards at a driver boundary are riskier than they look.</strong> <code>Buffer.isBuffer()</code> reads like sensible defence. Against <code>node:sqlite</code> data it is a filter that rejects everything. If you add a guard like that, first find out what the driver actually returns.</p>
+
+        <p><strong>Fast offline tests create blind spots, and those need to be explicit.</strong> Disabling embeddings in tests was the right call: forty seconds instead of several minutes, no network. The mistake was not covering the disabled half anywhere else. Every "let's skip the heavy part for speed" has a price — the only question is whether you know about it.</p>
+
+        <p><strong>Silent degradation is worse than a crash.</strong> Had retrieval thrown, I would have known within a minute. Instead it fell back to BM25 and kept producing plausible answers. That is typical for hybrid systems: the fallback path masks the failure of the primary one.</p>
+
+        <p><strong>A missing signal is still a signal.</strong> A zero in a metrics column does not look like an error. It looks like a number.</p>
+
+        <h2 id="current-state">Current state</h2>
+
+        <p>The fix shipped in <code>1.6.0</code> together with the audit results: ninety-two items across publishing, security, code quality, tests, and documentation. A fresh benchmark run produced MRR@5 0.9286 and Recall@5 100% for hybrid RSF — byte-for-byte identical to the reference measurement taken before the bug appeared. The fix restored behaviour rather than tuning numbers.</p>
+
+        <p>The package is MIT-licensed: <a href="https://www.npmjs.com/package/@lotargo/memory_plugin">npmjs.com/package/@lotargo/memory_plugin</a>, sources at <a href="https://github.com/Lotargo/memory_pugin">github.com/Lotargo/memory_pugin</a>.</p>
+
+        <p>One more thing worth noting: I found this because of another defect — importing a module launched a benchmark as a side effect. I fixed that too. But without it, the bug would have waited for the next manual run.</p>
+      </div>
+
+      <div data-lang-content="ru">
+        <h1>Все тесты зелёные, а векторный поиск мёртв: как Uint8Array отключил половину движка</h1>
+        <p class="post-lead">Двое суток мой RAG-плагин искал по документам без единого вектора. Двенадцать тестовых сьютов при этом проходили успешно, бенчмарки не запускались, а пользователи ничего не замечали, потому что BM25 продолжал возвращать разумные результаты. Нашёл я это случайно — и только потому, что тестовый скрипт по ошибке импортировал не тот модуль.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="vector-search-was-dead-ru-images"><img alt="Гибридная RAG-память для AI-агентов" src="../assets/vector-search-was-dead/images/memory-plugin-hero.avif" data-full-src="../assets/vector-search-was-dead/images/memory-plugin-hero.avif" loading="lazy" decoding="async" data-caption-ru="@lotargo/memory_plugin — локальная гибридная память для кодинг-агентов"><figcaption data-lang-content="ru">@lotargo/memory_plugin — локальная гибридная память для кодинг-агентов</figcaption></figure>
+        <h2 id="_1">Что за проект</h2>
+
+        <p><code>@lotargo/memory_plugin</code> — система долговременной памяти для AI-агентов. Она держит два слоя: заметки пользователя в Markdown и RAG-базу документов в SQLite. Поиск гибридный: BM25 через FTS5 и плотные векторы через ONNX, слитые алгоритмом relative score fusion. Всё локально, без внешних API.</p>
+
+        <p>Векторная половина здесь не украшение. Именно она вытягивает кросс-язычные запросы: спрашиваешь по-русски — находит в английской документации. BM25 на такое неспособен в принципе, у него нулевое лексическое пересечение.</p>
+
+        <h2 id="_2">Как это вскрылось</h2>
+
+        <p>Я заканчивал аудит проекта и проверял мелкий фикс в генераторе отчётов бенчмарков. Написал скрипт, который импортировал функцию рендеринга, — и вместо быстрой проверки получил полный прогон бенчмарка на ONNX. Сам по себе это был отдельный дефект: модуль запускал измерения как побочный эффект импорта.</p>
+
+        <p>Пока прогон шёл, я смотрел в таблицу результатов. И там было вот это:</p>
+
+        <table>
+        <thead>
+        <tr>
+        <th>Стратегия</th>
+        <th style="text-align: right;">MRR@5</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td>BM25</td>
+        <td style="text-align: right;">0.6706</td>
+        </tr>
+        <tr>
+        <td>Dense Vector</td>
+        <td style="text-align: right;"><strong>0</strong></td>
+        </tr>
+        <tr>
+        <td>Hybrid RRF</td>
+        <td style="text-align: right;">0.6706</td>
+        </tr>
+        <tr>
+        <td>Hybrid RSF</td>
+        <td style="text-align: right;">0.6706</td>
+        </tr>
+        </tbody>
+        </table>
+
+        <p>Ноль по вектору. Все двадцать одна запроса — MISSED. И, что показательнее, гибридные режимы дали ровно цифры BM25: фьюжн работал, но сливать ему было нечего.</p>
+
+        <h2 id="_3">Причина</h2>
+
+        <p>Эмбеддинги считались корректно — я проверил это первым делом, вызвав модель напрямую. Векторы писались в базу: 1536 байт на чанк, ровно 384 float32. Читались тоже. А вот дальше:</p>
+
+        <pre><code class="language-js">let vecSub = r.vector;
+        if (typeof vecSub === "string") {
+          vecSub = Buffer.from(vecSub, "base64");
+        } else if (vecSub.type === "Buffer" &amp;&amp; Array.isArray(vecSub.data)) {
+          vecSub = Buffer.from(vecSub.data);
+        } else if (Array.isArray(vecSub)) {
+          vecSub = Buffer.from(vecSub);
+        }
+        if (!Buffer.isBuffer(vecSub) || vecSub.byteLength &lt; vectorDim * 4) continue;
+        </code></pre>
+
+        <p>Последняя строка и убивала поиск. Движок работает на встроенном модуле <code>node:sqlite</code>, а он возвращает BLOB-колонки как <code>Uint8Array</code> — не как <code>Buffer</code>. Ни одна из трёх веток нормализации не срабатывала, <code>Buffer.isBuffer()</code> возвращал <code>false</code>, и <code>continue</code> отбрасывал строку. Каждую. Всегда.</p>
+
+        <blockquote>
+        <p><code>Buffer</code> наследует <code>Uint8Array</code>, но не наоборот. Проверка <code>Buffer.isBuffer()</code> на данных из <code>node:sqlite</code> — это тихий <code>continue</code> для всей выборки.</p>
+        </blockquote>
+
+        <p>Самое неприятное — до появления этой проверки код работал именно потому, что был проще. <code>Uint8Array</code> проваливался мимо всех веток и попадал прямо в <code>tempView.set(vecSub.subarray(...))</code>. У <code>Uint8Array</code> есть <code>subarray</code>. Всё считалось.</p>
+
+        <p>Проверку добавили в коммите, который назывался «await missing async calls, security fixes, and dead code cleanup». Защитная строка, написанная из лучших побуждений, отключила половину движка.</p>
+
+        <h2 id="_4">Почему тесты молчали</h2>
+
+        <p>Вот это интереснее самого бага.</p>
+
+        <p>В проекте двенадцать тестовых файлов: юнит, интеграционные, облачные. Все зелёные. Проблема в одной общей детали — каждый из них работает так:</p>
+
+        <pre><code class="language-js">await ingestDocument({
+          content: "...",
+          generateEmbeddings: false,
+          customDb: db,
+        });
+        </code></pre>
+
+        <p><code>generateEmbeddings: false</code>. Сделано это осознанно и по разумной причине: тесты не должны тянуть двухгигабайтную модель и зависеть от сети. Весь прогон укладывается в 41 секунду и работает офлайн.</p>
+
+        <p>Но следствие такое: плотная половина движка не проверялась вообще. Единственный вызов <code>hybridQuery</code> в интеграционных тестах тоже шёл с <code>generateEmbeddings: false</code>, а в этом режиме функция сознательно переключается в <code>lexical_only</code>. То есть тест «проверки гибридного поиска» проверял BM25.</p>
+
+        <p>Тесты подтверждали, что векторы <strong>записаны</strong> — правильного размера, ненулевые. Что их кто-то потом <strong>прочитает</strong>, они не проверяли никогда.</p>
+
+        <h2 id="_5">Ещё два места</h2>
+
+        <p>Убедившись в причине, я поискал ту же ошибку по всему коду. Нашёл дважды:</p>
+
+        <ul>
+        <li>в очереди облачной синхронизации — при <code>hybrid-sync</code> в облако уходили <strong>пустые</strong> векторы;</li>
+        <li>в экспорте снапшотов — снапшоты сохранялись без векторов.</li>
+        </ul>
+
+        <p>Оба места повторяли ту же цепочку <code>if/else if</code> с <code>Buffer.isBuffer()</code> в конце. Обе ошибки были тихими: ни исключения, ни предупреждения в логе.</p>
+
+        <p>Исправление — одна функция нормализации на все три места:</p>
+
+        <pre><code class="language-js">export function toVectorBytes(value) {
+          if (value === null || value === undefined) return null;
+          if (typeof value === "string") return new Uint8Array(Buffer.from(value, "base64"));
+          if (value instanceof Uint8Array) return value; // покрывает и Buffer
+          if (ArrayBuffer.isView(value)) return new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+          if (value instanceof ArrayBuffer) return new Uint8Array(value);
+          if (value.type === "Buffer" &amp;&amp; Array.isArray(value.data)) return new Uint8Array(value.data);
+          if (Array.isArray(value)) return new Uint8Array(value);
+          return null;
+        }
+        </code></pre>
+
+        <p>Порядок проверок важен: <code>value instanceof Uint8Array</code> стоит до <code>ArrayBuffer.isView</code>, потому что покрывает и <code>Buffer</code>, и то, что отдаёт <code>node:sqlite</code>, без лишнего копирования.</p>
+
+        <h2 id="_6">Что я добавил, чтобы это не повторилось</h2>
+
+        <p>Юнит-теста на функцию нормализации мало. Он проверяет преобразование типов, но не отвечает на вопрос «а поиск-то работает?».</p>
+
+        <p>Поэтому появился отдельный smoke-тест с <strong>настоящими</strong> эмбеддингами. Он не входит в <code>npm test</code> — грузит модель, это долго. Запускается перед релизом командой <code>npm run smoke</code> и утверждает то, чего не утверждал никто:</p>
+
+        <pre><code class="language-js">const cosines = hits.map((h) =&gt; h.cosine_sim ?? 0);
+        assert.ok(
+          cosines.some((c) =&gt; c &gt; 0),
+          "at least one hit carries a non-zero cosine similarity — " +
+          "a zero here means the dense half of the engine is dead"
+        );
+        </code></pre>
+
+        <p>Плюс кросс-язычная проверка: русский запрос должен дойти до английского документа. Это невозможно подделать лексическим поиском — если тест проходит, вектор жив.</p>
+
+        <p>Затем я вернул баг обратно и убедился, что тест падает. Регрессионный тест, не проверенный на воспроизведении дефекта, — это предположение, а не гарантия.</p>
+
+        <p>Модель тест берёт из уже существующего кэша, поэтому два гигабайта не качаются заново.</p>
+
+        <h2 id="_7">Что я из этого вынес</h2>
+
+        <p><strong>Проверки типов на границе с драйвером опаснее, чем кажутся.</strong> <code>Buffer.isBuffer()</code> выглядит как разумная защита. На данных из <code>node:sqlite</code> это фильтр, отбрасывающий всё. Если добавляете такую проверку — сначала выясните, что драйвер возвращает на самом деле.</p>
+
+        <p><strong>Быстрые офлайн-тесты создают слепые зоны, и о них надо знать явно.</strong> Отключить эмбеддинги в тестах было правильным решением: сорок секунд против нескольких минут, никакой сети. Ошибка не в этом, а в том, что никто не покрывал отключённую половину отдельно. У любого «пропустим тяжёлое ради скорости» есть цена — вопрос лишь в том, знаете вы о ней или нет.</p>
+
+        <p><strong>Тихая деградация хуже падения.</strong> Упади поиск с исключением — я бы узнал через минуту. Вместо этого он вернулся к BM25 и продолжил выдавать правдоподобные ответы. Для гибридных систем это типично: запасной путь маскирует отказ основного.</p>
+
+        <p><strong>Отсутствие сигнала — тоже сигнал.</strong> Ноль в колонке метрики не выглядит как ошибка. Он выглядит как число.</p>
+
+        <h2 id="_8">Текущее состояние</h2>
+
+        <p>Исправление вышло в <code>1.6.0</code> вместе с итогами аудита: девяносто два пункта по публикации, безопасности, качеству кода, тестам и документации. Свежий прогон бенчмарков дал MRR@5 0.9286 и Recall@5 100% для гибридного RSF — побайтово совпало с эталонным замером, сделанным до появления бага. Фикс вернул поведение, а не подкрутил цифры.</p>
+
+        <p>Пакет открыт под MIT: <a href="https://www.npmjs.com/package/@lotargo/memory_plugin">npmjs.com/package/@lotargo/memory_plugin</a>, исходники — <a href="https://github.com/Lotargo/memory_pugin">github.com/Lotargo/memory_pugin</a>.</p>
+
+        <p>Отдельно любопытно, что нашёл я это благодаря другому дефекту — импорт модуля запускал бенчмарк как побочный эффект. Его я тоже починил. Но не будь его, баг ждал бы следующего ручного прогона.</p>
+      </div>
+
+      <nav class="post-pagination" aria-label="Post navigation" data-i18n-aria="post-pagination-aria">
+        <span class="post-page-link is-disabled" aria-disabled="true">
+          <span data-i18n="post-prev">Previous</span>
+          <strong data-i18n="post-prev-none">No earlier post</strong>
+        </span>
+        <span class="post-page-link is-disabled" aria-disabled="true">
+          <span data-i18n="post-next">Next</span>
+          <strong data-i18n="post-next-none">No later post</strong>
+        </span>
+      </nav>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <span>Oleg Boyko / Lotargo</span>
+    <span>Blog · AI systems · verification</span>
+  </footer>
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/blog-post.js"></script>
+</body>
+</html>

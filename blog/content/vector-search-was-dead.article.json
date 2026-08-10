@@ -1,0 +1,43 @@
+{
+  "format_version": 1,
+  "slug": "vector-search-was-dead",
+  "date": "2026-08-10",
+  "html": "article.html",
+  "render": {
+    "engine": "markdown",
+    "template": "default"
+  },
+  "sources": {
+    "en": "content/en.md",
+    "ru": "content/ru.md"
+  },
+  "assets": "assets",
+  "post": {
+    "notificationId": "2026-08-10-vector-search-was-dead",
+    "type": {
+      "en": "Debugging notes",
+      "ru": "Разбор дефекта"
+    },
+    "title": {
+      "en": "All Tests Green, Vector Search Dead: How Uint8Array Disabled Half an Engine",
+      "ru": "Все тесты зелёные, а векторный поиск мёртв: как Uint8Array отключил половину движка"
+    },
+    "shortTitle": {
+      "en": "All tests green, vector search dead",
+      "ru": "Все тесты зелёные, а поиск мёртв"
+    },
+    "description": {
+      "en": "A Buffer.isBuffer() guard discarded every stored vector because node:sqlite returns BLOBs as Uint8Array. Retrieval silently fell back to BM25 for two days while twelve test suites stayed green — because all of them ran with embeddings disabled.",
+      "ru": "Проверка Buffer.isBuffer() отбрасывала все сохранённые векторы, потому что node:sqlite возвращает BLOB как Uint8Array. Поиск двое суток тихо работал на одном BM25, а двенадцать тестовых сьютов оставались зелёными — потому что все они шли с отключёнными эмбеддингами."
+    },
+    "notificationTitle": {
+      "en": "When green tests hide a dead subsystem",
+      "ru": "Когда зелёные тесты скрывают мёртвую подсистему"
+    },
+    "notificationText": {
+      "en": "A post-mortem of a silent retrieval regression in @lotargo/memory_plugin: the driver type boundary, the blind spot in offline tests, and the smoke test that now guards it.",
+      "ru": "Разбор тихой регрессии поиска в @lotargo/memory_plugin: граница типов драйвера, слепая зона офлайн-тестов и smoke-тест, который её закрывает."
+    },
+    "notify": true
+  }
+}

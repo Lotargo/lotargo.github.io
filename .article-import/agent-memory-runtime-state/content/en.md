@@ -2,7 +2,7 @@
 
 Long-term memory for an AI agent stops being a list of saved facts surprisingly quickly. A small notebook is enough at first; then search appears, memory has to be separated by project, and eventually persistent instructions start changing not what the model knows, but how it behaves. At that point memory becomes part of the agent's runtime state — bringing new problems around isolation, reproducibility, and hidden dependencies along with the convenience.
 
-![memory_plugin architecture](assets/01_hero_banner.avif "Local-first memory, hybrid RAG, and agent personalization as one runtime environment")
+![memory_plugin architecture](assets/01_hero_banner.png "Local-first memory, hybrid RAG, and agent personalization as one runtime environment")
 
 This article grew out of building [`@lotargo/memory_plugin`](https://github.com/Lotargo/memory_plugin), but it is not a feature tour. The more interesting path is the architectural transition itself: **notes → memory → RAG → persona → persistent agent state** — and what changes once an agent genuinely remembers across sessions.
 
@@ -20,7 +20,7 @@ At small scale this works extremely well. The records are human-readable, versio
 
 If every new session starts with the complete archive, long-term memory slowly turns into another way to saturate the context window. The fact that a model can technically accept a large context does not mean it should receive everything you know on every call.
 
-![Project evolution](assets/02_project_evolution.avif "Evolution from a simple notebook to structured memory, RAG, persona, and shared agent state")
+![Project evolution](assets/02_project_evolution.png "Evolution from a simple notebook to structured memory, RAG, persona, and shared agent state")
 
 In `memory_plugin`, the path was incremental. A Notebook of short facts came first. Structured records and project scopes followed. Then detailed material needed retrieval. After that it became clear that descriptive facts and behavioral instructions should not be treated as the same kind of memory. The `fact` / `directive` distinction led naturally to persona as persistent cross-client state.
 
@@ -32,7 +32,7 @@ Two resources are often conflated: **the size of long-term storage** and **the s
 
 The first can be effectively huge. The second is always finite, even when context windows are measured in hundreds of thousands of tokens. And this is not merely a token-price problem. A large noisy context makes it harder to distinguish the details that actually matter.
 
-![Context budget reality](assets/09_context_budget_reality.avif "A large raw history competes with compact hot memory plus selective RAG retrieval")
+![Context budget reality](assets/09_context_budget_reality.png "A large raw history competes with compact hot memory plus selective RAG retrieval")
 
 A useful memory architecture therefore optimizes not for maximum prompt injection, but for **maximum availability with minimum active context**.
 
@@ -54,7 +54,7 @@ That leads to the hot/cold split.
 
 **Cold memory** contains decisions, investigations, long notes, handoffs, documents, reports, and experiment history. It should remain accessible without living in every prompt.
 
-![Hot Memory vs Cold RAG](assets/03_hot_memory_vs_cold_rag.avif "Small always-on memory for high-signal context and a larger library retrieved through RAG on demand")
+![Hot Memory vs Cold RAG](assets/03_hot_memory_vs_cold_rag.png "Small always-on memory for high-signal context and a larger library retrieved through RAG on demand")
 
 In practice these become different interfaces for the agent. In `memory_plugin`, a concise statement can live in the Notebook while a detailed investigation becomes a RAG Memory Note. Document retrieval combines SQLite FTS5/BM25 with local dense embeddings, and results can be discovered as a compact index, used as snippets, or expanded to the complete source.
 
@@ -102,7 +102,7 @@ Prefer concise answers and challenge unnecessary abstractions.
 
 That is not a fact about the world or the project. It is an instruction the agent should actively apply.
 
-![Fact vs Directive](assets/04_fact_vs_directive.avif "Facts describe context; directives configure active agent behavior")
+![Fact vs Directive](assets/04_fact_vs_directive.png "Facts describe context; directives configure active agent behavior")
 
 The distinction is structural:
 
@@ -130,7 +130,7 @@ Persistent directives can influence:
 - level of initiative;
 - the communication pattern expected by a specific user.
 
-![Persona as runtime state](assets/05_persona_as_runtime_state.avif "The same model can behave differently under different persistent profiles")
+![Persona as runtime state](assets/05_persona_as_runtime_state.png "The same model can behave differently under different persistent profiles")
 
 The model weights did not change. The provider did not change. The model version did not change. Yet the working behavior did.
 
@@ -193,7 +193,7 @@ Application → CLI → Model
 
 The real path can be much longer.
 
-![Configuration bleed in CLI-as-Provider](assets/06_cli_provider_configuration_bleed.avif "Global plugins, MCP, skills, memory, and persona can silently become part of an application's runtime when a CLI is used as a provider")
+![Configuration bleed in CLI-as-Provider](assets/06_cli_provider_configuration_bleed.png "Global plugins, MCP, skills, memory, and persona can silently become part of an application's runtime when a CLI is used as a provider")
 
 ```text
 Application
@@ -227,7 +227,7 @@ App
 
 The execution dependency tree is different.
 
-![Agent State Is a Dependency](assets/08_agent_state_is_dependency.avif "Runtime behavior depends on hidden config, plugins, MCP, memory, and persona in addition to the CLI itself")
+![Agent State Is a Dependency](assets/08_agent_state_is_dependency.png "Runtime behavior depends on hidden config, plugins, MCP, memory, and persona in addition to the CLI itself")
 
 The uncomfortable part is that those dependencies may not appear in:
 
@@ -267,7 +267,7 @@ Otherwise the benchmark measures not just the model, but the life history of the
 
 If a CLI becomes part of an application, it should get its own runtime profile.
 
-![CLI runtime isolation](assets/07_cli_runtime_isolation.avif "A personal CLI keeps memory and persona while a provider CLI uses a minimal controlled configuration")
+![CLI runtime isolation](assets/07_cli_runtime_isolation.png "A personal CLI keeps memory and persona while a provider CLI uses a minimal controlled configuration")
 
 A minimal split can look like this:
 
@@ -320,7 +320,7 @@ agent ≈ model
       + runtime configuration
 ```
 
-![Guiding principle](assets/10_guiding_principle.avif "RAG answers what the agent knows; persona shapes how that knowledge is used")
+![Guiding principle](assets/10_guiding_principle.png "RAG answers what the agent knows; persona shapes how that knowledge is used")
 
 The conclusion I keep coming back to is simple:
 

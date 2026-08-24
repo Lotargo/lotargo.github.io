@@ -3,84 +3,84 @@
   "article_slug": "agent-memory-runtime-state",
   "assets": [
     {
-      "file": "01_hero_banner.avif",
+      "file": "01_hero_banner.png",
       "width": 2048,
       "height": 768,
       "purpose": "editorial architecture diagram",
       "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
-      "sha256": "699af8510936c7d29fbc5c8720d38bdd553b7033e3d700fb623eb0093788f989"
+      "sha256": "b9f48812aff7860e9d439fe97256eeec43b86a108c4a0cb57ed327f5fbe16171"
     },
     {
-      "file": "02_project_evolution.avif",
+      "file": "02_project_evolution.png",
       "width": 1774,
       "height": 887,
       "purpose": "editorial architecture diagram",
       "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
-      "sha256": "e51d562ffcce2201086772a1ad1b719038cf2214cc17242f5e3c13eb250dca03"
+      "sha256": "ec2616f435adb8af42f49f76cdafb3b19a4fb4409ebc022399301367d47f3b9c"
     },
     {
-      "file": "03_hot_memory_vs_cold_rag.avif",
+      "file": "03_hot_memory_vs_cold_rag.png",
       "width": 1536,
       "height": 1024,
       "purpose": "editorial architecture diagram",
       "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
-      "sha256": "f3bc40b1d06d99f934d295b98a7434dbad2b18147b35b47d80fa4282da048634"
+      "sha256": "44541bb6c60626c9cd65fbb877ffaa946f190de9d30b72755db1eb7ace8f5ba3"
     },
     {
-      "file": "04_fact_vs_directive.avif",
+      "file": "04_fact_vs_directive.png",
       "width": 1448,
       "height": 1086,
       "purpose": "editorial architecture diagram",
       "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
-      "sha256": "35798d581958a3353dc518208467310241bf38ed14da36ceeea861dc6370cc7f"
+      "sha256": "b5a99434eb40034bfbd15016edf4e83e5cebceb8ca9e57a403bcbd9e271aac33"
     },
     {
-      "file": "05_persona_as_runtime_state.avif",
+      "file": "05_persona_as_runtime_state.png",
       "width": 1619,
       "height": 971,
       "purpose": "editorial architecture diagram",
       "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
-      "sha256": "0198c304795a60e3edc83b2564449c2906484db73e811cf776e008b7812940bb"
+      "sha256": "3c4e23507d5a51e463a150d54dd328954cb91615e1939fa7694f7312a517d231"
     },
     {
-      "file": "06_cli_provider_configuration_bleed.avif",
+      "file": "06_cli_provider_configuration_bleed.png",
       "width": 1698,
       "height": 926,
       "purpose": "editorial architecture diagram",
       "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
-      "sha256": "ef22e969fe8e554d4c93c486fe06090688db11018b2eb0a6a270a27e0f0d7d6c"
+      "sha256": "2a27ea50e97afba2e1632cb6aa1cdbb7dc4e0999d097661dcd4f3434228cb489"
     },
     {
-      "file": "07_cli_runtime_isolation.avif",
+      "file": "07_cli_runtime_isolation.png",
       "width": 1586,
       "height": 992,
       "purpose": "editorial architecture diagram",
       "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
-      "sha256": "77af6121079283741ebc765c3ab610fc844514581a4dbe67bd98d7211a04ef83"
+      "sha256": "d087b65593a684558604416b5f046ce167a5f4ebe28e6571ff2b7c0194f1065f"
     },
     {
-      "file": "08_agent_state_is_dependency.avif",
+      "file": "08_agent_state_is_dependency.png",
       "width": 2172,
       "height": 724,
       "purpose": "editorial architecture diagram",
       "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
-      "sha256": "b85f551f47b794db62d50e49d7bc1f63706fd288015e078393a568c832b82527"
+      "sha256": "3e9c986cf16d948d4782b0516fff401328e470f032085cb7f12f25b7d4311ab8"
     },
     {
-      "file": "09_context_budget_reality.avif",
+      "file": "09_context_budget_reality.png",
       "width": 2172,
       "height": 724,
       "purpose": "editorial architecture diagram",
       "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
-      "sha256": "32991be00bc9f9ac3fd2ee7d07090cc83f7de58cce11386f9d3769e37f8eabd1"
+      "sha256": "e3725f0615d90a7c2ffe7aa7054bc8d756814a5fb12fe775e7a1c78e18bd4fa5"
     },
     {
-      "file": "10_guiding_principle.avif",
+      "file": "10_guiding_principle.png",
       "width": 2172,
       "height": 724,
       "purpose": "editorial architecture diagram",
       "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
-      "sha256": "86c1cdff7d695d4fa4d16931273795c175c32400f2c6b64bfe5b694acb55e69d"
+      "sha256": "36592655b2d13032dc4d8c837e45521320039fd101a66905bb0abb09f2310c4d"
     }
   ]
 }

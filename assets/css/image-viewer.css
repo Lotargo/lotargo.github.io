@@ -21,6 +21,10 @@
   cursor: zoom-in;
 }
 
+/*
+  Generic photo galleries keep a uniform 16:9 crop. Article Markdown images
+  use the editorial modifiers below and preserve their intrinsic proportions.
+*/
 .post-gallery-item img {
   display: block;
   width: 100%;
@@ -54,9 +58,26 @@
   margin-right: auto;
 }
 
-.post-figure--editorial img {
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
+/*
+  Technical diagrams, screenshots, infographics and other Markdown article
+  assets must never be cropped into a presentation ratio. Their intrinsic
+  aspect ratio is part of the content, so keep the full image visible.
+*/
+.post-figure--editorial img,
+.post-gallery--editorial .post-gallery-item img {
+  width: 100%;
+  height: auto;
+  max-height: none;
+  aspect-ratio: auto;
+  object-fit: contain;
+}
+
+/* Avoid clipping diagram edges when the figure itself uses overflow:hidden. */
+.post-figure--editorial:hover .image-viewer-trigger,
+.post-gallery--editorial .post-gallery-item:hover img,
+.post-gallery--editorial .post-gallery-item:focus-within img {
+  transform: none;
+  filter: brightness(1.025);
 }
 
 .post-figure--editorial figcaption,

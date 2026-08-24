@@ -8,7 +8,7 @@
       "height": 768,
       "purpose": "editorial architecture diagram",
       "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
-      "sha256": "092722f41f6686a6b3b30baa0682f9b9836ec237d971f1c5be9dcedf3093595c"
+      "sha256": "247592295cb44a9379e017723857721179559332e30865d331420cd35123791b"
     },
     {
       "file": "02_project_evolution.avif",
@@ -16,7 +16,7 @@
       "height": 887,
       "purpose": "editorial architecture diagram",
       "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
-      "sha256": "e0a0d7d178123048bd97e265f818c0ae8014e41dbbf4e6e8ca44c321656f9192"
+      "sha256": "903a93c35dc52c18efd02df1d1669f5b5d7881a959b169cae66a52f7b42fe7d2"
     },
     {
       "file": "03_hot_memory_vs_cold_rag.avif",
@@ -24,7 +24,7 @@
       "height": 1024,
       "purpose": "editorial architecture diagram",
       "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
-      "sha256": "a70a2259cdb7933c94a914afaed44ca413131142f44194a4561a1e98dc5aac7a"
+      "sha256": "53faf974c19e76944327f649137f8be4ebf75becc107da61f6a9116a2c755d0f"
     },
     {
       "file": "04_fact_vs_directive.avif",
@@ -32,7 +32,7 @@
       "height": 1086,
       "purpose": "editorial architecture diagram",
       "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
-      "sha256": "0c6a39fa939bf13e168de5656d7a8c465ae924cbd5bd6af176bea756fed88df9"
+      "sha256": "817820ae2aad9f6f03bee9b697a35ac3af55b531d987a456c61a0e2377eda297"
     },
     {
       "file": "05_persona_as_runtime_state.avif",
@@ -40,7 +40,7 @@
       "height": 971,
       "purpose": "editorial architecture diagram",
       "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
-      "sha256": "8a743cd7e743f68fb1dcd2706233a8f3c0fb2445d3450e3781616aefdddea10b"
+      "sha256": "a9de8ae3c19d63ffaed6f0b640de1db052b390cee5ad0655e122b7aef780108a"
     },
     {
       "file": "06_cli_provider_configuration_bleed.avif",
@@ -48,7 +48,7 @@
       "height": 926,
       "purpose": "editorial architecture diagram",
       "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
-      "sha256": "e8c77165ed47b5b97422fdc9720f824fe6e80e472d4a812e37dd612ce45d7d72"
+      "sha256": "cdda12e4ecb85fb0c033e4efe3eee90d24f58eab7c576cc362a2c672271e8a63"
     },
     {
       "file": "07_cli_runtime_isolation.avif",
@@ -56,7 +56,7 @@
       "height": 992,
       "purpose": "editorial architecture diagram",
       "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
-      "sha256": "3c68f66ac903da03683d5a0843541d4aeec594c27c221e72711d206555b5c94c"
+      "sha256": "35cced69125d9120d5b488dcd5cef6f4671e29483d61cf7cd67b05a2547d1f58"
     },
     {
       "file": "08_agent_state_is_dependency.avif",
@@ -64,7 +64,7 @@
       "height": 724,
       "purpose": "editorial architecture diagram",
       "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
-      "sha256": "5ec0c1b942187cdd716e555535d86dcf9440fc378283c2fde76b6596078e51d9"
+      "sha256": "be37894a3bca42dcb2136d7b9da1b64006e2aa9df016a2e411894a44b637d3a7"
     },
     {
       "file": "09_context_budget_reality.avif",
@@ -72,7 +72,7 @@
       "height": 724,
       "purpose": "editorial architecture diagram",
       "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
-      "sha256": "7cc0b8f51a017d24f0f1d47e600a2ccfc21236095d20d9d401bbbf0f59eeae88"
+      "sha256": "52846b895d12c45cba1e19899ec1c0ac624d9e11ceb147c20f62b9a75e28aa28"
     },
     {
       "file": "10_guiding_principle.avif",
@@ -80,7 +80,7 @@
       "height": 724,
       "purpose": "editorial architecture diagram",
       "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
-      "sha256": "6b0e97cba667cea5950de358cd30e6ac2651d3be6babd52287fd4940a82f2f5f"
+      "sha256": "5dbe7308561d8ccb14334ed9d375e362173a1b65915bf2ad85da70818542a980"
     }
   ]
 }

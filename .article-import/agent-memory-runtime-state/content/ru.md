@@ -2,7 +2,7 @@
 
 Долговременная память AI-агента очень быстро перестаёт быть просто списком сохранённых фактов. Сначала достаточно небольшого блокнота, затем появляется поиск, потом разделение памяти по проектам, а после — постоянные инструкции, которые меняют уже не знания модели, а её поведение. В этот момент память становится частью runtime-состояния агента — и вместе с удобством появляются новые проблемы изоляции, воспроизводимости и скрытых зависимостей.
 
-![Архитектура memory_plugin](assets/01_hero_banner.avif "Local-first memory, hybrid RAG и персонализация агента как единая среда выполнения")
+![Архитектура memory_plugin](assets/01_hero_banner.png "Local-first memory, hybrid RAG и персонализация агента как единая среда выполнения")
 
 Эта статья выросла из разработки [`@lotargo/memory_plugin`](https://github.com/Lotargo/memory_plugin), но речь здесь не о перечне функций конкретного плагина. Интереснее проследить сам переход: **заметки → память → RAG → persona → persistent agent state** — и посмотреть, что меняется в архитектуре, когда агент действительно начинает что-то помнить между сессиями.
 
@@ -20,7 +20,7 @@ Do not introduce abstractions without a concrete need.
 
 Если каждую новую сессию начинать с полного архива, долговременная память постепенно превращается в ещё один способ забить контекстное окно. Сам факт, что модель технически может принять большой контекст, не означает, что ей стоит каждый раз отправлять всё известное.
 
-![Эволюция проекта](assets/02_project_evolution.avif "Эволюция от простого блокнота к структурированной памяти, RAG, persona и общему состоянию агента")
+![Эволюция проекта](assets/02_project_evolution.png "Эволюция от простого блокнота к структурированной памяти, RAG, persona и общему состоянию агента")
 
 В `memory_plugin` путь оказался довольно естественным. Сначала появился Notebook с короткими фактами. Затем потребовались структурированные записи и project scopes. Потом — поиск по подробным материалам. После этого стало очевидно, что описательные факты и поведенческие инструкции нельзя считать одним и тем же типом памяти. Так возникло разделение `fact` и `directive`, а вместе с ним — persona как постоянное состояние между клиентами.
 
@@ -32,7 +32,7 @@ Do not introduce abstractions without a concrete need.
 
 Первый может быть практически неограниченным. Второй всегда конечен — даже если окно измеряется сотнями тысяч токенов. Более того, проблема не сводится к цене токенов. Большой шумный контекст усложняет выбор действительно важных деталей.
 
-![Реальность бюджета контекста](assets/09_context_budget_reality.avif "Большая сырая история конкурирует с небольшим hot memory и выборочным RAG retrieval")
+![Реальность бюджета контекста](assets/09_context_budget_reality.png "Большая сырая история конкурирует с небольшим hot memory и выборочным RAG retrieval")
 
 Поэтому полезная архитектура памяти обычно стремится не к максимальному prompt injection, а к **максимальной доступности при минимальном активном контексте**.
 
@@ -54,7 +54,7 @@ expand the full source only when needed
 
 **Cold memory** — решения, исследования, длинные заметки, handoff-записи, документы, отчёты и история экспериментов. Она должна быть доступна, но не обязана жить в каждом prompt.
 
-![Hot Memory и Cold RAG](assets/03_hot_memory_vs_cold_rag.avif "Небольшая always-on память для высокосигнального контекста и большая библиотека, извлекаемая через RAG по необходимости")
+![Hot Memory и Cold RAG](assets/03_hot_memory_vs_cold_rag.png "Небольшая always-on память для высокосигнального контекста и большая библиотека, извлекаемая через RAG по необходимости")
 
 Практически это даёт два разных интерфейса мышления агента. В `memory_plugin` короткая запись может жить в Notebook, а подробное исследование — как RAG Memory Note. Для документов retrieval объединяет SQLite FTS5/BM25 и локальные dense embeddings, после чего результаты можно получить как компактный индекс, snippets или раскрыть целиком.
 
@@ -102,7 +102,7 @@ Prefer concise answers and challenge unnecessary abstractions.
 
 Это уже не факт о мире и не факт о проекте. Это инструкция, которую агент должен активно применять.
 
-![Fact и Directive](assets/04_fact_vs_directive.avif "Fact описывает контекст, Directive задаёт активное поведение агента")
+![Fact и Directive](assets/04_fact_vs_directive.png "Fact описывает контекст, Directive задаёт активное поведение агента")
 
 Разница принципиальна:
 
@@ -130,7 +130,7 @@ Prefer concise answers and challenge unnecessary abstractions.
 - уровень инициативы;
 - привычный формат общения с конкретным пользователем.
 
-![Persona как runtime state](assets/05_persona_as_runtime_state.avif "Одна и та же модель ведёт себя по-разному при разных persistent profiles")
+![Persona как runtime state](assets/05_persona_as_runtime_state.png "Одна и та же модель ведёт себя по-разному при разных persistent profiles")
 
 Вес модели не изменился. Provider не изменился. Версия модели не изменилась. Но её рабочее поведение стало другим.
 
@@ -193,7 +193,7 @@ Application → CLI → Model
 
 Но реальная схема может быть значительно длиннее.
 
-![Configuration Bleed в CLI-as-Provider](assets/06_cli_provider_configuration_bleed.avif "Глобальные plugins, MCP, skills, memory и persona могут незаметно попадать в runtime приложения, использующего CLI как provider")
+![Configuration Bleed в CLI-as-Provider](assets/06_cli_provider_configuration_bleed.png "Глобальные plugins, MCP, skills, memory и persona могут незаметно попадать в runtime приложения, использующего CLI как provider")
 
 ```text
 Application
@@ -227,7 +227,7 @@ App
 
 А фактическое дерево исполнения оказывается другим.
 
-![Agent State Is a Dependency](assets/08_agent_state_is_dependency.avif "Runtime зависит не только от CLI, но и от скрытых config, plugins, MCP, memory и persona")
+![Agent State Is a Dependency](assets/08_agent_state_is_dependency.png "Runtime зависит не только от CLI, но и от скрытых config, plugins, MCP, memory и persona")
 
 Особенно неприятно то, что такие зависимости могут отсутствовать в:
 
@@ -267,7 +267,7 @@ Model B + Agent State B
 
 Если CLI используется как часть приложения, ему нужен собственный runtime profile.
 
-![Изоляция CLI runtime](assets/07_cli_runtime_isolation.avif "Персональный CLI сохраняет память и persona, provider CLI запускается с минимальной контролируемой конфигурацией")
+![Изоляция CLI runtime](assets/07_cli_runtime_isolation.png "Персональный CLI сохраняет память и persona, provider CLI запускается с минимальной контролируемой конфигурацией")
 
 Минимальная модель может выглядеть так:
 
@@ -320,7 +320,7 @@ agent ≈ model
       + runtime configuration
 ```
 
-![Общий принцип persistent agent state](assets/10_guiding_principle.avif "Memory, retrieval и directives вместе формируют устойчивое состояние агента")
+![Общий принцип persistent agent state](assets/10_guiding_principle.png "Memory, retrieval и directives вместе формируют устойчивое состояние агента")
 
 Главный вывод для меня оказался простым:
 

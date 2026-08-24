@@ -1,0 +1,756 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="How a simple agent notebook evolves into hot memory, RAG, project scopes and persistent persona — and why that turns agent state into a runtime dependency that must be isolated." />
+  <meta name="theme-color" content="#000000" />
+  <title>When Agent Memory Becomes Runtime State: RAG, Persona, and Hidden Dependencies · Lotargo Blog</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem('lotargo-theme');
+        document.documentElement.dataset.theme = savedTheme || 'dark';
+      } catch (error) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    })();
+  </script>
+</head>
+<body data-title-en="When Agent Memory Becomes Runtime State: RAG, Persona, and Hidden Dependencies · Lotargo Blog" data-title-ru="Когда память агента становится частью runtime: RAG, persona и скрытые зависимости · Блог Lotargo">
+  <header class="site-header" data-js="header">
+    <a class="brand" href="../../" aria-label="Back to landing">
+      <span class="brand-mark" aria-hidden="true">LØ</span>
+      <span class="brand-text">Lotargo</span>
+    </a>
+    <div class="header-controls">
+      <nav class="nav" aria-label="Post navigation">
+        <a href="../../" data-i18n="blog-nav-home">Home</a>
+        <a href="../" data-i18n="nav-blog">Blog</a>
+        <a href="../../#projects" data-i18n="nav-projects">Projects</a>
+      </nav>
+      <button class="theme-toggle" type="button" data-js="theme-toggle" aria-label="Switch color theme">
+        <span data-js="theme-label">Theme</span>
+      </button>
+      <button class="lang-toggle" type="button" data-js="lang-toggle" aria-label="Switch language">
+        <span data-js="lang-label">EN</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top" class="post-shell">
+    <article class="post-article" data-generated-from-markdown="true" data-article-slug="agent-memory-runtime-state">
+      <div class="post-toolbar">
+        <a class="post-back" href="../" data-i18n="post-back-blog">Back to blog</a>
+        <div class="post-meta">
+          <span>2026-08-25</span>
+          <span data-lang-content="en">AI infrastructure</span>
+          <span data-lang-content="ru">AI-инфраструктура</span>
+        </div>
+      </div>
+
+      <div data-lang-content="en">
+        <h1>When Agent Memory Becomes Runtime State: RAG, Persona, and Hidden Dependencies</h1>
+        <p class="post-lead">Long-term memory for an AI agent stops being a list of saved facts surprisingly quickly. A small notebook is enough at first; then search appears, memory has to be separated by project, and eventually persistent instructions start changing not what the model knows, but how it behaves. At that point memory becomes part of the agent's runtime state — bringing new problems around isolation, reproducibility, and hidden dependencies along with the convenience.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="agent-memory-runtime-state-en-images"><img alt="memory_plugin architecture" src="../assets/agent-memory-runtime-state/01_hero_banner.png" data-full-src="../assets/agent-memory-runtime-state/01_hero_banner.png" loading="lazy" decoding="async" data-caption-en="Local-first memory, hybrid RAG, and agent personalization as one runtime environment"><figcaption data-lang-content="en">Local-first memory, hybrid RAG, and agent personalization as one runtime environment</figcaption></figure>
+        <p>This article grew out of building <a href="https://github.com/Lotargo/memory_plugin"><code>@lotargo/memory_plugin</code></a>, but it is not a feature tour. The more interesting path is the architectural transition itself: <strong>notes → memory → RAG → persona → persistent agent state</strong> — and what changes once an agent genuinely remembers across sessions.</p>
+
+        <h2 id="memory-is-not-chat-history">Memory is not chat history</h2>
+
+        <p>The simplest long-term memory implementation is almost trivial: a text file where the user or agent keeps short notes.</p>
+
+        <pre><code class="language-text">Project uses PostgreSQL.
+        Prefer concise answers.
+        Do not introduce abstractions without a concrete need.
+        </code></pre>
+
+        <p>At small scale this works extremely well. The records are human-readable, versionable, and cheap to maintain. The problem begins precisely when the memory becomes useful: useful records accumulate.</p>
+
+        <p>If every new session starts with the complete archive, long-term memory slowly turns into another way to saturate the context window. The fact that a model can technically accept a large context does not mean it should receive everything you know on every call.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="agent-memory-runtime-state-en-images"><img alt="Project evolution" src="../assets/agent-memory-runtime-state/02_project_evolution.png" data-full-src="../assets/agent-memory-runtime-state/02_project_evolution.png" loading="lazy" decoding="async" data-caption-en="Evolution from a simple notebook to structured memory, RAG, persona, and shared agent state"><figcaption data-lang-content="en">Evolution from a simple notebook to structured memory, RAG, persona, and shared agent state</figcaption></figure>
+        <p>In <code>memory_plugin</code>, the path was incremental. A Notebook of short facts came first. Structured records and project scopes followed. Then detailed material needed retrieval. After that it became clear that descriptive facts and behavioral instructions should not be treated as the same kind of memory. The <code>fact</code> / <code>directive</code> distinction led naturally to persona as persistent cross-client state.</p>
+
+        <p>Each layer solved a limitation of the previous one rather than replacing it.</p>
+
+        <h2 id="context-budget-storing-everything-is-not-the-same-as-sending-everything">Context budget: storing everything is not the same as sending everything</h2>
+
+        <p>Two resources are often conflated: <strong>the size of long-term storage</strong> and <strong>the size of the model's active context</strong>.</p>
+
+        <p>The first can be effectively huge. The second is always finite, even when context windows are measured in hundreds of thousands of tokens. And this is not merely a token-price problem. A large noisy context makes it harder to distinguish the details that actually matter.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="agent-memory-runtime-state-en-images"><img alt="Context budget reality" src="../assets/agent-memory-runtime-state/09_context_budget_reality.png" data-full-src="../assets/agent-memory-runtime-state/09_context_budget_reality.png" loading="lazy" decoding="async" data-caption-en="A large raw history competes with compact hot memory plus selective RAG retrieval"><figcaption data-lang-content="en">A large raw history competes with compact hot memory plus selective RAG retrieval</figcaption></figure>
+        <p>A useful memory architecture therefore optimizes not for maximum prompt injection, but for <strong>maximum availability with minimum active context</strong>.</p>
+
+        <pre><code class="language-text">store broadly
+            ↓
+        keep high-signal state small
+            ↓
+        retrieve relevant detail on demand
+            ↓
+        expand the full source only when needed
+        </code></pre>
+
+        <p>That leads to the hot/cold split.</p>
+
+        <h2 id="hot-memory-and-cold-rag">Hot memory and Cold RAG</h2>
+
+        <p><strong>Hot memory</strong> is the small set of information worth keeping close almost all the time: architectural constraints, preferences, active agreements, stable user facts.</p>
+
+        <p><strong>Cold memory</strong> contains decisions, investigations, long notes, handoffs, documents, reports, and experiment history. It should remain accessible without living in every prompt.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="agent-memory-runtime-state-en-images"><img alt="Hot Memory vs Cold RAG" src="../assets/agent-memory-runtime-state/03_hot_memory_vs_cold_rag.png" data-full-src="../assets/agent-memory-runtime-state/03_hot_memory_vs_cold_rag.png" loading="lazy" decoding="async" data-caption-en="Small always-on memory for high-signal context and a larger library retrieved through RAG on demand"><figcaption data-lang-content="en">Small always-on memory for high-signal context and a larger library retrieved through RAG on demand</figcaption></figure>
+        <p>In practice these become different interfaces for the agent. In <code>memory_plugin</code>, a concise statement can live in the Notebook while a detailed investigation becomes a RAG Memory Note. Document retrieval combines SQLite FTS5/BM25 with local dense embeddings, and results can be discovered as a compact index, used as snippets, or expanded to the complete source.</p>
+
+        <p>The specific ranking algorithm is secondary to the contract:</p>
+
+        <blockquote>
+        <p><strong>Memory should be large. Active context should stay small.</strong></p>
+        </blockquote>
+
+        <p>The agent's workflow changes accordingly. Instead of “remember everything,” it becomes: find the right source, verify its identity, then expand only the fragment or document needed now.</p>
+
+        <h2 id="memory-needs-to-know-which-project-it-belongs-to">Memory needs to know which project it belongs to</h2>
+
+        <p>The next problem appears as soon as one agent is used across several repositories.</p>
+
+        <p>Suppose project A uses FastAPI and project B uses Django. If both are just records in one global notebook, the model has little structural reason not to carry a decision from one project into the other.</p>
+
+        <p>Long-term memory therefore needs not only retrieval, but <strong>scope</strong>.</p>
+
+        <pre><code class="language-text">global
+          ├── user preferences
+          └── reusable knowledge
+
+        project A
+          ├── architecture
+          ├── decisions
+          └── investigations
+
+        project B
+          ├── architecture
+          ├── decisions
+          └── investigations
+        </code></pre>
+
+        <p>My implementation makes Git identity — primarily the normalized remote — more important than the absolute filesystem path. A repository can move to a different directory or machine and still resolve to the same logical memory.</p>
+
+        <p>This suggests an important rule: <strong><code>all</code> should not mean “everything this agent has ever seen.”</strong> For a working agent, a safer interpretation is “global + current project.” Other projects should remain outside the retrieval boundary.</p>
+
+        <h2 id="fact-and-directive-knowledge-and-behavior-are-different-things">Fact and Directive: knowledge and behavior are different things</h2>
+
+        <p>Up to this point memory can still be described as a knowledge base. Then a record like this appears:</p>
+
+        <pre><code class="language-text">Prefer concise answers and challenge unnecessary abstractions.
+        </code></pre>
+
+        <p>That is not a fact about the world or the project. It is an instruction the agent should actively apply.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="agent-memory-runtime-state-en-images"><img alt="Fact vs Directive" src="../assets/agent-memory-runtime-state/04_fact_vs_directive.png" data-full-src="../assets/agent-memory-runtime-state/04_fact_vs_directive.png" loading="lazy" decoding="async" data-caption-en="Facts describe context; directives configure active agent behavior"><figcaption data-lang-content="en">Facts describe context; directives configure active agent behavior</figcaption></figure>
+        <p>The distinction is structural:</p>
+
+        <table>
+        <thead>
+        <tr>
+        <th>Type</th>
+        <th>Question</th>
+        <th>Example</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td><code>fact</code></td>
+        <td>What does the agent know?</td>
+        <td>“The project uses PostgreSQL 16”</td>
+        </tr>
+        <tr>
+        <td><code>directive</code></td>
+        <td>How should the agent act?</td>
+        <td>“Inspect the existing architecture before adding abstractions”</td>
+        </tr>
+        </tbody>
+        </table>
+
+        <p>Both can share physical storage, but semantically merging them is dangerous. A fact should help the model interpret the task. A directive should become part of active configuration.</p>
+
+        <p>This is the point where ordinary persistent memory quietly becomes personalization.</p>
+
+        <h2 id="persona-is-runtime-state">Persona is runtime state</h2>
+
+        <p>The word <em>persona</em> is often reduced to cosmetics: “be friendly,” “talk like a pirate,” “use emoji.” That definition is too narrow for working agents.</p>
+
+        <p>Persistent directives can influence:</p>
+
+        <ul>
+        <li>degree of autonomy;</li>
+        <li>preferred architectural style;</li>
+        <li>explanation format;</li>
+        <li>willingness to challenge assumptions;</li>
+        <li>attitude toward risky changes;</li>
+        <li>tool-use conventions;</li>
+        <li>level of initiative;</li>
+        <li>the communication pattern expected by a specific user.</li>
+        </ul>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="agent-memory-runtime-state-en-images"><img alt="Persona as runtime state" src="../assets/agent-memory-runtime-state/05_persona_as_runtime_state.png" data-full-src="../assets/agent-memory-runtime-state/05_persona_as_runtime_state.png" loading="lazy" decoding="async" data-caption-en="The same model can behave differently under different persistent profiles"><figcaption data-lang-content="en">The same model can behave differently under different persistent profiles</figcaption></figure>
+        <p>The model weights did not change. The provider did not change. The model version did not change. Yet the working behavior did.</p>
+
+        <p>That makes persona more useful to think of as <strong>runtime state</strong> than as a UI preference:</p>
+
+        <pre><code class="language-text">output = f(model, prompt, tools, retrieved knowledge, persistent directives)
+        </code></pre>
+
+        <p>Removing the final argument can change the result as noticeably as changing the tool set or the system prompt.</p>
+
+        <p>This leads to the central distinction:</p>
+
+        <blockquote>
+        <p><strong>RAG answers what the agent knows. Persona shapes how it uses that knowledge.</strong></p>
+        </blockquote>
+
+        <h2 id="how-strongly-can-persistent-directives-affect-behavior">How strongly can persistent directives affect behavior?</h2>
+
+        <p>In practice the effect can be stronger than expected from a one-off system prompt. There is no mystery involved: a persistent instruction repeatedly becomes part of the agent's working norm and therefore shapes how later requests are interpreted.</p>
+
+        <p>Directives can influence how readily a model:</p>
+
+        <ul>
+        <li>asks for clarification instead of acting;</li>
+        <li>selects a conservative strategy;</li>
+        <li>challenges a user's assumption;</li>
+        <li>chooses a cautious or refusal-oriented interpretation of an ambiguous request;</li>
+        <li>continues an established working style without having the rules explained again.</li>
+        </ul>
+
+        <p>This observation needs careful wording. <strong>Persistent persona does not rewrite model weights and does not remove built-in safety mechanisms.</strong> Higher-priority platform and safety instructions remain authoritative. Persistent context can, however, affect how ambiguous cases are interpreted and which of several allowed response strategies the model selects. The effect is simply easier to observe in models whose behavioral constraints are less rigidly expressed.</p>
+
+        <p>That is exactly why persistent personalization deserves the same engineering attention as other runtime components.</p>
+
+        <h2 id="persistent-persona-has-its-own-failure-modes">Persistent persona has its own failure modes</h2>
+
+        <p>Once an instruction survives a session, a mistake can survive the session too.</p>
+
+        <p>Possible failures include:</p>
+
+        <ul>
+        <li>a preference that is no longer current;</li>
+        <li>conflicting directives;</li>
+        <li>an accidental habit promoted into a durable rule;</li>
+        <li>an excessively aggressive or cautious persona;</li>
+        <li>an incorrect fact that continues influencing decisions;</li>
+        <li>instruction poisoning through uncontrolled writes to long-term memory.</li>
+        </ul>
+
+        <p>Persistent state therefore needs a lifecycle: stable identifiers, updates, superseding, deletion, scopes, and some way to explain <strong>why a particular instruction is active now</strong>.</p>
+
+        <p>“An agent that remembers everything” sounds attractive until it becomes very good at remembering what should have been forgotten.</p>
+
+        <h2 id="cli-as-provider-the-hidden-runtime-layer">CLI as provider: the hidden runtime layer</h2>
+
+        <p>Another problem became much easier to see once persistent persona existed.</p>
+
+        <p>Tools such as OpenCode or Codex are not always used interactively. A developer can place a CLI between an application and the LLM and use it as a ready-made provider/runtime layer: the CLI already handles accounts, models, tools, and agent execution.</p>
+
+        <p>The mental model is often:</p>
+
+        <pre><code class="language-text">Application → CLI → Model
+        </code></pre>
+
+        <p>The real path can be much longer.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="agent-memory-runtime-state-en-images"><img alt="Configuration bleed in CLI-as-Provider" src="../assets/agent-memory-runtime-state/06_cli_provider_configuration_bleed.png" data-full-src="../assets/agent-memory-runtime-state/06_cli_provider_configuration_bleed.png" loading="lazy" decoding="async" data-caption-en="Global plugins, MCP, skills, memory, and persona can silently become part of an application's runtime when a CLI is used as a provider"><figcaption data-lang-content="en">Global plugins, MCP, skills, memory, and persona can silently become part of an application's runtime when a CLI is used as a provider</figcaption></figure>
+        <pre><code class="language-text">Application
+            ↓
+        CLI runtime
+            ├── global config
+            ├── plugins
+            ├── MCP servers
+            ├── skills
+            ├── prompts
+            ├── memory
+            └── persona
+            ↓
+        Model
+        </code></pre>
+
+        <p>When the CLI runs inside the user's normal environment, all of this becomes <strong>ambient agent state</strong>: state that the application never declared directly but that still influences the output.</p>
+
+        <p>I think of the resulting effect as <strong>Configuration Bleed in CLI-as-Provider Architectures</strong>.</p>
+
+        <p><code>memory_plugin</code> does not create this class of problem. It merely makes it easy to observe because memory and persona have visible behavioral effects. A global MCP server, skill, or user prompt can leak into the same runtime in exactly the same way.</p>
+
+        <h2 id="agent-state-is-a-dependency-even-when-it-is-absent-from-the-lockfile">Agent state is a dependency even when it is absent from the lockfile</h2>
+
+        <p>The application's visible dependency tree may look harmless:</p>
+
+        <pre><code class="language-text">App
+        └── CLI runtime
+        </code></pre>
+
+        <p>The execution dependency tree is different.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="agent-memory-runtime-state-en-images"><img alt="Agent State Is a Dependency" src="../assets/agent-memory-runtime-state/08_agent_state_is_dependency.png" data-full-src="../assets/agent-memory-runtime-state/08_agent_state_is_dependency.png" loading="lazy" decoding="async" data-caption-en="Runtime behavior depends on hidden config, plugins, MCP, memory, and persona in addition to the CLI itself"><figcaption data-lang-content="en">Runtime behavior depends on hidden config, plugins, MCP, memory, and persona in addition to the CLI itself</figcaption></figure>
+        <p>The uncomfortable part is that those dependencies may not appear in:</p>
+
+        <ul>
+        <li><code>package.json</code>;</li>
+        <li><code>requirements.txt</code>;</li>
+        <li>a lockfile;</li>
+        <li>the Dockerfile;</li>
+        <li>application source code.</li>
+        </ul>
+
+        <p>A global plugin update or persona change can alter the behavior of an application that never imports that plugin.</p>
+
+        <p>From a reproducibility perspective, this is a real hidden dependency.</p>
+
+        <h2 id="ambient-state-contaminates-benchmarks">Ambient state contaminates benchmarks</h2>
+
+        <p>Consider a simple benchmark:</p>
+
+        <pre><code class="language-text">Model A vs Model B
+        </code></pre>
+
+        <p>If Model A is reached through a CLI with accumulated memory, coding skills, and persona while Model B runs in a clean profile, the actual comparison is:</p>
+
+        <pre><code class="language-text">Model A + Agent State A
+                vs
+        Model B + Agent State B
+        </code></pre>
+
+        <p>It is easy to attribute the result to the model even though part of the advantage came from the environment.</p>
+
+        <p>Serious comparisons therefore benefit from a <strong>clean-profile baseline</strong>: a separate HOME/config directory, a fixed tool set, no personal memory, and every instruction explicitly recorded. Persistent state can then be added as its own experimental variable.</p>
+
+        <p>Otherwise the benchmark measures not just the model, but the life history of the CLI used to reach it.</p>
+
+        <h2 id="production-isolation-personal-agent-and-provider-are-different-environments">Production isolation: personal agent and provider are different environments</h2>
+
+        <p>If a CLI becomes part of an application, it should get its own runtime profile.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="agent-memory-runtime-state-en-images"><img alt="CLI runtime isolation" src="../assets/agent-memory-runtime-state/07_cli_runtime_isolation.png" data-full-src="../assets/agent-memory-runtime-state/07_cli_runtime_isolation.png" loading="lazy" decoding="async" data-caption-en="A personal CLI keeps memory and persona while a provider CLI uses a minimal controlled configuration"><figcaption data-lang-content="en">A personal CLI keeps memory and persona while a provider CLI uses a minimal controlled configuration</figcaption></figure>
+        <p>A minimal split can look like this:</p>
+
+        <pre><code class="language-text">Personal CLI
+        HOME=/home/user
+          memory
+          persona
+          skills
+          plugins
+
+        Provider CLI
+        HOME=/isolated/provider
+          minimal config
+          required integration only
+          no personal memory
+          no global persona
+        </code></pre>
+
+        <p>Practical isolation options are familiar:</p>
+
+        <ul>
+        <li>separate <code>HOME</code> or config directory;</li>
+        <li>separate CLI profile;</li>
+        <li>separate system user;</li>
+        <li>container;</li>
+        <li>explicitly disabled global plugins, MCP servers, and skills;</li>
+        <li>a minimal fixed environment for tests and production.</li>
+        </ul>
+
+        <p>The broader point is to treat agent state with roughly the same care already given to credentials and environment variables. Personalization is not a defect — it is what gives the agent continuity. But continuity without boundaries becomes implicit coupling.</p>
+
+        <h2 id="from-a-stateless-model-to-a-persistent-working-environment">From a stateless model to a persistent working environment</h2>
+
+        <p>Long-term memory ultimately changes what we mean by “the agent.”</p>
+
+        <p>A stateless approximation is:</p>
+
+        <pre><code class="language-text">agent ≈ model + prompt + tools
+        </code></pre>
+
+        <p>A persistent system is closer to:</p>
+
+        <pre><code class="language-text">agent ≈ model
+              + tools
+              + hot memory
+              + retrievable knowledge
+              + project scope
+              + persona/directives
+              + runtime configuration
+        </code></pre>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="agent-memory-runtime-state-en-images"><img alt="Guiding principle" src="../assets/agent-memory-runtime-state/10_guiding_principle.png" data-full-src="../assets/agent-memory-runtime-state/10_guiding_principle.png" loading="lazy" decoding="async" data-caption-en="RAG answers what the agent knows; persona shapes how that knowledge is used"><figcaption data-lang-content="en">RAG answers what the agent knows; persona shapes how that knowledge is used</figcaption></figure>
+        <p>The conclusion I keep coming back to is simple:</p>
+
+        <p><strong>Memory provides continuity of knowledge. RAG provides selective access to that knowledge. Persona provides continuity of behavior. Isolation defines where that behavior is allowed to apply.</strong></p>
+
+        <p>That is the point where “LLM memory” stops being a convenient notebook and becomes part of runtime architecture.</p>
+
+        <p><a href="https://github.com/Lotargo/memory_plugin"><code>@lotargo/memory_plugin</code></a> is one practical implementation of this idea: a local-first Notebook, hybrid RAG, project scopes, and persistent persona across multiple AI coding clients. But the principle is broader than any one project. As agent systems acquire more durable state, we can no longer afford to treat that state as an invisible UI preference.</p>
+      </div>
+
+      <div data-lang-content="ru">
+        <h1>Когда память агента становится частью runtime: RAG, persona и скрытые зависимости</h1>
+        <p class="post-lead">Долговременная память AI-агента очень быстро перестаёт быть просто списком сохранённых фактов. Сначала достаточно небольшого блокнота, затем появляется поиск, потом разделение памяти по проектам, а после — постоянные инструкции, которые меняют уже не знания модели, а её поведение. В этот момент память становится частью runtime-состояния агента — и вместе с удобством появляются новые проблемы изоляции, воспроизводимости и скрытых зависимостей.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="agent-memory-runtime-state-ru-images"><img alt="Архитектура memory_plugin" src="../assets/agent-memory-runtime-state/01_hero_banner.png" data-full-src="../assets/agent-memory-runtime-state/01_hero_banner.png" loading="lazy" decoding="async" data-caption-ru="Local-first memory, hybrid RAG и персонализация агента как единая среда выполнения"><figcaption data-lang-content="ru">Local-first memory, hybrid RAG и персонализация агента как единая среда выполнения</figcaption></figure>
+        <p>Эта статья выросла из разработки <a href="https://github.com/Lotargo/memory_plugin"><code>@lotargo/memory_plugin</code></a>, но речь здесь не о перечне функций конкретного плагина. Интереснее проследить сам переход: <strong>заметки → память → RAG → persona → persistent agent state</strong> — и посмотреть, что меняется в архитектуре, когда агент действительно начинает что-то помнить между сессиями.</p>
+
+        <h2 id="_1">Память — не история чата</h2>
+
+        <p>Самая простая реализация долговременной памяти выглядит почти смешно: текстовый файл, в который агент или пользователь добавляет короткие заметки.</p>
+
+        <pre><code class="language-text">Project uses PostgreSQL.
+        Prefer concise answers.
+        Do not introduce abstractions without a concrete need.
+        </code></pre>
+
+        <p>На небольшом объёме это работает отлично. Такие записи понятны человеку, легко версионируются и практически ничего не стоят в обслуживании. Проблема начинается не тогда, когда памяти мало, а когда она становится полезной: полезные записи накапливаются.</p>
+
+        <p>Если каждую новую сессию начинать с полного архива, долговременная память постепенно превращается в ещё один способ забить контекстное окно. Сам факт, что модель технически может принять большой контекст, не означает, что ей стоит каждый раз отправлять всё известное.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="agent-memory-runtime-state-ru-images"><img alt="Эволюция проекта" src="../assets/agent-memory-runtime-state/02_project_evolution.png" data-full-src="../assets/agent-memory-runtime-state/02_project_evolution.png" loading="lazy" decoding="async" data-caption-ru="Эволюция от простого блокнота к структурированной памяти, RAG, persona и общему состоянию агента"><figcaption data-lang-content="ru">Эволюция от простого блокнота к структурированной памяти, RAG, persona и общему состоянию агента</figcaption></figure>
+        <p>В <code>memory_plugin</code> путь оказался довольно естественным. Сначала появился Notebook с короткими фактами. Затем потребовались структурированные записи и project scopes. Потом — поиск по подробным материалам. После этого стало очевидно, что описательные факты и поведенческие инструкции нельзя считать одним и тем же типом памяти. Так возникло разделение <code>fact</code> и <code>directive</code>, а вместе с ним — persona как постоянное состояние между клиентами.</p>
+
+        <p>Каждый следующий слой не отменял предыдущий. Он решал его ограничение.</p>
+
+        <h2 id="context-budget">Context budget: хранить много не значит отправлять всё</h2>
+
+        <p>Есть два разных ресурса, которые часто смешивают: <strong>объём долговременного хранилища</strong> и <strong>объём активного контекста модели</strong>.</p>
+
+        <p>Первый может быть практически неограниченным. Второй всегда конечен — даже если окно измеряется сотнями тысяч токенов. Более того, проблема не сводится к цене токенов. Большой шумный контекст усложняет выбор действительно важных деталей.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="agent-memory-runtime-state-ru-images"><img alt="Реальность бюджета контекста" src="../assets/agent-memory-runtime-state/09_context_budget_reality.png" data-full-src="../assets/agent-memory-runtime-state/09_context_budget_reality.png" loading="lazy" decoding="async" data-caption-ru="Большая сырая история конкурирует с небольшим hot memory и выборочным RAG retrieval"><figcaption data-lang-content="ru">Большая сырая история конкурирует с небольшим hot memory и выборочным RAG retrieval</figcaption></figure>
+        <p>Поэтому полезная архитектура памяти обычно стремится не к максимальному prompt injection, а к <strong>максимальной доступности при минимальном активном контексте</strong>.</p>
+
+        <pre><code class="language-text">store broadly
+            ↓
+        keep high-signal state small
+            ↓
+        retrieve relevant detail on demand
+            ↓
+        expand the full source only when needed
+        </code></pre>
+
+        <p>Отсюда появляется разделение на горячую и холодную память.</p>
+
+        <h2 id="hot-memory-cold-rag">Hot memory и Cold RAG</h2>
+
+        <p><strong>Hot memory</strong> — это то, что действительно полезно иметь рядом почти всегда: несколько архитектурных ограничений, предпочтений, текущих договорённостей, устойчивых пользовательских фактов.</p>
+
+        <p><strong>Cold memory</strong> — решения, исследования, длинные заметки, handoff-записи, документы, отчёты и история экспериментов. Она должна быть доступна, но не обязана жить в каждом prompt.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="agent-memory-runtime-state-ru-images"><img alt="Hot Memory и Cold RAG" src="../assets/agent-memory-runtime-state/03_hot_memory_vs_cold_rag.png" data-full-src="../assets/agent-memory-runtime-state/03_hot_memory_vs_cold_rag.png" loading="lazy" decoding="async" data-caption-ru="Небольшая always-on память для высокосигнального контекста и большая библиотека, извлекаемая через RAG по необходимости"><figcaption data-lang-content="ru">Небольшая always-on память для высокосигнального контекста и большая библиотека, извлекаемая через RAG по необходимости</figcaption></figure>
+        <p>Практически это даёт два разных интерфейса мышления агента. В <code>memory_plugin</code> короткая запись может жить в Notebook, а подробное исследование — как RAG Memory Note. Для документов retrieval объединяет SQLite FTS5/BM25 и локальные dense embeddings, после чего результаты можно получить как компактный индекс, snippets или раскрыть целиком.</p>
+
+        <p>Но конкретный поисковый алгоритм здесь вторичен. Важнее сам контракт:</p>
+
+        <blockquote>
+        <p><strong>Память обязана быть большой. Активный контекст обязан оставаться маленьким.</strong></p>
+        </blockquote>
+
+        <p>Это меняет и способ работы агента. Вместо «вспомни всё» появляется последовательность: найти подходящий источник, проверить его идентичность, а затем раскрыть ровно тот фрагмент или документ, который нужен сейчас.</p>
+
+        <h2 id="_2">Память должна знать, к какому проекту она относится</h2>
+
+        <p>Следующая проблема возникает, как только одним агентом пользуются в нескольких репозиториях.</p>
+
+        <p>Допустим, в проекте A принято использовать FastAPI, а в проекте B — Django. Если это просто две записи в глобальном блокноте, у модели нет надёжной причины не перенести решение из одного проекта в другой.</p>
+
+        <p>Поэтому долговременная память нуждается не только в retrieval, но и в <strong>scope</strong>.</p>
+
+        <pre><code class="language-text">global
+          ├── user preferences
+          └── reusable knowledge
+
+        project A
+          ├── architecture
+          ├── decisions
+          └── investigations
+
+        project B
+          ├── architecture
+          ├── decisions
+          └── investigations
+        </code></pre>
+
+        <p>В моей реализации project identity привязан прежде всего к Git remote, а не к абсолютному пути на диске. Это позволяет переместить репозиторий, открыть его из другой директории или на другой машине и всё равно получить ту же логическую память.</p>
+
+        <p>Здесь появляется важный принцип: <strong><code>all</code> не должно означать «всё, что когда-либо видел агент»</strong>. Для рабочего агента безопаснее трактовать его как «global + current project». Остальные проекты должны оставаться за границей retrieval.</p>
+
+        <h2 id="fact-directive">Fact и Directive — знания и поведение не одно и то же</h2>
+
+        <p>До определённого момента память можно считать базой знаний. Но затем появляется запись вроде:</p>
+
+        <pre><code class="language-text">Prefer concise answers and challenge unnecessary abstractions.
+        </code></pre>
+
+        <p>Это уже не факт о мире и не факт о проекте. Это инструкция, которую агент должен активно применять.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="agent-memory-runtime-state-ru-images"><img alt="Fact и Directive" src="../assets/agent-memory-runtime-state/04_fact_vs_directive.png" data-full-src="../assets/agent-memory-runtime-state/04_fact_vs_directive.png" loading="lazy" decoding="async" data-caption-ru="Fact описывает контекст, Directive задаёт активное поведение агента"><figcaption data-lang-content="ru">Fact описывает контекст, Directive задаёт активное поведение агента</figcaption></figure>
+        <p>Разница принципиальна:</p>
+
+        <table>
+        <thead>
+        <tr>
+        <th>Тип</th>
+        <th>Вопрос</th>
+        <th>Пример</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td><code>fact</code></td>
+        <td>Что агент знает?</td>
+        <td>«Проект использует PostgreSQL 16»</td>
+        </tr>
+        <tr>
+        <td><code>directive</code></td>
+        <td>Как агент должен действовать?</td>
+        <td>«Сначала проверяй существующую архитектуру и только потом добавляй абстракции»</td>
+        </tr>
+        </tbody>
+        </table>
+
+        <p>Можно хранить оба типа в одном физическом хранилище, но семантически смешивать их опасно. Факт должен помогать модели интерпретировать задачу. Directive должен становиться частью её активной конфигурации.</p>
+
+        <p>Так обычная persistent memory незаметно превращается в механизм персонализации.</p>
+
+        <h2 id="persona-runtime-state">Persona — это runtime state</h2>
+
+        <p>Слово <em>persona</em> часто ассоциируется с чем-то косметическим: «будь дружелюбным», «говори как пират», «используй эмодзи». Для рабочих агентов это слишком узкое представление.</p>
+
+        <p>Долговременные directives могут задавать:</p>
+
+        <ul>
+        <li>степень автономности;</li>
+        <li>предпочтительный стиль архитектуры;</li>
+        <li>формат объяснений;</li>
+        <li>склонность перепроверять предположения;</li>
+        <li>отношение к рискованным изменениям;</li>
+        <li>правила использования инструментов;</li>
+        <li>уровень инициативы;</li>
+        <li>привычный формат общения с конкретным пользователем.</li>
+        </ul>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="agent-memory-runtime-state-ru-images"><img alt="Persona как runtime state" src="../assets/agent-memory-runtime-state/05_persona_as_runtime_state.png" data-full-src="../assets/agent-memory-runtime-state/05_persona_as_runtime_state.png" loading="lazy" decoding="async" data-caption-ru="Одна и та же модель ведёт себя по-разному при разных persistent profiles"><figcaption data-lang-content="ru">Одна и та же модель ведёт себя по-разному при разных persistent profiles</figcaption></figure>
+        <p>Вес модели не изменился. Provider не изменился. Версия модели не изменилась. Но её рабочее поведение стало другим.</p>
+
+        <p>Поэтому мне кажется полезнее считать такую persona не UI-настройкой, а <strong>runtime state</strong>:</p>
+
+        <pre><code class="language-text">output = f(model, prompt, tools, retrieved knowledge, persistent directives)
+        </code></pre>
+
+        <p>Если убрать последний аргумент, результат может измениться так же заметно, как после смены набора инструментов или системного prompt.</p>
+
+        <p>Отсюда и ключевое различие всей архитектуры:</p>
+
+        <blockquote>
+        <p><strong>RAG отвечает на вопрос «что агент знает». Persona определяет, как он использует это знание.</strong></p>
+        </blockquote>
+
+        <h2 id="persistent-directives">Насколько сильно persistent directives меняют модель</h2>
+
+        <p>На практике эффект бывает сильнее, чем ожидаешь от обычного одноразового system prompt. Причина не мистическая: постоянная инструкция присутствует в рабочей норме агента снова и снова и формирует устойчивый контекст интерпретации запросов.</p>
+
+        <p>Например, directives могут заметно менять то, насколько охотно модель:</p>
+
+        <ul>
+        <li>задаёт уточняющие вопросы вместо действия;</li>
+        <li>выбирает консервативную стратегию;</li>
+        <li>спорит с предположением пользователя;</li>
+        <li>предпочитает отказ или осторожную интерпретацию неоднозначного запроса;</li>
+        <li>продолжает уже установленный стиль работы без повторного объяснения правил.</li>
+        </ul>
+
+        <p>Это наблюдение важно сформулировать аккуратно. <strong>Persistent persona не переписывает веса модели и не удаляет встроенные safety-механизмы.</strong> Более приоритетные инструкции платформы и ограничения безопасности остаются авторитетными. Но долговременный контекст способен влиять на трактовку неоднозначных случаев и на выбор между несколькими допустимыми стратегиями ответа. На моделях с менее жёстко выраженным поведенческим контуром этот эффект просто заметнее.</p>
+
+        <p>Именно поэтому persistent personalization заслуживает того же инженерного внимания, что и остальные части runtime.</p>
+
+        <h2 id="persona-failure-modes">У постоянной persona есть собственные failure modes</h2>
+
+        <p>Как только инструкция переживает одну сессию, ошибка тоже начинает переживать одну сессию.</p>
+
+        <p>Можно получить:</p>
+
+        <ul>
+        <li>устаревшее предпочтение, которое давно перестало быть актуальным;</li>
+        <li>конфликт двух directives;</li>
+        <li>случайную привычку, превращённую в постоянное правило;</li>
+        <li>чрезмерно агрессивную или осторожную persona;</li>
+        <li>неверный факт, который продолжает влиять на решения;</li>
+        <li>instruction poisoning через неконтролируемую запись в долговременную память.</li>
+        </ul>
+
+        <p>Поэтому persistent state должен иметь жизненный цикл: идентификаторы, обновление, superseding, удаление, scopes и возможность понять, <strong>почему конкретная инструкция сейчас активна</strong>.</p>
+
+        <p>Фраза «агент всё помнит» звучит привлекательно до тех пор, пока он не начинает идеально помнить то, что уже стоило забыть.</p>
+
+        <h2 id="cli-provider-runtime">CLI как provider: скрытая часть runtime</h2>
+
+        <p>Есть ещё одна проблема, которая стала заметна именно после появления постоянной persona.</p>
+
+        <p>CLI-инструменты вроде OpenCode или Codex иногда используют не только интерактивно. Их можно поставить между собственным приложением и LLM как готовый provider/runtime слой: CLI уже умеет работать с аккаунтом, моделями, инструментами и агентным циклом.</p>
+
+        <p>Мысленная схема при этом часто выглядит так:</p>
+
+        <pre><code class="language-text">Application → CLI → Model
+        </code></pre>
+
+        <p>Но реальная схема может быть значительно длиннее.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="agent-memory-runtime-state-ru-images"><img alt="Configuration Bleed в CLI-as-Provider" src="../assets/agent-memory-runtime-state/06_cli_provider_configuration_bleed.png" data-full-src="../assets/agent-memory-runtime-state/06_cli_provider_configuration_bleed.png" loading="lazy" decoding="async" data-caption-ru="Глобальные plugins, MCP, skills, memory и persona могут незаметно попадать в runtime приложения, использующего CLI как provider"><figcaption data-lang-content="ru">Глобальные plugins, MCP, skills, memory и persona могут незаметно попадать в runtime приложения, использующего CLI как provider</figcaption></figure>
+        <pre><code class="language-text">Application
+            ↓
+        CLI runtime
+            ├── global config
+            ├── plugins
+            ├── MCP servers
+            ├── skills
+            ├── prompts
+            ├── memory
+            └── persona
+            ↓
+        Model
+        </code></pre>
+
+        <p>Если CLI запускается из обычного пользовательского окружения, всё это становится <strong>ambient agent state</strong> — состоянием, которое приложение напрямую не объявляло, но которое всё равно влияет на его результат.</p>
+
+        <p>Я называю этот эффект <strong>Configuration Bleed in CLI-as-Provider Architectures</strong>.</p>
+
+        <p>Важно: <code>memory_plugin</code> не создаёт эту проблему. Он лишь делает её особенно хорошо видимой, потому что memory/persona обладают заметным поведенческим эффектом. Точно так же в runtime могут протечь глобальный MCP-сервер, skill или пользовательский prompt.</p>
+
+        <h2 id="agent-state-dependency-lockfile">Agent state — это dependency, даже если его нет в lockfile</h2>
+
+        <p>Обычное дерево зависимостей приложения может выглядеть безобидно:</p>
+
+        <pre><code class="language-text">App
+        └── CLI runtime
+        </code></pre>
+
+        <p>А фактическое дерево исполнения оказывается другим.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="agent-memory-runtime-state-ru-images"><img alt="Agent State Is a Dependency" src="../assets/agent-memory-runtime-state/08_agent_state_is_dependency.png" data-full-src="../assets/agent-memory-runtime-state/08_agent_state_is_dependency.png" loading="lazy" decoding="async" data-caption-ru="Runtime зависит не только от CLI, но и от скрытых config, plugins, MCP, memory и persona"><figcaption data-lang-content="ru">Runtime зависит не только от CLI, но и от скрытых config, plugins, MCP, memory и persona</figcaption></figure>
+        <p>Особенно неприятно то, что такие зависимости могут отсутствовать в:</p>
+
+        <ul>
+        <li><code>package.json</code>;</li>
+        <li><code>requirements.txt</code>;</li>
+        <li>lockfile;</li>
+        <li>Dockerfile;</li>
+        <li>исходном коде приложения.</li>
+        </ul>
+
+        <p>Обновление глобального plugin или изменение persona способно изменить поведение приложения, которое этот plugin никогда не импортировало.</p>
+
+        <p>С точки зрения воспроизводимости это полноценная скрытая dependency.</p>
+
+        <h2 id="ambient-state-benchmarks">Как ambient state загрязняет benchmarks</h2>
+
+        <p>Представим простой benchmark двух моделей.</p>
+
+        <pre><code class="language-text">Model A vs Model B
+        </code></pre>
+
+        <p>Если Model A запускается через CLI с накопленной memory, coding skills и persona, а Model B — в чистом окружении, сравнение на самом деле выглядит так:</p>
+
+        <pre><code class="language-text">Model A + Agent State A
+                vs
+        Model B + Agent State B
+        </code></pre>
+
+        <p>Результат можно ошибочно приписать модели, хотя часть преимущества дала среда.</p>
+
+        <p>Поэтому для серьёзных сравнений полезен <strong>clean-profile baseline</strong>: отдельный HOME/config, фиксированный набор инструментов, отсутствие пользовательской памяти и явная фиксация всех инструкций. После этого persistent state можно добавлять как самостоятельную экспериментальную переменную.</p>
+
+        <p>Иначе benchmark измеряет не только модель, но и историю жизни того CLI, через который её запустили.</p>
+
+        <h2 id="production-isolation-provider">Production isolation: персональный агент и provider — это разные среды</h2>
+
+        <p>Если CLI используется как часть приложения, ему нужен собственный runtime profile.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="agent-memory-runtime-state-ru-images"><img alt="Изоляция CLI runtime" src="../assets/agent-memory-runtime-state/07_cli_runtime_isolation.png" data-full-src="../assets/agent-memory-runtime-state/07_cli_runtime_isolation.png" loading="lazy" decoding="async" data-caption-ru="Персональный CLI сохраняет память и persona, provider CLI запускается с минимальной контролируемой конфигурацией"><figcaption data-lang-content="ru">Персональный CLI сохраняет память и persona, provider CLI запускается с минимальной контролируемой конфигурацией</figcaption></figure>
+        <p>Минимальная модель может выглядеть так:</p>
+
+        <pre><code class="language-text">Personal CLI
+        HOME=/home/user
+          memory
+          persona
+          skills
+          plugins
+
+        Provider CLI
+        HOME=/isolated/provider
+          minimal config
+          required integration only
+          no personal memory
+          no global persona
+        </code></pre>
+
+        <p>Практические варианты изоляции просты:</p>
+
+        <ul>
+        <li>отдельный <code>HOME</code> или config directory;</li>
+        <li>отдельный CLI profile;</li>
+        <li>отдельный системный пользователь;</li>
+        <li>контейнер;</li>
+        <li>явное отключение глобальных plugins, MCP и skills;</li>
+        <li>минимальный фиксированный environment для тестов и production.</li>
+        </ul>
+
+        <p>Здесь полезно относиться к agent state примерно так же, как мы уже относимся к credentials и environment variables. Персонализация сама по себе не плоха — наоборот, именно она делает агента последовательным между сессиями. Но последовательность без границ легко превращается в неявную связанность.</p>
+
+        <h2 id="stateless-model-persistent-working-environment">От stateless model к persistent working environment</h2>
+
+        <p>В итоге долговременная память меняет сам объект, который мы считаем «агентом».</p>
+
+        <p>Если раньше это можно было представить как:</p>
+
+        <pre><code class="language-text">agent ≈ model + prompt + tools
+        </code></pre>
+
+        <p>то persistent система ближе к:</p>
+
+        <pre><code class="language-text">agent ≈ model
+              + tools
+              + hot memory
+              + retrievable knowledge
+              + project scope
+              + persona/directives
+              + runtime configuration
+        </code></pre>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="agent-memory-runtime-state-ru-images"><img alt="Общий принцип persistent agent state" src="../assets/agent-memory-runtime-state/10_guiding_principle.png" data-full-src="../assets/agent-memory-runtime-state/10_guiding_principle.png" loading="lazy" decoding="async" data-caption-ru="Memory, retrieval и directives вместе формируют устойчивое состояние агента"><figcaption data-lang-content="ru">Memory, retrieval и directives вместе формируют устойчивое состояние агента</figcaption></figure>
+        <p>Главный вывод для меня оказался простым:</p>
+
+        <p><strong>Memory даёт непрерывность знания. RAG даёт выборочный доступ к этому знанию. Persona даёт непрерывность поведения. Isolation определяет границы, внутри которых это поведение имеет право существовать.</strong></p>
+
+        <p>Именно после этой точки «память для LLM» перестаёт быть удобным блокнотом и становится частью архитектуры среды выполнения.</p>
+
+        <p><a href="https://github.com/Lotargo/memory_plugin"><code>@lotargo/memory_plugin</code></a> — одна практическая реализация этой идеи: local-first Notebook, hybrid RAG, project scopes и persistent persona для нескольких AI coding clients. Но сам принцип шире конкретного проекта. Чем больше агентные системы получают долговременного состояния, тем меньше мы можем позволить себе считать это состояние невидимой настройкой интерфейса.</p>
+      </div>
+
+      <nav class="post-pagination" aria-label="Post navigation" data-i18n-aria="post-pagination-aria">
+        <span class="post-page-link is-disabled" aria-disabled="true">
+          <span data-i18n="post-prev">Previous</span>
+          <strong data-i18n="post-prev-none">No earlier post</strong>
+        </span>
+        <span class="post-page-link is-disabled" aria-disabled="true">
+          <span data-i18n="post-next">Next</span>
+          <strong data-i18n="post-next-none">No later post</strong>
+        </span>
+      </nav>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <span>Oleg Boyko / Lotargo</span>
+    <span>Blog · AI systems · verification</span>
+  </footer>
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/blog-post.js"></script>
+</body>
+</html>

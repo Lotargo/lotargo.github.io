@@ -298,6 +298,38 @@ window.BLOG_POSTS = [
       "ru": "Разбор тихой регрессии поиска в @lotargo/memory_plugin: граница типов драйвера, слепая зона офлайн-тестов и smoke-тест, который её закрывает."
     },
     "notify": true
+  },
+  {
+    "slug": "agent-memory-runtime-state",
+    "date": "2026-08-25",
+    "href": "./agent-memory-runtime-state.html",
+    "url": "./blog/posts/agent-memory-runtime-state.html",
+    "type": {
+      "en": "AI infrastructure",
+      "ru": "AI-инфраструктура"
+    },
+    "title": {
+      "en": "When Agent Memory Becomes Runtime State: RAG, Persona, and Hidden Dependencies",
+      "ru": "Когда память агента становится частью runtime: RAG, persona и скрытые зависимости"
+    },
+    "shortTitle": {
+      "en": "Memory as Runtime State",
+      "ru": "Память как runtime state"
+    },
+    "description": {
+      "en": "How a simple agent notebook evolves into hot memory, RAG, project scopes and persistent persona — and why that turns agent state into a runtime dependency that must be isolated.",
+      "ru": "Как простой блокнот агента превращается в hot memory, RAG, project scopes и persistent persona — и почему после этого состояние агента становится runtime-зависимостью, которую нужно изолировать."
+    },
+    "notificationId": "2026-08-25-agent-memory-runtime-state",
+    "notificationTitle": {
+      "en": "New article: memory as runtime state",
+      "ru": "Новая статья: память как runtime state"
+    },
+    "notificationText": {
+      "en": "From notebook memory and RAG to persona, ambient agent state, benchmark contamination, and runtime isolation.",
+      "ru": "От блокнота и RAG до persona, ambient agent state, загрязнения benchmark'ов и изоляции runtime."
+    },
+    "notify": true
   }
 
 ];

@@ -1,0 +1,55 @@
+{
+  "format_version": 1,
+  "assets": [
+    {
+      "target": "assets/01_hero_banner.png",
+      "url": "https://raw.githubusercontent.com/Lotargo/memory_plugin/main/assets/01_hero_banner.png",
+      "sha256": "b9f48812aff7860e9d439fe97256eeec43b86a108c4a0cb57ed327f5fbe16171"
+    },
+    {
+      "target": "assets/02_project_evolution.png",
+      "url": "https://raw.githubusercontent.com/Lotargo/memory_plugin/main/assets/02_project_evolution.png",
+      "sha256": "ec2616f435adb8af42f49f76cdafb3b19a4fb4409ebc022399301367d47f3b9c"
+    },
+    {
+      "target": "assets/03_hot_memory_vs_cold_rag.png",
+      "url": "https://raw.githubusercontent.com/Lotargo/memory_plugin/main/assets/03_hot_memory_vs_cold_rag.png",
+      "sha256": "44541bb6c60626c9cd65fbb877ffaa946f190de9d30b72755db1eb7ace8f5ba3"
+    },
+    {
+      "target": "assets/04_fact_vs_directive.png",
+      "url": "https://raw.githubusercontent.com/Lotargo/memory_plugin/main/assets/04_fact_vs_directive.png",
+      "sha256": "b5a99434eb40034bfbd15016edf4e83e5cebceb8ca9e57a403bcbd9e271aac33"
+    },
+    {
+      "target": "assets/05_persona_as_runtime_state.png",
+      "url": "https://raw.githubusercontent.com/Lotargo/memory_plugin/main/assets/05_persona_as_runtime_state.png",
+      "sha256": "3c4e23507d5a51e463a150d54dd328954cb91615e1939fa7694f7312a517d231"
+    },
+    {
+      "target": "assets/06_cli_provider_configuration_bleed.png",
+      "url": "https://raw.githubusercontent.com/Lotargo/memory_plugin/main/assets/06_cli_provider_configuration_bleed.png",
+      "sha256": "2a27ea50e97afba2e1632cb6aa1cdbb7dc4e0999d097661dcd4f3434228cb489"
+    },
+    {
+      "target": "assets/07_cli_runtime_isolation.png",
+      "url": "https://raw.githubusercontent.com/Lotargo/memory_plugin/main/assets/07_cli_runtime_isolation.png",
+      "sha256": "d087b65593a684558604416b5f046ce167a5f4ebe28e6571ff2b7c0194f1065f"
+    },
+    {
+      "target": "assets/08_agent_state_is_dependency.png",
+      "url": "https://raw.githubusercontent.com/Lotargo/memory_plugin/main/assets/08_agent_state_is_dependency.png",
+      "sha256": "3e9c986cf16d948d4782b0516fff401328e470f032085cb7f12f25b7d4311ab8"
+    },
+    {
+      "target": "assets/09_context_budget_reality.png",
+      "url": "https://raw.githubusercontent.com/Lotargo/memory_plugin/main/assets/09_context_budget_reality.png",
+      "sha256": "e3725f0615d90a7c2ffe7aa7054bc8d756814a5fb12fe775e7a1c78e18bd4fa5"
+    },
+    {
+      "target": "assets/10_guiding_principle.png",
+      "url": "https://raw.githubusercontent.com/Lotargo/memory_plugin/main/assets/10_guiding_principle.png",
+      "sha256": "36592655b2d13032dc4d8c837e45521320039fd101a66905bb0abb09f2310c4d"
+    }
+  ]
+}

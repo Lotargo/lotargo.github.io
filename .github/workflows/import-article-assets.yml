@@ -8,6 +8,7 @@ on:
       - '.article-import/**/bundle.tar.gz'
       - '.article-import/**/bundle.tgz'
       - '.article-import/**/bundle.b64'
+      - '.article-import/**/asset-sources.json'
       - '.article-import/**/READY'
       - '.asset-import/**/bundle.b64'
       - '.asset-import/**/READY'
@@ -41,6 +42,83 @@ jobs:
 
       - name: Install publishing dependencies
         run: python -m pip install --disable-pip-version-check -r requirements-publishing.txt
+
+      - name: Materialize staged remote assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          import json
+          import urllib.request
+          from pathlib import Path
+          from urllib.parse import urlparse
+
+          MAX_FILE_SIZE = 95 * 1024 * 1024
+          ALLOWED_HOSTS = {"raw.githubusercontent.com"}
+
+          for manifest_path in Path('.article-import').glob('*/asset-sources.json'):
+              article_root = manifest_path.parent.resolve()
+              try:
+                  manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+              except Exception as exc:
+                  print(
+                      f"::error file={manifest_path.as_posix()},title=Invalid remote asset manifest::"
+                      f"Cannot parse asset-sources.json: {exc}"
+                  )
+                  raise SystemExit(2)
+
+              if manifest.get('format_version') != 1 or not isinstance(manifest.get('assets'), list):
+                  print(
+                      f"::error file={manifest_path.as_posix()},title=Invalid remote asset manifest::"
+                      "format_version must equal 1 and assets must be an array"
+                  )
+                  raise SystemExit(2)
+
+              for entry in manifest['assets']:
+                  if not isinstance(entry, dict):
+                      raise SystemExit('Remote asset entry must be an object')
+                  target_value = entry.get('target')
+                  url = entry.get('url')
+                  expected = entry.get('sha256')
+                  if not all(isinstance(value, str) and value for value in (target_value, url, expected)):
+                      raise SystemExit('Remote asset target, url, and sha256 must be non-empty strings')
+
+                  relative = Path(target_value)
+                  if relative.is_absolute() or '..' in relative.parts:
+                      raise SystemExit(f'Unsafe remote asset target: {target_value}')
+                  target = (article_root / relative).resolve()
+                  if target != article_root and article_root not in target.parents:
+                      raise SystemExit(f'Remote asset escapes article staging directory: {target_value}')
+
+                  parsed = urlparse(url)
+                  if parsed.scheme != 'https' or parsed.hostname not in ALLOWED_HOSTS:
+                      raise SystemExit(f'Unsupported remote asset URL: {url}')
+                  if len(expected) != 64 or any(ch not in '0123456789abcdefABCDEF' for ch in expected):
+                      raise SystemExit(f'Invalid SHA-256 for {target_value}')
+
+                  request = urllib.request.Request(
+                      url,
+                      headers={'User-Agent': 'lotargo-article-asset-importer/1.0'},
+                  )
+                  with urllib.request.urlopen(request, timeout=30) as response:
+                      data = response.read(MAX_FILE_SIZE + 1)
+                  if len(data) > MAX_FILE_SIZE:
+                      raise SystemExit(f'Remote asset exceeds 95 MB: {target_value}')
+
+                  actual = hashlib.sha256(data).hexdigest()
+                  if actual.lower() != expected.lower():
+                      raise SystemExit(
+                          f'SHA-256 mismatch for {target_value}: expected {expected}, got {actual}'
+                      )
+
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(data)
+                  print(f'Materialized staged remote asset: {target.relative_to(Path.cwd())}')
+
+              manifest_path.unlink()
+              print(f'Removed consumed remote asset manifest: {manifest_path}')
+          PY
 
       - name: Decode staged text assets
         shell: bash

@@ -1,0 +1,86 @@
+{
+  "format_version": 1,
+  "article_slug": "agent-memory-runtime-state",
+  "assets": [
+    {
+      "file": "01_hero_banner.avif",
+      "width": 2048,
+      "height": 768,
+      "purpose": "editorial architecture diagram",
+      "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
+      "sha256": "092722f41f6686a6b3b30baa0682f9b9836ec237d971f1c5be9dcedf3093595c"
+    },
+    {
+      "file": "02_project_evolution.avif",
+      "width": 1774,
+      "height": 887,
+      "purpose": "editorial architecture diagram",
+      "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
+      "sha256": "e0a0d7d178123048bd97e265f818c0ae8014e41dbbf4e6e8ca44c321656f9192"
+    },
+    {
+      "file": "03_hot_memory_vs_cold_rag.avif",
+      "width": 1536,
+      "height": 1024,
+      "purpose": "editorial architecture diagram",
+      "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
+      "sha256": "a70a2259cdb7933c94a914afaed44ca413131142f44194a4561a1e98dc5aac7a"
+    },
+    {
+      "file": "04_fact_vs_directive.avif",
+      "width": 1448,
+      "height": 1086,
+      "purpose": "editorial architecture diagram",
+      "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
+      "sha256": "0c6a39fa939bf13e168de5656d7a8c465ae924cbd5bd6af176bea756fed88df9"
+    },
+    {
+      "file": "05_persona_as_runtime_state.avif",
+      "width": 1619,
+      "height": 971,
+      "purpose": "editorial architecture diagram",
+      "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
+      "sha256": "8a743cd7e743f68fb1dcd2706233a8f3c0fb2445d3450e3781616aefdddea10b"
+    },
+    {
+      "file": "06_cli_provider_configuration_bleed.avif",
+      "width": 1698,
+      "height": 926,
+      "purpose": "editorial architecture diagram",
+      "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
+      "sha256": "e8c77165ed47b5b97422fdc9720f824fe6e80e472d4a812e37dd612ce45d7d72"
+    },
+    {
+      "file": "07_cli_runtime_isolation.avif",
+      "width": 1586,
+      "height": 992,
+      "purpose": "editorial architecture diagram",
+      "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
+      "sha256": "3c68f66ac903da03683d5a0843541d4aeec594c27c221e72711d206555b5c94c"
+    },
+    {
+      "file": "08_agent_state_is_dependency.avif",
+      "width": 2172,
+      "height": 724,
+      "purpose": "editorial architecture diagram",
+      "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
+      "sha256": "5ec0c1b942187cdd716e555535d86dcf9440fc378283c2fde76b6596078e51d9"
+    },
+    {
+      "file": "09_context_budget_reality.avif",
+      "width": 2172,
+      "height": 724,
+      "purpose": "editorial architecture diagram",
+      "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
+      "sha256": "7cc0b8f51a017d24f0f1d47e600a2ccfc21236095d20d9d401bbbf0f59eeae88"
+    },
+    {
+      "file": "10_guiding_principle.avif",
+      "width": 2172,
+      "height": 724,
+      "purpose": "editorial architecture diagram",
+      "provenance": "AI-generated editorial asset prepared for the memory_plugin article",
+      "sha256": "6b0e97cba667cea5950de358cd30e6ac2651d3be6babd52287fd4940a82f2f5f"
+    }
+  ]
+}

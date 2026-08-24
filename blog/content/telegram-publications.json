@@ -1,6 +1,17 @@
 {
   "format_version": 1,
   "posts": {
+    "agent-memory-runtime-state": {
+      "article_url": "https://lotargo.github.io/blog/posts/agent-memory-runtime-state.html",
+      "channel_id": -1004375080506,
+      "channel_username": "lotargo_blog",
+      "last_action": "publish",
+      "message_id": 8,
+      "post_url": "https://t.me/lotargo_blog/8",
+      "presentation": "link-preview",
+      "source_hash": "sha256:8bd08c7d4aa9078fee9df241fd0efd9806d3e322f16d37bbedfdc35525439ce2",
+      "telegram_source": "agent-memory-runtime-state.tg-RU.md"
+    },
     "telegram-blog-publishing": {
       "article_url": "https://lotargo.github.io/blog/posts/telegram-blog-publishing.html",
       "channel_id": -1004375080506,

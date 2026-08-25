@@ -67,7 +67,7 @@ window.PORTFOLIO_PROJECTS = [
       "ru": "Живое Three.js-демо, экспорт GLB/OBJ/PLY, reconstruction pipeline, диагностика mesh, тесты и исследовательская документация"
     },
     "stack": "Python, PyTorch, DECA, FLAME2023, Three.js, GLB/OBJ/PLY",
-    "image": "./assets/img/3d_face_reconstruction.webp",
+    "image": "./assets/img/3d_face_reconstruction.png",
     "landingUrl": "https://lotargo.github.io/3D_Face_Reconstruction/",
     "repoUrl": "https://github.com/Lotargo/3D_Face_Reconstruction"
   },

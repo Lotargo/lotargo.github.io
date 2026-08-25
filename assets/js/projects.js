@@ -46,7 +46,7 @@ window.PORTFOLIO_PROJECTS = [
       ru: "Рабочий продуктовый лендинг, npm-пакет, публичный репозиторий, бенчмарки и документация"
     },
     stack: "Node.js, MCP, SQLite FTS5, local embeddings, Turso",
-    image: "./assets/img/memory_plugin.svg",
+    image: "./assets/img/memory_plugin.webp",
     landingUrl: "https://lotargo.github.io/memory_plugin/",
     repoUrl: "https://github.com/Lotargo/memory_plugin"
   },

@@ -638,7 +638,6 @@ code {
 }
 
 .project-grid {
-  container-type: inline-size;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0;
@@ -650,30 +649,28 @@ code {
 .project-card {
   position: relative;
   min-width: 0;
-  min-height: 660px;
   overflow: hidden;
   background: var(--panel);
-  display: grid;
-  grid-template-rows: auto 1fr;
+  display: flex;
+  flex-direction: column;
   border-bottom: 1px solid var(--line);
   border-right: 1px solid var(--line);
+  transition: background 220ms ease;
+}
+
+.project-card:hover {
+  background: var(--panel-2);
 }
 
 .project-card.no-visual {
   min-height: auto;
-  grid-template-rows: 1fr;
 }
 
 .project-visual {
   display: block;
-  width: calc((100cqw - 3px) / 2);
-  inline-size: calc((100cqw - 3px) / 2);
-  min-inline-size: 0;
-  max-inline-size: 100%;
-  height: calc((100cqw - 3px) * 9 / 32);
-  min-height: 0;
-  justify-self: stretch;
-  align-self: start;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  min-height: 200px;
   position: relative;
   overflow: hidden;
   border-bottom: 1px solid var(--line);
@@ -682,6 +679,7 @@ code {
     repeating-linear-gradient(90deg, var(--panel-soft) 0 1px, transparent 1px 18px),
     radial-gradient(circle at 70% 18%, color-mix(in srgb, var(--fg) 10%, transparent), transparent 36%),
     var(--panel);
+  flex-shrink: 0;
 }
 
 .project-visual::before {
@@ -699,11 +697,11 @@ code {
 }
 
 .project-visual.has-image {
-  background-size: 100% 100%;
+  background-size: cover;
   background-repeat: no-repeat;
-  background-position: center;
-  filter: grayscale(1) contrast(1.18);
-  transition: filter 560ms ease;
+  background-position: top center;
+  filter: grayscale(1) contrast(1.15);
+  transition: filter 400ms ease, transform 400ms ease;
 }
 
 .project-visual.has-image::before {
@@ -712,6 +710,7 @@ code {
 
 .project-card:hover .project-visual.has-image {
   filter: grayscale(0) contrast(1);
+  transform: scale(1.02);
 }
 
 .project-visual::after {
@@ -736,15 +735,19 @@ html[data-theme="light"] .project-card:hover .project-visual::after {
 }
 
 .card-body {
-  padding: clamp(28px, 2.5vw, 40px);
-  display: grid;
-  align-content: space-between;
-  gap: 32px;
+  padding: clamp(22px, 2.2vw, 32px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-grow: 1;
+  gap: 22px;
+  min-width: 0;
 }
 
 .card-top {
   display: grid;
-  gap: 18px;
+  gap: 14px;
+  min-width: 0;
 }
 
 .card-meta {
@@ -757,23 +760,25 @@ html[data-theme="light"] .project-card:hover .project-visual::after {
 
 .project-card h3 {
   margin: 0;
-  font-size: clamp(36px, 4vw, 64px);
-  line-height: 0.96;
-  letter-spacing: -0.018em;
+  font-size: clamp(22px, 2.1vw, 32px);
+  line-height: 1.12;
+  letter-spacing: -0.02em;
   text-transform: uppercase;
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: none;
   text-wrap: balance;
 }
 
 .project-card.long-title h3 {
-  max-width: calc(100% - clamp(18px, 2vw, 34px));
-  font-size: clamp(34px, 3.45vw, 56px);
+  font-size: clamp(20px, 1.85vw, 28px);
 }
 
 .project-card p {
   margin: 0;
   color: var(--muted-2);
-  font-size: clamp(16px, 1.15vw, 18px);
-  line-height: 1.62;
+  font-size: clamp(14px, 1.05vw, 16px);
+  line-height: 1.55;
   max-width: 680px;
 }
 
@@ -781,8 +786,11 @@ html[data-theme="light"] .project-card:hover .project-visual::after {
 .card-stack,
 .card-status {
   color: var(--muted);
-  font-size: 12px;
-  line-height: 1.8;
+  font-size: 11px;
+  line-height: 1.6;
+  letter-spacing: 0.06em;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .card-status {
@@ -790,12 +798,12 @@ html[data-theme="light"] .project-card:hover .project-visual::after {
 }
 
 .card-links {
-  margin-top: 10px;
+  margin-top: 6px;
 }
 
 .card-links a {
-  min-height: 40px;
-  padding: 11px 14px;
+  min-height: 38px;
+  padding: 10px 14px;
   font-size: 11px;
   text-decoration: none;
 }
@@ -1403,9 +1411,9 @@ a.post-page-link:focus-visible {
   }
 
   .project-visual {
-    width: calc(100cqw - 2px);
-    inline-size: calc(100cqw - 2px);
-    height: calc((100cqw - 2px) * 9 / 16);
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    height: auto;
   }
 
   .filter-bar {

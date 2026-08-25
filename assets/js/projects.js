@@ -30,8 +30,29 @@ window.PORTFOLIO_PROJECTS = [
     repoUrl: "https://github.com/Lotargo/public_sonata_ai_landing"
   },
   {
-    title: "Nexus API Balancer",
+    title: "memory_plugin",
     index: "02",
+    category: "RAG",
+    status: {
+      en: "Public open-source package / local-first AI tooling",
+      ru: "Публичный open-source пакет / локальный AI-инструмент"
+    },
+    description: {
+      en: "Persistent memory, hybrid RAG, persona directives, and repository-aware context for AI coding agents across multiple CLI clients.",
+      ru: "Постоянная память, гибридный RAG, настройка личности и контекст с привязкой к репозиторию для AI coding agents в нескольких CLI-клиентах."
+    },
+    proof: {
+      en: "Live product landing, npm package, public repository, benchmarks and documentation",
+      ru: "Рабочий продуктовый лендинг, npm-пакет, публичный репозиторий, бенчмарки и документация"
+    },
+    stack: "Node.js, MCP, SQLite FTS5, local embeddings, Turso",
+    image: "./assets/img/memory_plugin.svg",
+    landingUrl: "https://lotargo.github.io/memory_plugin/",
+    repoUrl: "https://github.com/Lotargo/memory_plugin"
+  },
+  {
+    title: "Nexus API Balancer",
+    index: "03",
     category: "INFRA",
     status: {
       en: "Public infrastructure project",
@@ -52,7 +73,7 @@ window.PORTFOLIO_PROJECTS = [
   },
   {
     title: "Academic Pipeline Engine",
-    index: "03",
+    index: "04",
     category: "AGENTIC",
     status: {
       en: "Public local-first agentic workspace",
@@ -73,7 +94,7 @@ window.PORTFOLIO_PROJECTS = [
   },
   {
     title: "CSS-Server",
-    index: "04",
+    index: "05",
     category: "RUNTIME",
     status: {
       en: "Public static runtime experiment",
@@ -94,7 +115,7 @@ window.PORTFOLIO_PROJECTS = [
   },
   {
     title: "ComfyUI Meta Viewer",
-    index: "05",
+    index: "06",
     category: "UI",
     status: {
       en: "Public local-first tooling",
@@ -115,7 +136,7 @@ window.PORTFOLIO_PROJECTS = [
   },
   {
     title: "Necromancer",
-    index: "06",
+    index: "07",
     category: "AI",
     status: {
       en: "Public experimental application",
@@ -136,7 +157,7 @@ window.PORTFOLIO_PROJECTS = [
   },
   {
     title: "Verification Lab",
-    index: "07",
+    index: "08",
     category: "VERIFY",
     status: {
       en: "Public reproducibility lab",
@@ -160,7 +181,7 @@ window.PORTFOLIO_PROJECTS = [
   },
   {
     title: "Search Routers",
-    index: "08",
+    index: "09",
     category: "RUNTIME",
     status: {
       en: "Proof of concept",
@@ -184,7 +205,7 @@ window.PORTFOLIO_PROJECTS = [
   },
   {
     title: "The Living Bunker",
-    index: "09",
+    index: "10",
     category: "AGENTIC",
     status: {
       en: "Active prototype",

@@ -10,20 +10,20 @@ window.PORTFOLIO_PROJECTS = [
     "index": "01",
     "category": "AI",
     "status": {
-      "en": "Closed-core research / public evidence dossier",
-      "ru": "Исследование с закрытым кодом / публичное досье"
+      "en": "Research platform / public technical dossier",
+      "ru": "Исследовательская платформа / публичное техническое досье"
     },
     "description": {
-      "en": "Custom low-level AI research platform presented through a public evidence archive: runtime notes, benchmarks, limitations, and claim boundaries.",
-      "ru": "Собственная низкоуровневая платформа исследований ИИ, представленная через публичный архив: примечания к рантайму, бенчмарки, ограничения и границы возможностей."
+      "en": "An experiment in building low-level AI systems without leaning on a ready-made ML runtime. The public side gathers architecture notes, experimental results, benchmarks, and known limitations.",
+      "ru": "Эксперимент с низкоуровневой реализацией ИИ-систем без привычной зависимости от готового ML-рантайма. Публичная часть проекта собирает архитектурные заметки, результаты экспериментов, бенчмарки и известные ограничения."
     },
     "proof": {
-      "en": "Evidence dossier, technical notes, benchmark-oriented public page",
-      "ru": "Досье результатов, технические заметки, публичная страница бенчмарков"
+      "en": "Technical dossier, notes, test results, and benchmarks",
+      "ru": "Техническое досье, заметки, результаты тестов и бенчмарков"
     },
     "stack": {
       "en": "Free Pascal, x86-64 Assembly, CUDA C++, custom runtime",
-      "ru": "Free Pascal, ассемблер x86-64, CUDA C++, собственный рантайм"
+      "ru": "Free Pascal, ассемблер x86-64, CUDA C++, собственный runtime"
     },
     "image": "./assets/img/sonata.png",
     "landingUrl": "https://lotargo.github.io/public_sonata_ai_landing/",
@@ -34,16 +34,16 @@ window.PORTFOLIO_PROJECTS = [
     "index": "02",
     "category": "RAG",
     "status": {
-      "en": "Public open-source package / local-first AI tooling",
-      "ru": "Публичный open-source пакет / локальный AI-инструмент"
+      "en": "Open source / local tools for AI coding agents",
+      "ru": "Open-source / локальные инструменты для AI coding agents"
     },
     "description": {
-      "en": "Persistent memory, hybrid RAG, persona directives, and repository-aware context for AI coding agents across multiple CLI clients.",
-      "ru": "Постоянная память, гибридный RAG, настройка личности и контекст с привязкой к репозиторию для AI coding agents в нескольких CLI-клиентах."
+      "en": "Memory and context for coding agents that would otherwise forget everything between sessions. It combines persistent notes, hybrid RAG, persona settings, and repository-aware context while staying local and portable across multiple CLI clients.",
+      "ru": "Память и контекст для coding agents, которые обычно забывают всё между сессиями. Проект объединяет постоянные заметки, гибридный RAG, настройки персоны и контекст репозитория, сохраняя данные локально и оставаясь переносимым между несколькими CLI-клиентами."
     },
     "proof": {
-      "en": "Live product landing, npm package, public repository, benchmarks and documentation",
-      "ru": "Рабочий продуктовый лендинг, npm-пакет, публичный репозиторий, бенчмарки и документация"
+      "en": "Live landing, npm package, public repository, documentation, and tests",
+      "ru": "Рабочий лендинг, npm-пакет, публичный репозиторий, документация и тесты"
     },
     "stack": "Node.js, MCP, SQLite FTS5, local embeddings, Turso",
     "image": "./assets/img/memory_plugin.webp",
@@ -55,16 +55,16 @@ window.PORTFOLIO_PROJECTS = [
     "index": "03",
     "category": "3D",
     "status": {
-      "en": "Active R&D prototype / browser 3D demo",
-      "ru": "Активный R&D-прототип / браузерное 3D-демо"
+      "en": "R&D prototype / browser 3D demo",
+      "ru": "R&D-прототип / браузерное 3D-демо"
     },
     "description": {
-      "en": "Face reconstruction pipeline from 1-3 smartphone photos to web-ready head assets with DECA/FLAME meshes, UV texture work, material masks, diagnostics, and a Three.js viewer.",
-      "ru": "Пайплайн реконструкции лица по 1–3 фото со смартфона в web-ready 3D-ассеты головы: DECA/FLAME mesh, UV-текстуры, маски материалов, диагностика и Three.js viewer."
+      "en": "An attempt to turn a few ordinary smartphone photos into a head asset ready for further work: geometry reconstruction, UVs, textures, material masks, mesh diagnostics, and a browser viewer.",
+      "ru": "Попытка превратить несколько обычных фотографий со смартфона в пригодный для дальнейшей работы трёхмерный ассет головы: от реконструкции геометрии и UV до текстур, масок материалов, диагностики mesh и просмотра результата прямо в браузере."
     },
     "proof": {
-      "en": "Live Three.js demo, GLB/OBJ/PLY export, reconstruction pipeline, mesh diagnostics, tests and research documentation",
-      "ru": "Живое Three.js-демо, экспорт GLB/OBJ/PLY, reconstruction pipeline, диагностика mesh, тесты и исследовательская документация"
+      "en": "Three.js demo, GLB/OBJ/PLY export, reconstruction pipeline, diagnostics, and research notes",
+      "ru": "Three.js-демо, экспорт GLB/OBJ/PLY, pipeline реконструкции, диагностика и исследовательские заметки"
     },
     "stack": "Python, PyTorch, DECA, FLAME2023, Three.js, GLB/OBJ/PLY",
     "image": "./assets/img/3d_face_reconstruction.png",
@@ -76,16 +76,16 @@ window.PORTFOLIO_PROJECTS = [
     "index": "04",
     "category": "INFRA",
     "status": {
-      "en": "Public infrastructure project",
-      "ru": "Публичный инфраструктурный проект"
+      "en": "Infrastructure project",
+      "ru": "Инфраструктурный проект"
     },
     "description": {
-      "en": "AI provider gateway and key balancer with routing, isolation, OpenAI-compatible behavior, and service architecture boundaries.",
-      "ru": "Шлюз и балансировщик ключей провайдеров ИИ с маршрутизацией, изоляцией, поведением в стиле OpenAI и архитектурными границами."
+      "en": "A gateway between an application and multiple AI providers, where routing, keys, and model selection stop being every client's problem. Priorities, isolation, balancing, and an OpenAI-compatible interface live in one infrastructure layer.",
+      "ru": "Шлюз между приложением и несколькими AI-провайдерами, где маршрутизация, ключи и модели перестают быть заботой каждого отдельного клиента. Приоритеты, изоляция, балансировка и OpenAI-совместимый интерфейс собраны в отдельный инфраструктурный слой."
     },
     "proof": {
-      "en": "Live landing, repository, infrastructure-oriented documentation",
-      "ru": "Работающий лендинг, репозиторий, инфраструктурная документация"
+      "en": "Live landing, repository, and architecture documentation",
+      "ru": "Рабочий лендинг, репозиторий и архитектурная документация"
     },
     "stack": "Rust, Tokio, Axum, SQLx, SQLite, JWT, Scalar",
     "image": "./assets/img/nexus.png",
@@ -97,16 +97,16 @@ window.PORTFOLIO_PROJECTS = [
     "index": "05",
     "category": "AGENTIC",
     "status": {
-      "en": "Public local-first agentic workspace",
-      "ru": "Публичная локальная агентная среда"
+      "en": "Local agentic workspace",
+      "ru": "Локальная агентная среда"
     },
     "description": {
-      "en": "Structured document generation workspace with artifact routing, reviewer loops, OCR/web research flow, exports, and reproducible pipelines.",
-      "ru": "Среда генерации структурированных документов с маршрутизацией артефактов, циклом рецензирования, поиском и OCR, экспортом и воспроизводимыми конвейерами."
+      "en": "A workspace for jobs where one model call is not enough: gather material, research, write a document, review it, and produce a finished file. Inside are artifact routing, a Writer/Reviewer loop, OCR, web research, and a reproducible document pipeline.",
+      "ru": "Рабочее пространство для задач, где одного запроса к модели недостаточно: нужно собрать материалы, провести исследование, написать документ, проверить результат и получить готовый файл. Внутри — маршрутизация артефактов, Writer/Reviewer-контур, OCR, web research и воспроизводимый pipeline генерации документов."
     },
     "proof": {
-      "en": "Live landing, repository, workflow documentation",
-      "ru": "Работающий лендинг, репозиторий, документация процессов"
+      "en": "Live landing, repository, and workflow documentation",
+      "ru": "Рабочий лендинг, репозиторий и документация процессов"
     },
     "stack": "Python, FastAPI, Next.js, React, TypeScript, SQLite, Docker",
     "image": "./assets/img/academic_pipeline.png",
@@ -118,16 +118,16 @@ window.PORTFOLIO_PROJECTS = [
     "index": "06",
     "category": "RUNTIME",
     "status": {
-      "en": "Public static runtime experiment",
-      "ru": "Публичный эксперимент статического рантайма"
+      "en": "Browser runtime experiment",
+      "ru": "Эксперимент с браузерным runtime"
     },
     "description": {
-      "en": "Boundary test for static browser computation: DOM-as-memory, CSS evaluation layer, calculator proof module, and static runtime shell.",
-      "ru": "Тестирование лимитов статических вычислений в браузере: DOM-как-память, слой вычисления CSS, калькулятор и оболочка статического рантайма."
+      "en": "The question was simple: how far can CSS go if it is used not only to style a page, but as part of the computation itself? The result became an experiment with DOM as memory, a CSS evaluation layer, and a static runtime shell.",
+      "ru": "Вопрос был довольно простой: насколько далеко можно зайти, если использовать CSS не только для оформления страницы, но и как часть вычислительного механизма? Из этого вырос эксперимент с DOM как памятью, CSS evaluation layer и статической runtime-оболочкой."
     },
     "proof": {
-      "en": "Live landing, repository, browser-runtime proof module",
-      "ru": "Работающий лендинг, репозиторий, модуль подтверждения рантайма в браузере"
+      "en": "Live demo, repository, and browser-runtime proof module",
+      "ru": "Рабочее демо, репозиторий и proof-модуль браузерного runtime"
     },
     "stack": "Rust, Tauri, HTML, CSS, SCSS, JavaScript, SQLite",
     "image": "./assets/img/css_server.png",
@@ -139,16 +139,16 @@ window.PORTFOLIO_PROJECTS = [
     "index": "07",
     "category": "UI",
     "status": {
-      "en": "Public local-first tooling",
-      "ru": "Публичный локальный инструмент"
+      "en": "Local tool",
+      "ru": "Локальный инструмент"
     },
     "description": {
-      "en": "Local gallery and metadata manager for generated images, prompt extraction, workflow graph inspection, search, and persistent cache.",
-      "ru": "Локальная галерея и менеджер метаданных генераций: извлечение промптов, инспекция графа воркфлоу, поиск и кэширование."
+      "en": "A gallery for ComfyUI images that sees more than the image itself: prompts, metadata, workflow graph, generation settings, and local history. Instead of another folder with thousands of PNGs, it becomes an actual place to browse and search.",
+      "ru": "Галерея для изображений из ComfyUI, которая умеет видеть за картинкой больше самой картинки: промпты, метаданные, workflow-граф, параметры генерации и локальную историю. Вместо очередной папки с тысячами PNG получается нормальное пространство для просмотра и поиска."
     },
     "proof": {
-      "en": "Live landing, repository, gallery interface",
-      "ru": "Работающий лендинг, репозиторий, интерфейс галереи"
+      "en": "Live landing, public repository, and gallery interface",
+      "ru": "Рабочий лендинг, публичный репозиторий и интерфейс галереи"
     },
     "stack": "Python, Flask, SQLite, Pydantic, Pillow, Vanilla JS, Fuse.js",
     "image": "./assets/img/comfyui_meta_viewer.png",
@@ -160,18 +160,18 @@ window.PORTFOLIO_PROJECTS = [
     "index": "08",
     "category": "AI",
     "status": {
-      "en": "Public experimental application",
-      "ru": "Публичное экспериментальное приложение"
+      "en": "Experimental application",
+      "ru": "Экспериментальное приложение"
     },
     "description": {
-      "en": "Cyber-occult local AI chat system with retro CRT interface, PostgreSQL history, provider balancer, RAG/search tools, and atmospheric UI.",
-      "ru": "Кибероккультный локальный чат с ИИ: ретро-интерфейс на базе ЭЛТ, история в PostgreSQL, балансировщик провайдеров, RAG/инструменты поиска и атмосферный дизайн."
+      "en": "A local AI chat that was allowed to have a personality of its own. Behind the retro CRT interface are PostgreSQL history, provider balancing, RAG, search, and several languages joined into one slightly strange but working system.",
+      "ru": "Локальный AI-чат, которому захотелось дать собственный характер. За ретро-CRT интерфейсом скрываются история в PostgreSQL, балансировка провайдеров, RAG, поиск и несколько языков, соединённых в одну немного странную, но работающую систему."
     },
     "proof": {
-      "en": "Live landing, repository, stylized working interface",
-      "ru": "Работающий лендинг, репозиторий, стилизованный рабочий интерфейс"
+      "en": "Live landing, repository, and a fully stylized working interface",
+      "ru": "Рабочий лендинг, репозиторий и полноценный стилизованный интерфейс"
     },
-    "stack": "Free Pascal, PHP, Lua/LuaJIT, PostgreSQL, Docker, JS, Canvas",
+    "stack": "Free Pascal, PHP, Lua/LuaJIT, PostgreSQL, Docker, JavaScript, Canvas",
     "image": "./assets/img/necromancer.png",
     "landingUrl": "https://lotargo.github.io/Necromancer/",
     "repoUrl": "https://github.com/Lotargo/Necromancer"
@@ -181,16 +181,16 @@ window.PORTFOLIO_PROJECTS = [
     "index": "09",
     "category": "VERIFY",
     "status": {
-      "en": "Public reproducibility lab",
-      "ru": "Публичная лаборатория воспроизводимости"
+      "en": "Reproducibility lab",
+      "ru": "Лаборатория воспроизводимости"
     },
     "description": {
-      "en": "Verification-oriented experiments around retrieval integrity, analytical correctness, adversarial rejection, singular states, and SAT-style checks.",
-      "ru": "Эксперименты по верификации: целостность поиска, аналитическая корректность, фильтрация состязательных промптов и SAT-проверки."
+      "en": "Some experiments are more interesting for how well they can disprove a hypothesis than for confirming it. This collection covers retrieval integrity, analytical correctness, edge states, and SAT-style checks with reproducible scenarios.",
+      "ru": "Некоторые эксперименты интереснее не тем, что подтверждают гипотезу, а тем, насколько хорошо способны её опровергнуть. Здесь собраны проверки retrieval-pipeline, аналитической корректности, пограничных состояний и SAT-задач с воспроизводимыми сценариями."
     },
     "proof": {
-      "en": "Repository, reports, reproducibility packs",
-      "ru": "Репозиторий, отчеты, пакеты для воспроизведения результатов"
+      "en": "Repository, reports, and reproducibility packs",
+      "ru": "Репозиторий, отчёты и пакеты для повторной проверки результатов"
     },
     "stack": {
       "en": "Python, symbolic checks, numerical verification, SAT/DPLL/CDCL",
@@ -206,15 +206,15 @@ window.PORTFOLIO_PROJECTS = [
     "category": "RUNTIME",
     "status": {
       "en": "Proof of concept",
-      "ru": "Концепт (Proof of concept)"
+      "ru": "Proof of Concept"
     },
     "description": {
-      "en": "Minimal two-stage LLM routing pipeline implemented with low-level constraints to test how little runtime support is needed for routing logic.",
-      "ru": "Минималистичный двухэтапный конвейер маршрутизации LLM, реализованный в жестких рамках с целью проверки минимально необходимых ресурсов."
+      "en": "A small experiment asking how much infrastructure simple LLM routing really needs. The two-stage route was deliberately built with an unusually low-level stack to strip away ready-made abstractions and see what remains.",
+      "ru": "Небольшой эксперимент о том, сколько на самом деле нужно инфраструктуры для простого LLM-routing. Двухэтапный маршрут был специально реализован в необычно низкоуровневом стеке, чтобы убрать как можно больше готовых абстракций и посмотреть, что останется."
     },
     "proof": {
-      "en": "Repository, architecture probe, unusual implementation stack",
-      "ru": "Репозиторий, исследование архитектуры, нестандартный стек реализации"
+      "en": "Repository, architecture description, and experimental implementation",
+      "ru": "Репозиторий, описание архитектуры и экспериментальная реализация"
     },
     "stack": {
       "en": "Free Pascal, x86-64 Assembly, Groq API, curl/OpenSSL",
@@ -233,12 +233,12 @@ window.PORTFOLIO_PROJECTS = [
       "ru": "Активный прототип"
     },
     "description": {
-      "en": "Observable multi-agent society sandbox for roles, asymmetric perception, constrained communication, repeatable scenarios, and emergent behavior.",
-      "ru": "Песочница симуляции мультиагентного сообщества с ролями, асимметричным восприятием, ограниченной коммуникацией и эмерджентным поведением."
+      "en": "A sandbox where several AI agents share one world but see it differently, know different things, and cannot freely exchange every piece of information. The interesting part is not one agent in isolation, but the behavior that appears between them.",
+      "ru": "Песочница, где несколько AI-агентов существуют в общем мире, но видят его по-разному, знают не всё и не могут свободно обмениваться любой информацией. Главный интерес здесь не в отдельном агенте, а в поведении, которое появляется между ними."
     },
     "proof": {
-      "en": "Repository, prototype description, agent-sandbox structure",
-      "ru": "Репозиторий, описание прототипа, структура песочницы агентов"
+      "en": "Repository, prototype description, and reproducible scenarios",
+      "ru": "Репозиторий, описание прототипа и воспроизводимые сценарии"
     },
     "stack": "Python, Flask, TypeScript/JavaScript, Groq, Cerebras, Pillow, pytest",
     "image": "",

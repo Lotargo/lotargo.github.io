@@ -3,15 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Oleg Boyko / Lotargo: AI system architecture, RAG, agentic workflows, infrastructure, custom runtimes, and working technical prototypes." />
+  <meta name="description" content="Projects by Oleg Boiko / Lotargo: practical AI systems, RAG and retrieval infrastructure, experimental runtimes, developer tools, and research prototypes." />
   <meta name="theme-color" content="#000000" />
-  <meta property="og:title" content="Oleg Boyko / Lotargo - AI Systems Portfolio" />
-  <meta property="og:description" content="AI system architecture, RAG and document pipelines, agentic workflows, infrastructure services, custom runtimes, and working prototypes." />
+  <meta property="og:title" content="Oleg Boiko / Lotargo — Projects & Experiments" />
+  <meta property="og:description" content="Practical AI systems, experimental runtimes, retrieval infrastructure, developer tools, and projects grown from technical curiosity." />
   <meta property="og:type" content="website" />
-  <title>Oleg Boyko / Lotargo - AI Systems Portfolio</title>
+  <title>Oleg Boiko / Lotargo — Projects & Experiments</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&amp;family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet" />
   <link rel="icon" type="image/svg+xml" href="./assets/img/favicon.svg" />
   <link rel="stylesheet" href="./assets/css/styles.css" />
   <link rel="stylesheet" href="./assets/css/render-fixes.css" />
+  <link rel="stylesheet" href="./assets/css/narrative.css" />
   <link rel="stylesheet" href="./assets/css/telegram.css?v=20260728-2" data-telegram-ui-styles />
   <script>
     (function () {
@@ -84,48 +88,56 @@
   <main id="top">
     <section class="hero" aria-labelledby="hero-title">
       <div class="hero-kicker">
-        <span>00</span>
-        <span data-i18n="hero-kicker-text">AI / RAG / Agentic Systems / Runtime</span>
+        <span data-i18n="hero-kicker-text">Ideas / Systems / Experiments / Tools</span>
       </div>
 
-      <h1 id="hero-title" class="hero-title" aria-label="AI systems architecture and working prototypes" data-i18n-aria="hero-title-aria">
-        <span class="hero-line fill" data-i18n="hero-line-1">AI SYSTEMS</span>
-        <span class="hero-line outline" data-i18n="hero-line-2">ARCHITECTURE</span>
-        <span class="hero-line fill" data-i18n="hero-line-3">&amp; PROTOTYPES</span>
+      <h1 id="hero-title" class="hero-title" aria-label="Things worth using" data-i18n-aria="hero-title-aria">
+        <span class="hero-line fill" data-i18n="hero-line-1">THINGS</span>
+        <span class="hero-line outline" data-i18n="hero-line-2">WORTH</span>
+        <span class="hero-line fill" data-i18n="hero-line-3">USING.</span>
       </h1>
 
       <div class="hero-meta">
-        <p data-i18n-html="hero-meta-desc">
-          Technical portfolio of <strong>Oleg Boyko / Lotargo</strong>: AI system architecture, RAG and document pipelines,
-          agentic workflows, infrastructure services, custom runtimes, and research-driven prototypes.
+        <p data-i18n="hero-meta-desc">
+          Projects, experiments, and systems grown from curiosity, practical problems, and the desire to carry interesting ideas all the way into something that works.
         </p>
         <div class="hero-actions" aria-label="Primary actions" data-i18n-aria="hero-actions-aria">
-          <a class="button primary" href="#projects" data-i18n="hero-action-view">View systems</a>
+          <a class="button primary" href="#projects" data-i18n="hero-action-view">View projects</a>
           <a class="button" href="./blog/" data-i18n="hero-action-blog">Read blog</a>
-          <a class="button" href="https://github.com/Lotargo" target="_blank" rel="noreferrer" data-i18n="hero-action-github">GitHub profile</a>
+          <a class="button" href="https://github.com/Lotargo" target="_blank" rel="noreferrer" data-i18n="hero-action-github">GitHub</a>
           <a class="button telegram-action" href="https://t.me/lotargo_blog" target="_blank" rel="noreferrer" aria-label="Open the Russian Telegram channel" data-telegram-ui="true" data-telegram-landing-action="true">
             <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true">
               <path d="M21.7 3.3 18.5 19c-.2 1.1-.8 1.4-1.7.9l-4.8-3.5-2.3 2.2c-.3.3-.5.5-1 .5l.3-4.8 8.8-8c.4-.4-.1-.6-.6-.2L6.3 13l-4.7-1.5c-1-.3-1-1 .2-1.5l18.4-7.1c.9-.3 1.7.2 1.5 1.4Z"/>
             </svg>
-            <span data-lang-content="en">Telegram RU</span>
-            <span data-lang-content="ru" hidden>Telegram-канал</span>
+            <span data-lang-content="en">Telegram</span>
+            <span data-lang-content="ru" hidden>Telegram</span>
           </a>
         </div>
       </div>
 
       <div class="hero-footer" aria-hidden="true">
-        <span data-i18n="hero-footer-evidence">Architecture / implementation / validation</span>
-        <span data-i18n="hero-footer-static">Research to working systems</span>
+        <span data-i18n="hero-footer-evidence">Idea / experiment / implementation</span>
+        <span data-i18n="hero-footer-static">From the first question to a working system</span>
         <span>2026</span>
       </div>
     </section>
 
+    <section class="personal-note" aria-label="Personal note" data-i18n-aria="personal-note-aria">
+      <div class="personal-note-inner">
+        <blockquote class="personal-manifesto">
+          <p data-i18n="personal-p1">Programming has a lot in common with music.</p>
+          <p data-i18n="personal-p2">Here too, composition, rhythm, and style matter. Once you understand the instruments and can use them freely, things that once seemed impossible become achievable — and that makes it possible to go further, trying again for what still seems impossible.</p>
+          <p data-i18n="personal-p3">My path into this profession began after many years centered around creative work. But this is where I unexpectedly found the thing I wanted to give myself to completely.</p>
+        </blockquote>
+      </div>
+    </section>
+
     <section id="systems" class="section split-section" aria-labelledby="systems-title">
-      <div class="section-label" data-i18n="systems-label">01 / expertise</div>
+      <div class="section-label" data-i18n="systems-label">Where it begins</div>
       <div class="section-body">
-        <h2 id="systems-title" data-i18n="systems-title">Architecture, implementation, and technical validation.</h2>
-        <p class="lead" data-i18n-html="systems-lead">
-          The projects below cover the path from research hypothesis and system design to a working prototype, usable interface, and documented technical constraints.
+        <h2 id="systems-title" data-i18n="systems-title">Complex systems rarely begin with a complex solution.</h2>
+        <p class="lead" data-i18n="systems-lead">
+          Sometimes it starts with searching through documents. Sometimes with the need to connect several models, services, and states into one coherent flow. And sometimes a strange technical question simply refuses to go away: “what if this were done completely differently?” Those questions gradually turn into architecture, code, interfaces, and experiments. If an idea survives contact with reality, it becomes a tool someone can actually use.
         </p>
 
         <div class="capabilities" aria-label="Capabilities" data-i18n-aria="capabilities-aria">
@@ -135,18 +147,18 @@
               <span class="cap-tag" data-i18n="cap-rag-span">RAG</span>
             </div>
             <div class="cap-content">
-              <h3 data-i18n="cap-rag-title">Knowledge and retrieval systems</h3>
-              <p data-i18n="cap-rag-desc">RAG, indexing, metadata flows, vector search, source-aware workflows, and document processing pipelines.</p>
+              <h3 data-i18n="cap-rag-title">Search and knowledge</h3>
+              <p data-i18n="cap-rag-desc">When ordinary search stops being enough, the problem becomes not only the data itself, but how a system understands its relationships, origin, and context. RAG, vector search, indexing, metadata, and document processing become parts of one mechanism rather than goals of their own.</p>
             </div>
           </article>
           <article class="cap-card">
             <div class="cap-index">
               <span class="cap-num">02</span>
-              <span class="cap-tag" data-i18n="cap-ai-span">AI</span>
+              <span class="cap-tag" data-i18n="cap-ai-span">SYS</span>
             </div>
             <div class="cap-content">
-              <h3 data-i18n="cap-ai-title">AI infrastructure and runtimes</h3>
-              <p data-i18n="cap-ai-desc">Provider routing, service boundaries, local-first execution, custom runtimes, and performance-oriented implementation.</p>
+              <h3 data-i18n="cap-ai-title">Infrastructure and runtimes</h3>
+              <p data-i18n="cap-ai-desc">Sometimes the hardest problem is not inside the model at all, but around it: routing, state, service boundaries, call cost, local execution, or performance. Those are the moments when it becomes useful to go below familiar abstractions and see what the system truly needs.</p>
             </div>
           </article>
           <article class="cap-card">
@@ -155,8 +167,8 @@
               <span class="cap-tag" data-i18n="cap-lab-span">LAB</span>
             </div>
             <div class="cap-content">
-              <h3 data-i18n="cap-lab-title">Reliability and evaluation</h3>
-              <p data-i18n="cap-lab-desc">Testing, reproducibility, failure analysis, benchmarks, explicit limitations, and verification-oriented engineering.</p>
+              <h3 data-i18n="cap-lab-title">Testing and experiments</h3>
+              <p data-i18n="cap-lab-desc">A good idea does not stop being an experiment just because it worked once. That is why implementations are followed by tests, reproducible scenarios, benchmarks, and deliberate attempts to find the conditions under which everything breaks.</p>
             </div>
           </article>
           <article class="cap-card">
@@ -165,8 +177,8 @@
               <span class="cap-tag" data-i18n="cap-ui-span">UI</span>
             </div>
             <div class="cap-content">
-              <h3 data-i18n="cap-ui-title">Product interfaces</h3>
-              <p data-i18n="cap-ui-desc">Landing pages, dashboards, local tools, demos, galleries, and interfaces for technically complex products.</p>
+              <h3 data-i18n="cap-ui-title">Interfaces</h3>
+              <p data-i18n="cap-ui-desc">Even the most complicated system eventually meets a person. At that point architecture has to become a clear interface: a gallery, dashboard, local tool, demo, or simply a page that does not require reading the documentation first.</p>
             </div>
           </article>
         </div>
@@ -174,13 +186,13 @@
     </section>
 
     <section id="projects" class="section projects-section" aria-labelledby="projects-title">
-      <div class="section-label" data-i18n="projects-label">02 / selected systems</div>
+      <div class="section-label" data-i18n="projects-label">What came out of it</div>
       <div class="section-body">
         <div class="section-heading-row">
           <div>
-            <h2 id="projects-title" data-i18n="projects-title">Selected projects</h2>
+            <h2 id="projects-title" data-i18n="projects-title">Some ideas are worth taking all the way. Others only need to go far enough to show what they can do.</h2>
             <p class="lead compact" data-i18n="projects-lead">
-              Working prototypes and public repositories across AI systems, infrastructure, agentic workflows, and developer tools.
+              Finished tools, research systems, and small experiments live side by side here. They started for different reasons and solve very different problems, but each of them once began with one simple question: “will this work?”
             </p>
           </div>
           <div class="filter-bar" role="list" aria-label="Project filters" data-js="filters" data-i18n-aria="filters-aria"></div>
@@ -191,56 +203,56 @@
     </section>
 
     <section id="evidence" class="section evidence-section" aria-labelledby="evidence-title">
-      <div class="section-label" data-i18n="evidence-label">03 / engineering approach</div>
+      <div class="section-label" data-i18n="evidence-label">When the idea already works</div>
       <div class="section-body evidence-grid">
         <div>
-          <h2 id="evidence-title" data-i18n="evidence-title">Technical ambition backed by inspectable work.</h2>
+          <h2 id="evidence-title" data-i18n="evidence-title">A working result is more interesting than a beautiful hypothesis.</h2>
           <p class="lead" data-i18n="evidence-lead">
-            For each project, I separate what is implemented, what is experimental, and what remains planned. Public materials include repositories, demos, architecture notes, screenshots, benchmarks, and known limitations.
+            That is why projects keep more than their best screenshots. Architecture decisions, limitations, tests, failed directions, and experimental results are part of the work too — sometimes they explain the final system better than the polished result ever could.
           </p>
         </div>
 
         <div class="evidence-panel">
           <div class="panel-line">
             <span>01</span>
-            <p data-i18n="evidence-p1">Project status, scope, and current limitations are stated explicitly.</p>
+            <p data-i18n-html="evidence-p1"><strong>Show what actually works.</strong> Project status and the boundaries of the current implementation should be clear without having to read between the lines.</p>
           </div>
           <div class="panel-line">
             <span>02</span>
-            <p data-i18n="evidence-p2">Repositories, live interfaces, and technical notes are linked where available.</p>
+            <p data-i18n-html="evidence-p2"><strong>Do not hide the limits.</strong> Every experiment has conditions where it stops working. That can be just as useful as a successful result.</p>
           </div>
           <div class="panel-line">
             <span>03</span>
-            <p data-i18n="evidence-p3">Architectural decisions, constraints, and implementation trade-offs are documented.</p>
+            <p data-i18n-html="evidence-p3"><strong>Explain the architecture when it matters.</strong> Sometimes one diagram or technical note says more about a system than ten polished screenshots.</p>
           </div>
           <div class="panel-line">
             <span>04</span>
-            <p data-i18n="evidence-p4">Benchmarks and reproducibility materials are published when they materially support the result.</p>
+            <p data-i18n-html="evidence-p4"><strong>Test ideas in practice.</strong> If a result depends on performance, accuracy, or reproducibility, it is better to measure it than describe it with adjectives.</p>
           </div>
         </div>
       </div>
     </section>
 
     <section id="contact" class="section contact-section" aria-labelledby="contact-title">
-      <div class="section-label" data-i18n="contact-label">04 / contact</div>
+      <div class="section-label" data-i18n="contact-label">If you feel like continuing the conversation</div>
       <div class="section-body contact-body">
-        <h2 id="contact-title" data-i18n="contact-title">Let’s discuss the system, not just the stack.</h2>
+        <h2 id="contact-title" data-i18n="contact-title">Let’s discuss the problem, not just the stack.</h2>
         <p class="lead compact" data-i18n="contact-lead">
-          I am open to work on AI products, RAG and agentic systems, developer tools, infrastructure, and research-heavy prototypes. GitHub and selected project pages are linked below.
+          If something here feels familiar, or there is an idea that would be interesting to try turning into a real system, Telegram or email are the easiest ways to get in touch. For technical context, GitHub usually says more than can fit on a single page.
         </p>
         <div class="contact-links">
+          <a href="https://t.me/lotargo_blog" target="_blank" rel="noreferrer">Telegram</a>
+          <a href="mailto:etot.mir.realen@gmail.com">Email</a>
           <a href="https://github.com/Lotargo" target="_blank" rel="noreferrer">GitHub</a>
-          <a href="https://lotargo.github.io/public_sonata_ai_landing/" target="_blank" rel="noreferrer">Sonata dossier</a>
-          <a href="https://lotargo.github.io/Necromancer/" target="_blank" rel="noreferrer">Necromancer landing</a>
-          <a href="https://lotargo.github.io/Academic-Pipeline-Engine/" target="_blank" rel="noreferrer">Academic Pipeline</a>
         </div>
       </div>
     </section>
   </main>
 
   <footer class="site-footer">
-    <span>Oleg Boyko / Lotargo</span>
-    <span data-i18n="footer-title">AI systems · RAG · agentic workflows · infrastructure</span>
+    <span>Lotargo / Oleg Boiko</span>
+    <span data-i18n="footer-title">Ideas · experiments · working systems</span>
+    <span>2026</span>
   </footer>
 
   <script src="./assets/js/projects.js"></script>

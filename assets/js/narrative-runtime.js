@@ -8,7 +8,8 @@
     document.querySelectorAll('.card-proof').forEach((element) => {
       const current = element.textContent || '';
       const value = current.replace(/^(?:Proof|Подтверждение|Materials|Материалы):\s*/i, '');
-      element.textContent = label + value;
+      const next = label + value;
+      if (current !== next) element.textContent = next;
     });
   }
 

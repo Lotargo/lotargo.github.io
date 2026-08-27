@@ -330,6 +330,29 @@ window.BLOG_POSTS = [
       "ru": "От блокнота и RAG до persona, ambient agent state, загрязнения benchmark'ов и изоляции runtime."
     },
     "notify": true
+  },
+  {
+    "slug": "ai-writes-code-who-is-programmer",
+    "date": "2026-08-28",
+    "href": "./ai-writes-code-who-is-programmer.html",
+    "url": "./blog/posts/ai-writes-code-who-is-programmer.html",
+    "type": {
+      "en": "AI-assisted development",
+      "ru": "AI-разработка"
+    },
+    "title": {
+      "en": "If AI Writes the Code, Who Is the Programmer?",
+      "ru": "Если код пишет ИИ, кто тогда программист?"
+    },
+    "shortTitle": {
+      "en": "Who Is the Programmer?",
+      "ru": "Кто тогда программист?"
+    },
+    "description": {
+      "en": "How vibe coding and AI agents are changing the developer’s role: from writing code by hand to defining intent, orchestrating tools, verifying results, and owning the working system.",
+      "ru": "Как вайбкодинг и AI-агенты меняют роль разработчика: от ручного написания кода к постановке задач, оркестрации, проверке результата и ответственности за работающую систему."
+    },
+    "notify": false
   }
 
 ];

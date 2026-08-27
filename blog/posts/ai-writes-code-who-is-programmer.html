@@ -1,0 +1,952 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="How vibe coding and AI agents are changing the developer’s role: from writing code by hand to defining intent, orchestrating tools, verifying results, and owning the working system." />
+  <meta name="theme-color" content="#000000" />
+  <title>If AI Writes the Code, Who Is the Programmer? · Lotargo Blog</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem('lotargo-theme');
+        document.documentElement.dataset.theme = savedTheme || 'dark';
+      } catch (error) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    })();
+  </script>
+</head>
+<body data-title-en="If AI Writes the Code, Who Is the Programmer? · Lotargo Blog" data-title-ru="Если код пишет ИИ, кто тогда программист? · Блог Lotargo">
+  <header class="site-header" data-js="header">
+    <a class="brand" href="../../" aria-label="Back to landing">
+      <span class="brand-mark" aria-hidden="true">LØ</span>
+      <span class="brand-text">Lotargo</span>
+    </a>
+    <div class="header-controls">
+      <nav class="nav" aria-label="Post navigation">
+        <a href="../../" data-i18n="blog-nav-home">Home</a>
+        <a href="../" data-i18n="nav-blog">Blog</a>
+        <a href="../../#projects" data-i18n="nav-projects">Projects</a>
+      </nav>
+      <button class="theme-toggle" type="button" data-js="theme-toggle" aria-label="Switch color theme">
+        <span data-js="theme-label">Theme</span>
+      </button>
+      <button class="lang-toggle" type="button" data-js="lang-toggle" aria-label="Switch language">
+        <span data-js="lang-label">EN</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top" class="post-shell">
+    <article class="post-article" data-generated-from-markdown="true" data-article-slug="ai-writes-code-who-is-programmer">
+      <div class="post-toolbar">
+        <a class="post-back" href="../" data-i18n="post-back-blog">Back to blog</a>
+        <div class="post-meta">
+          <span>2026-08-28</span>
+          <span data-lang-content="en">AI-assisted development</span>
+          <span data-lang-content="ru">AI-разработка</span>
+        </div>
+      </div>
+
+      <div data-lang-content="en">
+        <h1>If AI Writes the Code, Who Is the Programmer?</h1>
+        <p class="post-lead">Not long ago, the answer seemed obvious: a programmer was the person who wrote the code. But what happens when AI can write most of the implementation, while the human defines the problem, chooses the direction, verifies the result, and remains responsible for the system that actually ships?</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="ai-writes-code-who-is-programmer-en-images"><img alt="The old engineer and the vibe coder" src="../assets/ai-writes-code-who-is-programmer/01-engineer-vs-vibecoder.avif" data-full-src="../assets/ai-writes-code-who-is-programmer/01-engineer-vs-vibecoder.avif" loading="lazy" decoding="async" data-caption-en="Two approaches to development: experience with constraints and freedom to experiment"><figcaption data-lang-content="en">Two approaches to development: experience with constraints and freedom to experiment</figcaption></figure>
+        <p>Only a few years ago, the path into software development was fairly easy to describe. To build an application, you had to learn a programming language, pick up a framework, understand databases, environments, builds, deployment, and dozens of other things whose names beginners often discovered only after breaking them for the first time.</p>
+
+        <p>Today, a new layer sits between the idea and the code: AI.</p>
+
+        <p>Part of this spectrum is now called vibe coding: instead of describing the implementation line by line, a person increasingly explains what they want, evaluates what the model produces, and steers the next iteration. That does not necessarily mean having no technical knowledge at all, but it does make possible a situation that would have looked almost paradoxical not long ago.</p>
+
+        <p>A person may not know a language's syntax, may be unable to write a Dockerfile from scratch, and may not even know the difference between an integration test and a unit test. Yet they can still describe <strong>how the system should behave</strong>, ask AI to build it, run the result, notice a problem, change the requirements, and repeat the cycle until the application does what was intended.</p>
+
+        <p>To a traditional programmer, this can look almost contradictory. How can someone build a working system without mastering every tool from which it is assembled?</p>
+
+        <p>Perhaps the contradiction exists only because we have spent too long treating programming as synonymous with writing code by hand.</p>
+
+        <p><em>In an old workshop, a large dog engineer knew the price of every mistake. He could see where the motor would overheat, where the transmission would slip, and where a tiny crack would become a serious failure a month later.</em></p>
+
+        <p><em>One day, a small adult rabbit arrived with an old laptop. He barely knew the names of the tools, but he had a very clear picture of a machine that did not yet exist.</em></p>
+
+        <p><em>The dog looked at the sketches and said, “That will be very difficult.”</em></p>
+
+        <p><em>The rabbit shrugged. “All right. What if we try anyway?”</em></p>
+
+        <h2 id="programming-has-always-moved-upward-through-layers-of-abstraction">Programming has always moved upward through layers of abstraction</h2>
+
+        <p>It is easy to forget how radically programming has already changed.</p>
+
+        <p>There was a time when working with a computer meant operating very close to the machine itself. Then came assembly languages. Then high-level languages. Compilers began doing work that programmers once had to control directly. Runtime systems and garbage collectors took over parts of memory management. Frameworks hid repetitive infrastructure. Cloud platforms turned servers, databases, and queues into services that could be provisioned almost as finished components.</p>
+
+        <p>Each step moved the developer farther away from the physical details of the machine.</p>
+
+        <p>And almost every step had someone saying, “That is not real programming anymore.”</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="ai-writes-code-who-is-programmer-en-images"><img alt="The abstraction ladder" src="../assets/ai-writes-code-who-is-programmer/02-abstraction-ladder.avif" data-full-src="../assets/ai-writes-code-who-is-programmer/02-abstraction-ladder.avif" loading="lazy" decoding="async" data-caption-en="From machine details to languages, frameworks, and AI-native development"><figcaption data-lang-content="en">From machine details to languages, frameworks, and AI-native development</figcaption></figure>
+        <p>The industry did not move forward because developers became lazier. It moved forward because <strong>attention freed from lower-level work could be spent on higher-level problems</strong>.</p>
+
+        <p>If a compiler can reliably turn a high-level language into machine instructions, most developers no longer need to do that translation manually. If a cloud platform can provision a managed database, every team does not need to begin a project by installing PostgreSQL on a bare server.</p>
+
+        <p>AI continues the same trend, but the jump is much larger.</p>
+
+        <p>What is being automated now is not a single mechanical operation, but entire chains of engineering work:</p>
+
+        <ul>
+        <li>writing an implementation;</li>
+        <li>selecting a library;</li>
+        <li>creating tests;</li>
+        <li>finding a bottleneck;</li>
+        <li>preparing a container;</li>
+        <li>configuring CI;</li>
+        <li>writing documentation;</li>
+        <li>analyzing an error;</li>
+        <li>proposing an architectural change.</li>
+        </ul>
+
+        <p>That is why the argument over whether someone is “a programmer” if they do not write most of the code by hand may turn out to be a temporary argument about where the abstraction boundary sits.</p>
+
+        <h2 id="you-can-misunderstand-the-tools-name-and-still-understand-the-problem">You can misunderstand the tool's name and still understand the problem</h2>
+
+        <p>Imagine someone who has never used Docker.</p>
+
+        <p>They do not know the terms <code>image</code>, <code>container</code>, <code>volume</code>, or <code>multi-stage build</code>. But they can formulate the requirement:</p>
+
+        <blockquote>
+        <p>“I want my application to run on someone else's computer the same way it runs on mine, without making them install a dozen dependencies by hand.”</p>
+        </blockquote>
+
+        <p>To an engineer, that sentence maps almost automatically onto a set of technical solutions.</p>
+
+        <p>A modern model can make the same translation.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="ai-writes-code-who-is-programmer-en-images"><img alt="From intent to an engineering system" src="../assets/ai-writes-code-who-is-programmer/03-intent-to-engineering.avif" data-full-src="../assets/ai-writes-code-who-is-programmer/03-intent-to-engineering.avif" loading="lazy" decoding="async" data-caption-en="AI as a translator between human intent and engineering implementation"><figcaption data-lang-content="en">AI as a translator between human intent and engineering implementation</figcaption></figure>
+        <p>A person can say:</p>
+
+        <blockquote>
+        <p>“If the service crashes in the middle of a job, the job must not disappear.”</p>
+        </blockquote>
+
+        <p>AI may propose a queue, retries, durable state, and idempotent processing.</p>
+
+        <p>The person may not know the word <strong>idempotency</strong>. They can still understand the desired behavior perfectly well:</p>
+
+        <blockquote>
+        <p>“If the operation runs twice, I do not want two identical records.”</p>
+        </blockquote>
+
+        <p>That distinction matters.</p>
+
+        <p><strong>Not knowing the professional term does not always mean not understanding the problem.</strong></p>
+
+        <p>In the past, a specialist often had to stand between an everyday description of behavior and its engineering implementation. AI is increasingly capable of playing that translator role.</p>
+
+        <p>What the human needs instead is the ability to state the intent clearly enough and to notice when the result does not match it.</p>
+
+        <p><em>The rabbit did not know what many parts in the workshop were called.</em></p>
+
+        <p><em>He spoke more simply: “If the engine stalls, the cargo must not vanish. If I give the machine to my neighbor, it should start for him too. If something inside begins to overheat, I want to know before I see smoke.”</em></p>
+
+        <p><em>Small mechanical helpers turned those sentences into gears, fuses, sensors, and new circuits.</em></p>
+
+        <p><em>At first, the dog frowned at the language. Then he noticed that the requirements were perfectly engineering-minded. They just did not use engineering vocabulary.</em></p>
+
+        <h2 id="but-ai-made-it">“But AI made it”</h2>
+
+        <p>This is probably the most natural objection to the new approach.</p>
+
+        <p>Someone presents a working project and says they built it. An experienced developer opens the repository and asks:</p>
+
+        <blockquote>
+        <p>“But you could not have written half of this without AI.”</p>
+        </blockquote>
+
+        <p>That may be true.</p>
+
+        <p>By itself, however, it says very little about the quality of the result.</p>
+
+        <p>A Java programmer does not have to write their own JVM. A Python developer does not have to implement the interpreter. The author of a web service does not design the processor, operating system, network stack, or database underneath it.</p>
+
+        <p>Software development has always been built on top of other people's intellectual work.</p>
+
+        <p>AI raises that dependency by another level.</p>
+
+        <p>The external intellectual tool can now do more than execute a prewritten library function. It can <strong>create new pieces of a system for a specific task</strong>.</p>
+
+        <p>So a more useful question is:</p>
+
+        <h3 id="who-decided-what-should-be-built">Who decided what should be built?</h3>
+
+        <p>Who decided the first version was bad?</p>
+
+        <p>Who noticed the interface was awkward?</p>
+
+        <p>Who changed the architecture after a test?</p>
+
+        <p>Who chose the acceptable trade-off between speed, cost, and reliability?</p>
+
+        <p>Who said, “No, that is not it. Do it again”?</p>
+
+        <p>AI performs an enormous amount of intellectual work. Pretending otherwise would be silly.</p>
+
+        <p>But the <strong>will of the project</strong> still belongs to the human, at least for now.</p>
+
+        <h2 id="a-working-result-is-not-the-same-thing-as-good-engineering">A working result is not the same thing as good engineering</h2>
+
+        <p>This is where the experienced developer is completely justified in saying, “Wait.”</p>
+
+        <p>There is a huge difference between:</p>
+
+        <blockquote>
+        <p>“It works on my machine.”</p>
+        </blockquote>
+
+        <p>and</p>
+
+        <blockquote>
+        <p>“I understand why it works and under which conditions it will keep working.”</p>
+        </blockquote>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="ai-writes-code-who-is-programmer-en-images"><img alt="It works, but why?" src="../assets/ai-writes-code-who-is-programmer/04-it-works-but-why.avif" data-full-src="../assets/ai-writes-code-who-is-programmer/04-it-works-but-why.avif" loading="lazy" decoding="async" data-caption-en="A working prototype can surprise even someone who knows all the reasons it should not have appeared this quickly"><figcaption data-lang-content="en">A working prototype can surprise even someone who knows all the reasons it should not have appeared this quickly</figcaption></figure>
+        <p>AI can assemble something convincing very quickly. Sometimes the result is genuinely good. Sometimes the inside contains strange dependencies, duplicated logic, unnecessary abstraction layers, hidden states, or solutions that survive only because the current inputs happen to be friendly.</p>
+
+        <p>Outside: a polished application.</p>
+
+        <p>Inside: a tiny civilization holding the wires together with both hands.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="ai-writes-code-who-is-programmer-en-images"><img alt="Polished outside, chaos inside" src="../assets/ai-writes-code-who-is-programmer/05-polished-outside-chaos-inside.avif" data-full-src="../assets/ai-writes-code-who-is-programmer/05-polished-outside-chaos-inside.avif" loading="lazy" decoding="async" data-caption-en="A convincing interface says very little about the quality of the system behind it"><figcaption data-lang-content="en">A convincing interface says very little about the quality of the system behind it</figcaption></figure>
+        <p>That is why a serious AI-native workflow cannot end with:</p>
+
+        <blockquote>
+        <p>“Look, it launched.”</p>
+        </blockquote>
+
+        <p>It needs criteria that can be tested:</p>
+
+        <ul>
+        <li>reproducible startup;</li>
+        <li>tests;</li>
+        <li>failure cases;</li>
+        <li>logging;</li>
+        <li>load tests;</li>
+        <li>security checks;</li>
+        <li>understandable dependencies;</li>
+        <li>observability;</li>
+        <li>minimally sufficient documentation;</li>
+        <li>a way to recover after failure.</li>
+        </ul>
+
+        <p>The interesting part is that the human can ask AI to build this layer too.</p>
+
+        <p>For example:</p>
+
+        <blockquote>
+        <p>“I do not know how to test this properly. Try to break it. Create tests, find weak points, fix the obvious problems, and explain in plain language what risks remain.”</p>
+        </blockquote>
+
+        <p>That does not eliminate the need for control.</p>
+
+        <p>It changes the form of control.</p>
+
+        <h2 id="the-developer-becomes-less-of-an-operator-and-more-of-a-conductor">The developer becomes less of an operator and more of a conductor</h2>
+
+        <p>The classic model of programming assumed that the developer personally implemented a large part of the system.</p>
+
+        <p>AI-native development increasingly turns that work into orchestration.</p>
+
+        <p>One agent can write code. Another can review it. A third can create tests. A fourth can analyze performance. A fifth can prepare documentation. A sixth can research external documentation and dependencies.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="ai-writes-code-who-is-programmer-en-images"><img alt="The developer as conductor of an AI orchestra" src="../assets/ai-writes-code-who-is-programmer/06-ai-orchestra.avif" data-full-src="../assets/ai-writes-code-who-is-programmer/06-ai-orchestra.avif" loading="lazy" decoding="async" data-caption-en="The human increasingly coordinates a whole loop of specialized AI helpers instead of individual lines of code"><figcaption data-lang-content="en">The human increasingly coordinates a whole loop of specialized AI helpers instead of individual lines of code</figcaption></figure>
+        <p>In such a loop, the human looks less like a musician who must personally play every part.</p>
+
+        <p>They look more like a conductor.</p>
+
+        <p>A conductor does not need to play the cello better than the cellist. But they do need to hear when the cello enters at the wrong moment.</p>
+
+        <p>Likewise, an AI-native developer may not remember the exact syntax of a configuration file, but they must notice when the system behaves incorrectly.</p>
+
+        <p>That produces a new kind of competence:</p>
+
+        <h3 id="the-ability-to-maintain-a-coherent-model-of-the-desired-result">the ability to maintain a coherent model of the desired result.</h3>
+
+        <p>How should the system behave?</p>
+
+        <p>Which states are acceptable?</p>
+
+        <p>Which failures are critical?</p>
+
+        <p>Which constraints are real?</p>
+
+        <p>What can be simplified?</p>
+
+        <p>How do we know the task is actually solved?</p>
+
+        <p>Those questions have always existed. The difference is that implementation used to consume much more of the developer's attention.</p>
+
+        <h2 id="one-person-can-now-cover-part-of-the-work-of-a-small-team">One person can now cover part of the work of a small team</h2>
+
+        <p>There is another reason old assumptions about development are starting to break.</p>
+
+        <p>Modern AI dramatically increases the productivity of a solo builder.</p>
+
+        <p>An idea that once might have needed several specialists could involve:</p>
+
+        <ul>
+        <li>a backend developer;</li>
+        <li>a frontend developer;</li>
+        <li>DevOps;</li>
+        <li>a tester;</li>
+        <li>a designer;</li>
+        <li>a technical writer.</li>
+        </ul>
+
+        <p>Today, one person can temporarily cover parts of those functions with models and specialized agents.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="ai-writes-code-who-is-programmer-en-images"><img alt="A team and a solo builder" src="../assets/ai-writes-code-who-is-programmer/07-team-vs-solo.avif" data-full-src="../assets/ai-writes-code-who-is-programmer/07-team-vs-solo.avif" loading="lazy" decoding="async" data-caption-en="AI narrows the distance between a solo author and the capabilities of a small team"><figcaption data-lang-content="en">AI narrows the distance between a solo author and the capabilities of a small team</figcaption></figure>
+        <p>That does not mean teams are going away.</p>
+
+        <p>Large products still require coordination, accountability, domain expertise, and long-term maintenance.</p>
+
+        <p>But <strong>the minimum team size capable of producing a complex working product is getting smaller</strong>.</p>
+
+        <p>This matters especially for people who previously could not enter software development at all.</p>
+
+        <p>They may be mechanics, designers, writers, engineers from another field, or simply people with a very specific problem.</p>
+
+        <p>They do not know “how it is normally done.”</p>
+
+        <p>And that is sometimes exactly why they ask questions a specialist stopped asking years ago.</p>
+
+        <h2 id="then-the-prototype-meets-reality">Then the prototype meets reality</h2>
+
+        <p>Building a prototype and living with a system are different jobs.</p>
+
+        <p>After launch, users arrive.</p>
+
+        <p>Users press buttons in the wrong order.</p>
+
+        <p>The network drops between exactly the two operations you assumed were inseparable.</p>
+
+        <p>The data is not as clean as the test set.</p>
+
+        <p>An API changes its behavior.</p>
+
+        <p>Memory runs out.</p>
+
+        <p>Load lands somewhere nobody expected.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="ai-writes-code-who-is-programmer-en-images"><img alt="Maintenance after launch" src="../assets/ai-writes-code-who-is-programmer/08-maintenance-after-launch.avif" data-full-src="../assets/ai-writes-code-who-is-programmer/08-maintenance-after-launch.avif" loading="lazy" decoding="async" data-caption-en="After the first launch comes a different kind of work: maintenance, observability, and real edge cases"><figcaption data-lang-content="en">After the first launch comes a different kind of work: maintenance, observability, and real edge cases</figcaption></figure>
+        <p>This is where years of engineering experience become an enormous advantage again.</p>
+
+        <p>An experienced specialist carries not only a catalog of ways to build systems, but also a <strong>catalog of ways real systems die</strong>.</p>
+
+        <p>So the productive future probably belongs neither to the pure vibe coder nor to the engineer who refuses AI on principle.</p>
+
+        <p>The stronger combination is someone willing to ask:</p>
+
+        <blockquote>
+        <p>“Why not try?”</p>
+        </blockquote>
+
+        <p>and also capable of asking:</p>
+
+        <blockquote>
+        <p>“How do we prove this will not fall apart tomorrow?”</p>
+        </blockquote>
+
+        <p><em>The rabbit's machine left the workshop.</em></p>
+
+        <p><em>The first road went perfectly.</em></p>
+
+        <p><em>On the second, it rained.</em></p>
+
+        <p><em>On the third, a bridge had collapsed.</em></p>
+
+        <p><em>On the fourth, someone tried to put something in the trunk that should never have fit there.</em></p>
+
+        <p><em>That evening, the rabbit returned to the workshop exhausted.</em></p>
+
+        <p><em>The dog silently pulled out a chair and opened his notebook.</em></p>
+
+        <p><em>Now they repaired the machine together.</em></p>
+
+        <h2 id="not-knowing-can-sometimes-create-freedom">Not knowing can sometimes create freedom</h2>
+
+        <p>Paradoxically, a lack of traditional training can occasionally become a temporary advantage.</p>
+
+        <p>An expert looks at a problem and sees constraints immediately.</p>
+
+        <p>They already know:</p>
+
+        <ul>
+        <li>this is expensive;</li>
+        <li>this will be difficult to maintain;</li>
+        <li>this is not how the architecture is normally done;</li>
+        <li>similar attempts failed before;</li>
+        <li>there will be too many edge cases.</li>
+        </ul>
+
+        <p>Most of the time, they are right.</p>
+
+        <p>But real constraints can sometimes become mixed with historical ones.</p>
+
+        <p>“Nobody does it that way” gradually becomes “It cannot be done that way.”</p>
+
+        <p>That is where a beginner can accidentally become useful.</p>
+
+        <p>They do not yet know which questions are considered stupid.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="ai-writes-code-who-is-programmer-en-images"><img alt="The wall of reality" src="../assets/ai-writes-code-who-is-programmer/09-wall-of-reality.avif" data-full-src="../assets/ai-writes-code-who-is-programmer/09-wall-of-reality.avif" loading="lazy" decoding="async" data-caption-en="Experience knows where the wall is. Inexperience may be the first to ask whether walking around it is mandatory"><figcaption data-lang-content="en">Experience knows where the wall is. Inexperience may be the first to ask whether walking around it is mandatory</figcaption></figure>
+        <p>So they start hitting the wall.</p>
+
+        <p>Sometimes it turns out to be load-bearing and should never have been touched.</p>
+
+        <p>Sometimes they simply hurt themselves.</p>
+
+        <p>And sometimes they discover a door nobody has used for years.</p>
+
+        <p>AI strengthens this effect because a beginner no longer has to spend years mastering every intermediate layer before testing an idea.</p>
+
+        <p>They can move through the loop very quickly:</p>
+
+        <blockquote>
+        <p>idea → implementation → error → change → verification.</p>
+        </blockquote>
+
+        <p>That does not guarantee a good result.</p>
+
+        <p>But it dramatically lowers the cost of experimentation.</p>
+
+        <p>And when experiments become cheap, unexpected discoveries become more common.</p>
+
+        <h2 id="the-new-engineer-does-not-have-to-choose-between-the-rabbit-and-the-dog">The new engineer does not have to choose between the rabbit and the dog</h2>
+
+        <p>The argument about “vibe coders versus real programmers” is built on a false choice.</p>
+
+        <p>The vibe coder is useful precisely where they do not know why an idea is supposed to be impossible.</p>
+
+        <p>The experienced engineer is useful precisely where they know <strong>why that idea might be dangerous</strong>.</p>
+
+        <p>One brings freedom.</p>
+
+        <p>The other brings a map of the minefield.</p>
+
+        <p>The strongest result appears when those qualities exist in the same person or the same team.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="ai-writes-code-who-is-programmer-en-images"><img alt="Two paths, one result" src="../assets/ai-writes-code-who-is-programmer/10-two-paths-one-result.avif" data-full-src="../assets/ai-writes-code-who-is-programmer/10-two-paths-one-result.avif" loading="lazy" decoding="async" data-caption-en="Traditional engineering and AI-native development meet where a verifiable working system appears"><figcaption data-lang-content="en">Traditional engineering and AI-native development meet where a verifiable working system appears</figcaption></figure>
+        <p><em>Over time, the dog stopped beginning every conversation with “That is not how it is done.”</em></p>
+
+        <p><em>Instead he said, “All right. Show me what you want it to do.”</em></p>
+
+        <p><em>And the rabbit stopped ending work with “But it works.”</em></p>
+
+        <p><em>Instead he asked, “How are we going to try to break it?”</em></p>
+
+        <p><em>Somewhere between those two questions, a new workshop appeared.</em></p>
+
+        <h2 id="perhaps-programming-was-never-really-the-art-of-writing-code">Perhaps programming was never really the art of writing code</h2>
+
+        <p>For a long time, code was the most precise way to tell a machine exactly what a human wanted.</p>
+
+        <p>To implement an idea, someone first had to translate it into a strict sequence of instructions.</p>
+
+        <p>Now a new translator exists between intent and execution.</p>
+
+        <p>It is imperfect.</p>
+
+        <p>It makes mistakes.</p>
+
+        <p>Sometimes it confidently builds nonsense.</p>
+
+        <p>Sometimes it produces structures that make an experienced engineer stare at the wall for a while.</p>
+
+        <p>But the abstraction level has already changed.</p>
+
+        <p>So a few years from now, the question:</p>
+
+        <blockquote>
+        <p>“Did you write all of this code yourself?”</p>
+        </blockquote>
+
+        <p>may matter less than it does today.</p>
+
+        <p>Other questions may matter more:</p>
+
+        <blockquote>
+        <p><strong>Do you understand what you are building?</strong></p>
+        <p><strong>Can you distinguish a working result from a convincing imitation?</strong></p>
+        <p><strong>Can you formulate a task in a way that can actually be verified?</strong></p>
+        <p><strong>Do you know what to do when reality behaves differently from what the model promised?</strong></p>
+        </blockquote>
+
+        <p>And perhaps the central question of the new engineering era will be much simpler:</p>
+
+        <h3 id="can-you-imagine-something-that-does-not-yet-exist-make-it-work-and-recognize-when-it-is-working-incorrectly">Can you imagine something that does not yet exist, make it work, and recognize when it is working incorrectly?</h3>
+
+        <p>If you can, then the argument over how many lines you personally typed may eventually matter far less than it seems to today.</p>
+      </div>
+
+      <div data-lang-content="ru">
+        <h1>Если код пишет ИИ, кто тогда программист?</h1>
+        <p class="post-lead">Ещё недавно ответ казался очевидным: программист - это человек, который пишет код. Но что происходит, когда большую часть реализации способен написать ИИ, а человеку остаются постановка задачи, выбор направления, проверка результата и ответственность за работающую систему?</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="ai-writes-code-who-is-programmer-ru-images"><img alt="Старый инженер и вайбкодер" src="../assets/ai-writes-code-who-is-programmer/01-engineer-vs-vibecoder.avif" data-full-src="../assets/ai-writes-code-who-is-programmer/01-engineer-vs-vibecoder.avif" loading="lazy" decoding="async" data-caption-ru="Два подхода к разработке: опыт ограничений и свобода эксперимента"><figcaption data-lang-content="ru">Два подхода к разработке: опыт ограничений и свобода эксперимента</figcaption></figure>
+        <p>Ещё несколько лет назад вход в разработку выглядел довольно понятно. Чтобы сделать приложение, нужно было выучить язык программирования, освоить фреймворк, разобраться с базами данных, окружением, сборкой, деплоем и десятками вещей, названия которых новичок иногда узнавал только после того, как впервые всё сломал.</p>
+
+        <p>Сегодня между идеей и кодом появился новый слой - ИИ.</p>
+
+        <p>Часть этого спектра сегодня называют вайбкодингом: человек всё меньше описывает реализацию строка за строкой и всё больше объясняет модели, что хочет получить, после чего оценивает результат и направляет следующий цикл изменений. Это не обязательно означает полное отсутствие технических знаний, но делает возможной ситуацию, которая ещё недавно выглядела почти парадоксально.</p>
+
+        <p>Человек может не знать синтаксис языка, не уметь самостоятельно написать Dockerfile и даже не понимать, чем интеграционный тест отличается от модульного. Но при этом он способен сформулировать, <strong>как должна вести себя система</strong>, попросить ИИ построить её, запустить результат, увидеть проблему, изменить требования и повторять этот цикл до тех пор, пока приложение не начнёт делать именно то, что требовалось.</p>
+
+        <p>Для классического программиста такая ситуация выглядит почти противоречиво. Как можно создать работающую систему, не владея всеми инструментами, из которых она собрана?</p>
+
+        <p>Но, возможно, противоречие возникает только потому, что мы слишком долго отождествляли программирование с ручным написанием кода.</p>
+
+        <p><em>В старой мастерской большой пёс-инженер знал цену каждой ошибке. Он видел, где перегреется мотор, где сорвётся передача и где маленькая трещина через месяц превратится в большую аварию.</em></p>
+
+        <p><em>Однажды в мастерскую пришёл небольшой взрослый кролик со старым ноутбуком. Он плохо знал названия инструментов, зато очень хорошо представлял машину, которой ещё не существовало.</em></p>
+
+        <p><em>Пёс посмотрел на его эскизы и сказал: «Так будет очень сложно».</em></p>
+
+        <p><em>Кролик пожал плечами: «Хорошо. А если всё-таки попробовать?»</em></p>
+
+        <h2 id="_1">Программирование всегда двигалось вверх по уровням абстракции</h2>
+
+        <p>Сегодня легко забыть, насколько сильно программирование уже менялось раньше.</p>
+
+        <p>Когда-то работа с компьютером означала почти прямое управление машиной. Затем появились ассемблеры. Потом языки высокого уровня. Компилятор начал выполнять работу, которую раньше программист должен был контролировать сам. Управление памятью частично забрали runtime и garbage collector. Фреймворки спрятали повторяющуюся инфраструктуру. Облака позволили получать серверы, базы данных и очереди практически как готовую услугу.</p>
+
+        <p>Каждая такая ступень отдаляла разработчика от физических деталей машины.</p>
+
+        <p>И почти каждую такую ступень кто-нибудь встречал словами: «Это уже не настоящее программирование».</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="ai-writes-code-who-is-programmer-ru-images"><img alt="Лестница абстракций" src="../assets/ai-writes-code-who-is-programmer/02-abstraction-ladder.avif" data-full-src="../assets/ai-writes-code-who-is-programmer/02-abstraction-ladder.avif" loading="lazy" decoding="async" data-caption-ru="От машинных деталей к языкам, фреймворкам и AI-native разработке"><figcaption data-lang-content="ru">От машинных деталей к языкам, фреймворкам и AI-native разработке</figcaption></figure>
+        <p>Но индустрия двигалась дальше не потому, что разработчики становились ленивее. Она двигалась дальше потому, что <strong>освобождённое внимание можно было потратить на задачи более высокого уровня</strong>.</p>
+
+        <p>Если компилятор способен надёжно переводить язык высокого уровня в машинные инструкции, большинству разработчиков больше не нужно делать это вручную. Если облачная платформа умеет поднимать управляемую базу данных, команде не обязательно каждый раз начинать проект с установки PostgreSQL на голый сервер.</p>
+
+        <p>ИИ продолжает ту же линию, но делает скачок заметно крупнее.</p>
+
+        <p>Теперь автоматизируется не отдельная механическая операция, а целые цепочки инженерной работы:</p>
+
+        <ul>
+        <li>написать реализацию;</li>
+        <li>подобрать библиотеку;</li>
+        <li>создать тесты;</li>
+        <li>найти bottleneck;</li>
+        <li>подготовить контейнер;</li>
+        <li>настроить CI;</li>
+        <li>написать документацию;</li>
+        <li>проанализировать ошибку;</li>
+        <li>предложить архитектурное изменение.</li>
+        </ul>
+
+        <p>Именно поэтому спор о том, считается ли программистом человек, который не пишет большую часть кода руками, может оказаться временным спором о границе абстракции.</p>
+
+        <h2 id="_2">Можно не знать название инструмента и всё равно понимать задачу</h2>
+
+        <p>Представим человека, который никогда не работал с Docker.</p>
+
+        <p>Он не знает терминов <code>image</code>, <code>container</code>, <code>volume</code>, <code>multi-stage build</code>. Но он формулирует задачу:</p>
+
+        <blockquote>
+        <p>«Я хочу, чтобы моё приложение запускалось у другого человека так же, как у меня, и чтобы для запуска не приходилось вручную устанавливать десяток зависимостей».</p>
+        </blockquote>
+
+        <p>Для инженера эта формулировка почти автоматически переводится в набор технических решений.</p>
+
+        <p>Для современной модели - тоже.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="ai-writes-code-who-is-programmer-ru-images"><img alt="От намерения к инженерной системе" src="../assets/ai-writes-code-who-is-programmer/03-intent-to-engineering.avif" data-full-src="../assets/ai-writes-code-who-is-programmer/03-intent-to-engineering.avif" loading="lazy" decoding="async" data-caption-ru="ИИ как переводчик между человеческим намерением и инженерной реализацией"><figcaption data-lang-content="ru">ИИ как переводчик между человеческим намерением и инженерной реализацией</figcaption></figure>
+        <p>Человек может сказать:</p>
+
+        <blockquote>
+        <p>«Если сервис упал посреди задачи, задача не должна исчезнуть».</p>
+        </blockquote>
+
+        <p>ИИ предложит очередь, повторные попытки, устойчивое хранение состояния и идемпотентную обработку.</p>
+
+        <p>Человек может не знать слово <strong>идемпотентность</strong>. Но он прекрасно понимает желаемое поведение:</p>
+
+        <blockquote>
+        <p>«Если операция повторилась, я не хочу получить две одинаковые записи».</p>
+        </blockquote>
+
+        <p>Это важный сдвиг.</p>
+
+        <p><strong>Незнание профессионального термина не всегда означает непонимание самой проблемы.</strong></p>
+
+        <p>Раньше между бытовым описанием поведения и инженерной реализацией должен был стоять специалист-переводчик. Сегодня эту роль всё чаще способен выполнять ИИ.</p>
+
+        <p>От человека при этом требуется другое: достаточно точно сформулировать намерение и заметить, когда полученный результат ему не соответствует.</p>
+
+        <p><em>Кролик не знал, как называются многие детали в мастерской.</em></p>
+
+        <p><em>Он говорил проще: «Если мотор заглох, груз не должен потеряться. Если машину отдаём соседу, она должна завестись и у него. Если внутри что-то начинает перегреваться, я хочу увидеть это раньше, чем пойдёт дым».</em></p>
+
+        <p><em>Рядом маленькие механические помощники превращали эти фразы в шестерёнки, предохранители, датчики и новые контуры.</em></p>
+
+        <p><em>Пёс сначала морщился от такого языка. Потом заметил, что требования сформулированы вполне инженерно. Просто без инженерных слов.</em></p>
+
+        <h2 id="_3">«Но ведь это сделал ИИ»</h2>
+
+        <p>Это, пожалуй, самый естественный аргумент против нового подхода.</p>
+
+        <p>Человек получает работающий проект и говорит, что сделал его сам. Опытный разработчик открывает репозиторий и спрашивает:</p>
+
+        <blockquote>
+        <p>«Но ты ведь даже не смог бы написать половину этого без ИИ».</p>
+        </blockquote>
+
+        <p>И, возможно, это правда.</p>
+
+        <p>Но сам по себе этот факт ещё ничего не говорит о качестве результата.</p>
+
+        <p>Программист на Java не обязан писать собственную JVM. Python-разработчик не обязан реализовывать интерпретатор. Автор веб-сервиса не проектирует процессор, операционную систему, сетевой стек и базу данных, которыми пользуется.</p>
+
+        <p>Разработка всегда строилась поверх чужого интеллектуального труда.</p>
+
+        <p>ИИ просто поднял эту зависимость ещё на один этаж.</p>
+
+        <p>Теперь внешний интеллектуальный инструмент способен не только выполнять заранее написанную библиотечную функцию, но и <strong>создавать новые фрагменты системы под конкретную задачу</strong>.</p>
+
+        <p>Поэтому полезнее задать другой вопрос:</p>
+
+        <h3 id="_4">Кто определил, что именно нужно построить?</h3>
+
+        <p>Кто решил, что первая версия плоха?</p>
+
+        <p>Кто заметил, что интерфейс неудобен?</p>
+
+        <p>Кто изменил архитектуру после теста?</p>
+
+        <p>Кто определил допустимый компромисс между скоростью, стоимостью и надёжностью?</p>
+
+        <p>Кто сказал: «Нет, это не то. Переделываем»?</p>
+
+        <p>ИИ выполняет огромный объём интеллектуальной работы. Было бы странно это отрицать.</p>
+
+        <p>Но <strong>воля проекта</strong> пока всё ещё принадлежит человеку.</p>
+
+        <h2 id="_5">Работающий результат ещё не означает хорошую инженерию</h2>
+
+        <p>Здесь опытный разработчик получает возможность совершенно справедливо сказать: «Подожди».</p>
+
+        <p>Потому что между двумя утверждениями есть огромная разница:</p>
+
+        <blockquote>
+        <p>«У меня это работает».</p>
+        </blockquote>
+
+        <p>и</p>
+
+        <blockquote>
+        <p>«Я понимаю, почему это работает и при каких условиях продолжит работать».</p>
+        </blockquote>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="ai-writes-code-who-is-programmer-ru-images"><img alt="Работает, но почему?" src="../assets/ai-writes-code-who-is-programmer/04-it-works-but-why.avif" data-full-src="../assets/ai-writes-code-who-is-programmer/04-it-works-but-why.avif" loading="lazy" decoding="async" data-caption-ru="Работающий прототип может удивить даже того, кто знает все причины, почему он не должен был появиться так быстро"><figcaption data-lang-content="ru">Работающий прототип может удивить даже того, кто знает все причины, почему он не должен был появиться так быстро</figcaption></figure>
+        <p>ИИ способен за короткое время собрать систему, которая выглядит вполне убедительно. Иногда она действительно оказывается хорошей. Иногда внутри обнаруживаются странные зависимости, повторяющаяся логика, лишние уровни абстракции, неочевидные состояния или решения, которые случайно держатся только на текущем наборе входных данных.</p>
+
+        <p>Снаружи - красивое приложение.</p>
+
+        <p>Внутри - маленькая цивилизация существ, которые изо всех сил удерживают провода руками.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="ai-writes-code-who-is-programmer-ru-images"><img alt="Красиво снаружи, хаос внутри" src="../assets/ai-writes-code-who-is-programmer/05-polished-outside-chaos-inside.avif" data-full-src="../assets/ai-writes-code-who-is-programmer/05-polished-outside-chaos-inside.avif" loading="lazy" decoding="async" data-caption-ru="Убедительный интерфейс ещё ничего не говорит о качестве внутренней системы"><figcaption data-lang-content="ru">Убедительный интерфейс ещё ничего не говорит о качестве внутренней системы</figcaption></figure>
+        <p>Именно поэтому серьёзный AI-native workflow не может заканчиваться на фразе:</p>
+
+        <blockquote>
+        <p>«Смотри, оно запустилось».</p>
+        </blockquote>
+
+        <p>Нужны критерии, которые можно проверить:</p>
+
+        <ul>
+        <li>воспроизводимый запуск;</li>
+        <li>тесты;</li>
+        <li>failure cases;</li>
+        <li>логирование;</li>
+        <li>нагрузочные проверки;</li>
+        <li>security checks;</li>
+        <li>понятные зависимости;</li>
+        <li>наблюдаемость;</li>
+        <li>минимально достаточная документация;</li>
+        <li>возможность восстановить систему после сбоя.</li>
+        </ul>
+
+        <p>Самое любопытное, что человек снова может попросить ИИ построить и этот слой.</p>
+
+        <p>Например:</p>
+
+        <blockquote>
+        <p>«Я не знаю, как правильно проверить приложение. Попробуй его сломать. Создай тесты, найди слабые места, исправь очевидные проблемы и объясни мне простыми словами, какие риски остались».</p>
+        </blockquote>
+
+        <p>Это не отменяет необходимость контроля.</p>
+
+        <p>Но меняет его форму.</p>
+
+        <h2 id="_6">Разработчик превращается из исполнителя в дирижёра</h2>
+
+        <p>Классическая модель программирования подразумевала, что значительную часть реализации разработчик делает сам.</p>
+
+        <p>AI-native подход постепенно превращает эту работу в оркестрацию.</p>
+
+        <p>Один агент может писать код. Другой - проверять его. Третий - создавать тесты. Четвёртый - анализировать производительность. Пятый - готовить документацию. Шестой - исследовать внешнюю документацию и зависимости.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="ai-writes-code-who-is-programmer-ru-images"><img alt="Разработчик как дирижёр AI-оркестра" src="../assets/ai-writes-code-who-is-programmer/06-ai-orchestra.avif" data-full-src="../assets/ai-writes-code-who-is-programmer/06-ai-orchestra.avif" loading="lazy" decoding="async" data-caption-ru="Человек всё чаще управляет не отдельными строками кода, а целым контуром специализированных AI-помощников"><figcaption data-lang-content="ru">Человек всё чаще управляет не отдельными строками кода, а целым контуром специализированных AI-помощников</figcaption></figure>
+        <p>Человек в таком контуре всё меньше напоминает музыканта, который обязан лично сыграть каждую партию.</p>
+
+        <p>Он становится похож на дирижёра.</p>
+
+        <p>Дирижёр не обязан играть на виолончели лучше виолончелиста. Но он должен слышать, когда виолончель вступила не там.</p>
+
+        <p>Точно так же AI-native разработчик может не помнить точный синтаксис конфигурационного файла, но должен заметить, что система ведёт себя неправильно.</p>
+
+        <p>Отсюда появляется новая разновидность компетенции:</p>
+
+        <h3 id="_7">способность удерживать целостную модель результата.</h3>
+
+        <p>Как должна работать система?</p>
+
+        <p>Какие состояния допустимы?</p>
+
+        <p>Какие ошибки критичны?</p>
+
+        <p>Какие ограничения реальны?</p>
+
+        <p>Что можно упростить?</p>
+
+        <p>Как понять, что задача действительно решена?</p>
+
+        <p>Эти вопросы существовали всегда. Просто раньше значительная часть внимания разработчика уходила на саму реализацию.</p>
+
+        <h2 id="_8">Один человек теперь способен закрывать часть работы маленькой команды</h2>
+
+        <p>Есть ещё одна причина, почему старые представления о разработке начинают ломаться.</p>
+
+        <p>Современный ИИ резко увеличил производительность одиночного разработчика.</p>
+
+        <p>Раньше идея могла требовать участия нескольких специалистов:</p>
+
+        <ul>
+        <li>backend-разработчика;</li>
+        <li>frontend-разработчика;</li>
+        <li>DevOps;</li>
+        <li>тестировщика;</li>
+        <li>дизайнера;</li>
+        <li>технического писателя.</li>
+        </ul>
+
+        <p>Сегодня один человек способен временно закрывать часть этих функций при помощи моделей и специализированных агентов.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="ai-writes-code-who-is-programmer-ru-images"><img alt="Команда и одиночный разработчик" src="../assets/ai-writes-code-who-is-programmer/07-team-vs-solo.avif" data-full-src="../assets/ai-writes-code-who-is-programmer/07-team-vs-solo.avif" loading="lazy" decoding="async" data-caption-ru="AI сокращает дистанцию между одиночным автором идеи и возможностями небольшой команды"><figcaption data-lang-content="ru">AI сокращает дистанцию между одиночным автором идеи и возможностями небольшой команды</figcaption></figure>
+        <p>Это не означает, что команды исчезнут.</p>
+
+        <p>Большие продукты всё ещё требуют координации, ответственности, доменной экспертизы и долгосрочной поддержки.</p>
+
+        <p>Но <strong>минимальный размер команды, способной создать сложный работающий продукт, уменьшается</strong>.</p>
+
+        <p>И это особенно сильно меняет положение людей, которые раньше вообще не могли войти в разработку.</p>
+
+        <p>Человек может быть механиком, дизайнером, писателем, инженером другой специальности или просто человеком с очень конкретной проблемой.</p>
+
+        <p>Он не знает, «как принято».</p>
+
+        <p>И именно поэтому иногда задаёт вопросы, которые специалист давно перестал задавать.</p>
+
+        <h2 id="_9">Но после запуска приходит реальность</h2>
+
+        <p>Создать прототип и жить с системой - разные задачи.</p>
+
+        <p>После запуска появляются пользователи.</p>
+
+        <p>Пользователи нажимают кнопки не в том порядке.</p>
+
+        <p>Сеть пропадает именно между двумя операциями.</p>
+
+        <p>Данные оказываются не такими чистыми, как тестовый набор.</p>
+
+        <p>API меняет поведение.</p>
+
+        <p>Память заканчивается.</p>
+
+        <p>Нагрузка приходит не туда, куда ожидали.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="ai-writes-code-who-is-programmer-ru-images"><img alt="Поддержка после запуска" src="../assets/ai-writes-code-who-is-programmer/08-maintenance-after-launch.avif" data-full-src="../assets/ai-writes-code-who-is-programmer/08-maintenance-after-launch.avif" loading="lazy" decoding="async" data-caption-ru="После первого запуска начинается другая работа: поддержка, наблюдаемость и реальные пограничные случаи"><figcaption data-lang-content="ru">После первого запуска начинается другая работа: поддержка, наблюдаемость и реальные пограничные случаи</figcaption></figure>
+        <p>Вот здесь многолетний инженерный опыт снова становится огромным преимуществом.</p>
+
+        <p>Опытный специалист хранит в голове не только способы построить систему, но и <strong>каталог способов, которыми реальные системы умирают</strong>.</p>
+
+        <p>Поэтому продуктивное будущее, скорее всего, не принадлежит ни чистому вайбкодеру, ни инженеру, который принципиально отказывается от AI.</p>
+
+        <p>Сильнее будет их сочетание.</p>
+
+        <p>Человек, который не боится спросить:</p>
+
+        <blockquote>
+        <p>«Почему бы не попробовать?»</p>
+        </blockquote>
+
+        <p>и одновременно умеет спросить:</p>
+
+        <blockquote>
+        <p>«Как мы докажем, что это не развалится завтра?»</p>
+        </blockquote>
+
+        <p><em>Машина кролика выехала из мастерской.</em></p>
+
+        <p><em>На первой дороге всё прошло идеально.</em></p>
+
+        <p><em>На второй пошёл дождь.</em></p>
+
+        <p><em>На третьей сломался мост.</em></p>
+
+        <p><em>На четвёртой кто-то попытался загрузить в багажник то, что вообще не должно было туда поместиться.</em></p>
+
+        <p><em>Вечером кролик вернулся в мастерскую очень уставшим.</em></p>
+
+        <p><em>Пёс молча подвинул ему стул и открыл блокнот.</em></p>
+
+        <p><em>Теперь они чинили машину вместе.</em></p>
+
+        <h2 id="_10">Незнание иногда даёт свободу</h2>
+
+        <p>Парадоксально, но недостаток классического образования иногда может стать временным преимуществом.</p>
+
+        <p>Эксперт смотрит на задачу и мгновенно видит ограничения.</p>
+
+        <p>Он уже знает:</p>
+
+        <ul>
+        <li>это дорого;</li>
+        <li>это сложно поддерживать;</li>
+        <li>так архитектурно не принято;</li>
+        <li>похожие попытки раньше проваливались;</li>
+        <li>здесь появится слишком много edge cases.</li>
+        </ul>
+
+        <p>Чаще всего он прав.</p>
+
+        <p>Но иногда вместе с реальными ограничениями в мышлении закрепляются исторические.</p>
+
+        <p>«Так никто не делает» постепенно превращается в «так нельзя».</p>
+
+        <p>Именно здесь новичок способен случайно оказаться полезен.</p>
+
+        <p>Он ещё не знает, какие вопросы считаются глупыми.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="ai-writes-code-who-is-programmer-ru-images"><img alt="Стена реальности" src="../assets/ai-writes-code-who-is-programmer/09-wall-of-reality.avif" data-full-src="../assets/ai-writes-code-who-is-programmer/09-wall-of-reality.avif" loading="lazy" decoding="async" data-caption-ru="Опыт знает, где находится стена. Неопытность иногда первой спрашивает, обязательно ли идти вокруг"><figcaption data-lang-content="ru">Опыт знает, где находится стена. Неопытность иногда первой спрашивает, обязательно ли идти вокруг</figcaption></figure>
+        <p>Он начинает долбить стену.</p>
+
+        <p>Иногда выясняется, что стена действительно несущая и трогать её не стоило.</p>
+
+        <p>Иногда он разбивает себе лоб.</p>
+
+        <p>А иногда внезапно обнаруживается дверь, которой никто давно не пользовался.</p>
+
+        <p>ИИ усиливает этот эффект, потому что новичку больше не обязательно тратить годы на освоение всех промежуточных уровней прежде, чем проверить идею.</p>
+
+        <p>Он может очень быстро пройти цикл:</p>
+
+        <blockquote>
+        <p>идея → реализация → ошибка → изменение → проверка.</p>
+        </blockquote>
+
+        <p>Это не гарантирует хорошего результата.</p>
+
+        <p>Но резко снижает стоимость эксперимента.</p>
+
+        <p>А низкая стоимость эксперимента почти всегда увеличивает количество неожиданных находок.</p>
+
+        <h2 id="_11">Новый инженер не обязан выбирать между кроликом и псом</h2>
+
+        <p>Спор «вайбкодеры против настоящих программистов» сам по себе построен на ложном выборе.</p>
+
+        <p>Вайбкодер полезен именно там, где не знает, почему идея должна быть невозможной.</p>
+
+        <p>Опытный инженер полезен именно там, где знает, <strong>почему она может оказаться опасной</strong>.</p>
+
+        <p>У первого есть свобода.</p>
+
+        <p>У второго - карта минного поля.</p>
+
+        <p>И сильнейший вариант возникает тогда, когда эти качества соединяются в одном человеке или одной команде.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="ai-writes-code-who-is-programmer-ru-images"><img alt="Две дороги - один результат" src="../assets/ai-writes-code-who-is-programmer/10-two-paths-one-result.avif" data-full-src="../assets/ai-writes-code-who-is-programmer/10-two-paths-one-result.avif" loading="lazy" decoding="async" data-caption-ru="Классическая инженерия и AI-native разработка сходятся там, где появляется проверяемый работающий результат"><figcaption data-lang-content="ru">Классическая инженерия и AI-native разработка сходятся там, где появляется проверяемый работающий результат</figcaption></figure>
+        <p><em>Со временем пёс перестал начинать разговор со слов «так не делают».</em></p>
+
+        <p><em>Теперь он говорил: «Хорошо. Покажи, что хочешь получить».</em></p>
+
+        <p><em>А кролик перестал заканчивать работу словами «ну оно же работает».</em></p>
+
+        <p><em>Теперь он спрашивал: «Как мы попробуем это сломать?»</em></p>
+
+        <p><em>Где-то между этими двумя вопросами и появилась новая мастерская.</em></p>
+
+        <h2 id="_12">Возможно, программирование никогда не было искусством писать код</h2>
+
+        <p>Код долгое время был самым точным способом объяснить машине, чего именно хочет человек.</p>
+
+        <p>Чтобы реализовать идею, приходилось сначала переводить её в строгую последовательность инструкций.</p>
+
+        <p>Теперь между намерением и исполнением появился новый переводчик.</p>
+
+        <p>Он пока несовершенен.</p>
+
+        <p>Он ошибается.</p>
+
+        <p>Он иногда уверенно строит ерунду.</p>
+
+        <p>Иногда создаёт конструкции, от которых опытный инженер долго смотрит в стену.</p>
+
+        <p>Но уровень абстракции уже изменился.</p>
+
+        <p>Поэтому через несколько лет вопрос:</p>
+
+        <blockquote>
+        <p>«А ты сам написал весь этот код?»</p>
+        </blockquote>
+
+        <p>может оказаться не таким важным, как сегодня.</p>
+
+        <p>Вместо него появятся другие:</p>
+
+        <blockquote>
+        <p><strong>Ты понимаешь, что именно строишь?</strong></p>
+        <p><strong>Ты способен отличить работающий результат от убедительной имитации?</strong></p>
+        <p><strong>Ты умеешь сформулировать задачу так, чтобы её можно было проверить?</strong></p>
+        <p><strong>Ты знаешь, что делать, когда реальность ведёт себя не так, как обещала модель?</strong></p>
+        </blockquote>
+
+        <p>И, возможно, главный вопрос новой инженерии будет звучать совсем просто:</p>
+
+        <h3 id="_13">Можешь ли ты придумать то, чего ещё нет, заставить это работать и понять, когда оно работает неправильно?</h3>
+
+        <p>Если да, то спор о том, сколько строк ты написал собственными руками, со временем может оказаться гораздо менее важным, чем кажется сегодня.</p>
+      </div>
+
+      <nav class="post-pagination" aria-label="Post navigation" data-i18n-aria="post-pagination-aria">
+        <span class="post-page-link is-disabled" aria-disabled="true">
+          <span data-i18n="post-prev">Previous</span>
+          <strong data-i18n="post-prev-none">No earlier post</strong>
+        </span>
+        <span class="post-page-link is-disabled" aria-disabled="true">
+          <span data-i18n="post-next">Next</span>
+          <strong data-i18n="post-next-none">No later post</strong>
+        </span>
+      </nav>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <span>Oleg Boyko / Lotargo</span>
+    <span>Blog · AI systems · verification</span>
+  </footer>
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/blog-post.js"></script>
+</body>
+</html>

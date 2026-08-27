@@ -12,6 +12,17 @@
       "source_hash": "sha256:8bd08c7d4aa9078fee9df241fd0efd9806d3e322f16d37bbedfdc35525439ce2",
       "telegram_source": "agent-memory-runtime-state.tg-RU.md"
     },
+    "ai-writes-code-who-is-programmer": {
+      "article_url": "https://lotargo.github.io/blog/posts/ai-writes-code-who-is-programmer.html",
+      "channel_id": -1004375080506,
+      "channel_username": "lotargo_blog",
+      "last_action": "publish",
+      "message_id": 9,
+      "post_url": "https://t.me/lotargo_blog/9",
+      "presentation": "link-preview",
+      "source_hash": "sha256:b14dd9f86c5046949005a36876c62e15178bcbec4be376eb2226e98d975b7170",
+      "telegram_source": null
+    },
     "telegram-blog-publishing": {
       "article_url": "https://lotargo.github.io/blog/posts/telegram-blog-publishing.html",
       "channel_id": -1004375080506,

@@ -6,8 +6,29 @@
 
 window.PORTFOLIO_PROJECTS = [
   {
-    "title": "Sonata AI",
+    "title": "Agentic Circuit",
     "index": "01",
+    "category": "AGENTIC",
+    "status": {
+      "en": "Active open-source agent runtime",
+      "ru": "Активный open-source агентный runtime"
+    },
+    "description": {
+      "en": "A multi-perspective agent runtime where fast and slow reasoning paths share one personality, isolated long-term memory, and the same trust rules. It combines parallel analysis, hybrid retrieval, provider fallback, and final synthesis behind an OpenAI-compatible API.",
+      "ru": "Мультиперспективный агентный runtime, в котором быстрый и глубокий маршруты рассуждения используют единое ядро личности, изолированную долговременную память и общие правила доверия. Параллельный анализ, гибридный retrieval, fallback провайдеров и финальный синтез доступны через OpenAI-совместимый API."
+    },
+    "proof": {
+      "en": "Public repository, architecture diagrams, OpenAPI reference, tests, and live benchmark workflows",
+      "ru": "Публичный репозиторий, архитектурные схемы, OpenAPI-документация, тесты и live benchmark workflows"
+    },
+    "stack": "TypeScript, Python, LangGraph, FastAPI, Qdrant, TEI, OpenWebUI, Docker",
+    "image": "./assets/img/agentic_circuit.png",
+    "landingUrl": "https://github.com/Lotargo/Agentic-Circuit",
+    "repoUrl": "https://github.com/Lotargo/Agentic-Circuit"
+  },
+  {
+    "title": "Sonata AI",
+    "index": "02",
     "category": "AI",
     "status": {
       "en": "Research platform / public technical dossier",
@@ -31,7 +52,7 @@ window.PORTFOLIO_PROJECTS = [
   },
   {
     "title": "memory_plugin",
-    "index": "02",
+    "index": "03",
     "category": "RAG",
     "status": {
       "en": "Open source / local tools for AI coding agents",
@@ -52,7 +73,7 @@ window.PORTFOLIO_PROJECTS = [
   },
   {
     "title": "3D Face Reconstruction",
-    "index": "03",
+    "index": "04",
     "category": "3D",
     "status": {
       "en": "R&D prototype / browser 3D demo",
@@ -73,7 +94,7 @@ window.PORTFOLIO_PROJECTS = [
   },
   {
     "title": "Nexus API Balancer",
-    "index": "04",
+    "index": "05",
     "category": "INFRA",
     "status": {
       "en": "Infrastructure project",
@@ -94,7 +115,7 @@ window.PORTFOLIO_PROJECTS = [
   },
   {
     "title": "Academic Pipeline Engine",
-    "index": "05",
+    "index": "06",
     "category": "AGENTIC",
     "status": {
       "en": "Local agentic workspace",
@@ -115,7 +136,7 @@ window.PORTFOLIO_PROJECTS = [
   },
   {
     "title": "CSS-Server",
-    "index": "06",
+    "index": "07",
     "category": "RUNTIME",
     "status": {
       "en": "Browser runtime experiment",
@@ -136,7 +157,7 @@ window.PORTFOLIO_PROJECTS = [
   },
   {
     "title": "ComfyUI Meta Viewer",
-    "index": "07",
+    "index": "08",
     "category": "UI",
     "status": {
       "en": "Local tool",
@@ -157,7 +178,7 @@ window.PORTFOLIO_PROJECTS = [
   },
   {
     "title": "Necromancer",
-    "index": "08",
+    "index": "09",
     "category": "AI",
     "status": {
       "en": "Experimental application",
@@ -178,7 +199,7 @@ window.PORTFOLIO_PROJECTS = [
   },
   {
     "title": "Verification Lab",
-    "index": "09",
+    "index": "10",
     "category": "VERIFY",
     "status": {
       "en": "Reproducibility lab",
@@ -202,7 +223,7 @@ window.PORTFOLIO_PROJECTS = [
   },
   {
     "title": "Search Routers",
-    "index": "10",
+    "index": "11",
     "category": "RUNTIME",
     "status": {
       "en": "Proof of concept",
@@ -226,7 +247,7 @@ window.PORTFOLIO_PROJECTS = [
   },
   {
     "title": "The Living Bunker",
-    "index": "11",
+    "index": "12",
     "category": "AGENTIC",
     "status": {
       "en": "Active prototype",

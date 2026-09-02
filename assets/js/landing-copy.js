@@ -14,7 +14,7 @@
       "hero-line-1": "THINGS",
       "hero-line-2": "WORTH",
       "hero-line-3": "USING.",
-      "hero-meta-desc": "Projects, experiments, and systems grown from curiosity, practical problems, and the desire to carry interesting ideas all the way into something that works.",
+      "hero-meta-desc": "Projects and experiments shaped by curiosity, practical constraints, and the stubborn work of turning an interesting idea into a system that actually works.",
       "hero-action-view": "View projects",
       "hero-action-blog": "Read blog",
       "hero-action-github": "GitHub",

@@ -173,6 +173,34 @@ body {
 }
 
 @media (min-width: 1181px) {
+  html[lang="en"] .hero {
+    gap: clamp(28px, 3vw, 46px);
+  }
+
+  html[lang="en"] .hero-title {
+    width: 100%;
+    max-width: none;
+    display: grid;
+    grid-template-columns: max-content max-content;
+    justify-content: start;
+    align-items: baseline;
+    column-gap: clamp(18px, 2vw, 32px);
+  }
+
+  html[lang="en"] .hero-line {
+    font-size: clamp(72px, 8.4vw, 144px);
+    line-height: 0.86;
+  }
+
+  html[lang="en"] .hero-line:first-child {
+    grid-column: 1 / -1;
+    font-size: clamp(88px, 11vw, 170px);
+  }
+
+  html[lang="en"] .hero-line:nth-child(2) {
+    margin-left: clamp(32px, 7vw, 108px);
+  }
+
   .hero-meta {
     grid-template-columns: minmax(0, 1fr) minmax(530px, max-content);
     gap: clamp(36px, 4vw, 64px);

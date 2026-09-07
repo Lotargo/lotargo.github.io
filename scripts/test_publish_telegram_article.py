@@ -34,7 +34,7 @@ class TelegramArticlePublisherTests(unittest.TestCase):
                 source,
             )
 
-    def test_load_article_defaults_to_link_preview(self) -> None:
+    def test_load_article_defaults_to_photo_caption_with_cover(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             content = root / "blog" / "content"
@@ -70,8 +70,8 @@ class TelegramArticlePublisherTests(unittest.TestCase):
                 "https://example.test",
             )
 
-            self.assertEqual(article.presentation, "link-preview")
-            self.assertIsNone(article.cover_path)
+            self.assertEqual(article.presentation, "photo-caption")
+            self.assertEqual(article.cover_path, assets / "cover.png")
             self.assertEqual(article.telegram_path, content / "sample.tg-RU.md")
 
     def test_inline_distribution_can_enable_photo_caption(self) -> None:
@@ -121,6 +121,45 @@ class TelegramArticlePublisherTests(unittest.TestCase):
             self.assertEqual(article.presentation, "photo-caption")
             self.assertEqual(article.cover_path, assets / "cover.png")
 
+
+    def test_load_article_rejects_missing_image(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            content = root / "blog" / "content"
+            content.mkdir(parents=True)
+
+            manifest = {
+                "slug": "sample",
+                "date": "2026-07-24",
+                "post": {
+                    "title": {"ru": "Заголовок"},
+                    "description": {"ru": "Описание"},
+                },
+            }
+            (content / "sample.article.json").write_text(
+                json.dumps(manifest, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            (content / "sample.ru.md").write_text(
+                "Полная статья без изображения.",
+                encoding="utf-8",
+            )
+            (content / "sample.tg-RU.md").write_text(
+                "# Telegram-версия\n\nКороткий текст.",
+                encoding="utf-8",
+            )
+
+            with self.assertRaises(publisher.TelegramArticleError) as caught:
+                publisher.load_article(
+                    root,
+                    content / "sample.article.json",
+                    "https://example.test",
+                )
+            self.assertIn(
+                "requires at least one attached image",
+                str(caught.exception),
+            )
+
     def test_publication_action_updates_changed_posts(self) -> None:
         article = publisher.TelegramArticle(
             slug="sample",
@@ -130,9 +169,9 @@ class TelegramArticlePublisherTests(unittest.TestCase):
             article_url="https://example.test/sample",
             manifest_path=Path("sample.article.json"),
             markdown_path=None,
-            cover_path=None,
+            cover_path=Path("cover.png"),
             telegram_path=Path("sample.tg-RU.md"),
-            presentation="link-preview",
+            presentation="photo-caption",
             message_html="<b>Текст</b>",
             visible_characters=5,
             source_hash="sha256:new",
@@ -144,7 +183,7 @@ class TelegramArticlePublisherTests(unittest.TestCase):
         )
         self.assertEqual(
             publisher.publication_action(
-                {"source_hash": "sha256:new", "presentation": "link-preview"},
+                {"source_hash": "sha256:new", "presentation": "photo-caption"},
                 article,
                 False,
             ),
@@ -152,7 +191,7 @@ class TelegramArticlePublisherTests(unittest.TestCase):
         )
         self.assertEqual(
             publisher.publication_action(
-                {"source_hash": "sha256:old", "presentation": "link-preview"},
+                {"source_hash": "sha256:old", "presentation": "photo-caption"},
                 article,
                 False,
             ),
@@ -160,7 +199,7 @@ class TelegramArticlePublisherTests(unittest.TestCase):
         )
         self.assertEqual(
             publisher.publication_action(
-                {"source_hash": "sha256:old", "presentation": "photo-caption"},
+                {"source_hash": "sha256:old", "presentation": "link-preview"},
                 article,
                 False,
             ),
@@ -168,7 +207,7 @@ class TelegramArticlePublisherTests(unittest.TestCase):
         )
         self.assertEqual(
             publisher.publication_action(
-                {"source_hash": "sha256:new", "presentation": "link-preview"},
+                {"source_hash": "sha256:new", "presentation": "photo-caption"},
                 article,
                 True,
             ),

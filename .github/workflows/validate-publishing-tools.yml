@@ -7,6 +7,18 @@ on:
       - 'scripts/article_bundle.py'
       - 'scripts/render_article.py'
       - 'scripts/publish_article.py'
+      - 'scripts/telegram_preview.py'
+      - 'scripts/publish_telegram.py'
+      - 'scripts/publish_telegram_article.py'
+      - 'scripts/test_telegram_preview.py'
+      - 'scripts/test_publish_telegram.py'
+      - 'scripts/test_publish_telegram_article.py'
+      - 'scripts/telegram_preview.py'
+      - 'scripts/publish_telegram.py'
+      - 'scripts/publish_telegram_article.py'
+      - 'scripts/test_telegram_preview.py'
+      - 'scripts/test_publish_telegram.py'
+      - 'scripts/test_publish_telegram_article.py'
       - 'templates/article.html'
       - 'tests/test_article_bundle.py'
       - 'tests/test_render_article.py'
@@ -48,9 +60,14 @@ jobs:
           python -m py_compile scripts/article_bundle.py
           python -m py_compile scripts/render_article.py
           python -m py_compile scripts/publish_article.py
+          python -m py_compile scripts/telegram_preview.py
+          python -m py_compile scripts/publish_telegram.py
+          python -m py_compile scripts/publish_telegram_article.py
 
       - name: Run publishing tests
-        run: python -m unittest tests.test_article_bundle tests.test_render_article -v
+        run: |
+          python -m unittest tests.test_article_bundle tests.test_render_article -v
+          python -m unittest scripts.test_telegram_preview scripts.test_publish_telegram scripts.test_publish_telegram_article -v
 
       - name: Render and validate example bundle
         run: |

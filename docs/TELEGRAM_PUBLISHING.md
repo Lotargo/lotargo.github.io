@@ -1,20 +1,21 @@
 # Telegram Blog Publishing
 
-The repository publishes compact Russian-language article announcements to the public Telegram channel `@lotargo_blog`.
+The repository publishes compact Russian-language article editions to the public Telegram channel `@lotargo_blog`.
+
+Every Telegram article publication must include at least one attached image. New publications use `photo-caption` with a local PNG, JPEG, or WebP cover. Text-only article publication is rejected.
 
 ## Current production scope
 
 The first production version publishes:
 
-- the Russian article title;
-- the Russian article description;
-- the article date;
-- an inline **Читать статью** button;
-- the first supported Markdown image as a cover when it is a local PNG, JPEG, or WebP file.
+- a compact Russian Telegram edition when available;
+- an inline link to the full article;
+- at least one attached PNG, JPEG, or WebP image;
+- a `photo-caption` presentation for new publications.
 
-SVG and AVIF images are skipped for now. When no supported cover is found, the publisher sends a text-only announcement.
+SVG and AVIF images are not valid Telegram attachments in the current publisher. When no supported cover is found, publication fails instead of falling back to a text-only post.
 
-The website remains the canonical source. Telegram receives an announcement rather than the full article.
+The website remains the canonical source. Telegram receives a compact self-contained edition rather than the full article. The attached image is mandatory, not optional.
 
 ## Required GitHub configuration
 

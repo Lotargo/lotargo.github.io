@@ -36,6 +36,10 @@ LIST_RE = re.compile(r"^\s*(?:[-+*]|\d+[.)])\s+", re.MULTILINE)
 EMPHASIS_RE = re.compile(r"(?<!\\)(?:\*\*|__|~~|\*|_|`)")
 ESCAPED_MARKDOWN_RE = re.compile(r"\\([\\`*_{}\[\]()#+\-.!>])")
 MULTI_BLANK_RE = re.compile(r"\n{3,}")
+MARKDOWN_IMAGE_REF_RE = re.compile(
+    r"!\[[^\]]*\]\(\s*(?:<([^>]+)>|([^\s)]+))(?:\s+[\"'][^\"']*[\"'])?\s*\)"
+)
+SUPPORTED_TELEGRAM_IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp"}
 
 
 class TelegramPreviewError(RuntimeError):
@@ -139,10 +143,83 @@ def _safe_source_path(bundle_root: Path, source: str, field: str) -> Path:
     return resolved
 
 
+def _telegram_cover_path(
+    bundle_root: Path,
+    language: str,
+    source_path: Path,
+    config: dict[str, Any],
+) -> Path:
+    value = config.get("cover", "auto")
+    if value is None or value is False:
+        raise TelegramPreviewError(
+            "Every enabled Telegram publication requires at least one attached image; "
+            "cover cannot be null or false",
+            logical_path=DISTRIBUTION_FILENAME,
+            title="Telegram image is required",
+        )
+
+    candidates: list[str] = []
+    if value == "auto":
+        for markdown_path in (
+            bundle_root / "content" / f"{language}.md",
+            source_path,
+        ):
+            if not markdown_path.is_file():
+                continue
+            markdown = markdown_path.read_text(encoding="utf-8")
+            for match in MARKDOWN_IMAGE_REF_RE.finditer(markdown):
+                reference = (match.group(1) or match.group(2) or "").strip()
+                if reference and not re.match(r"^(?:https?://|data:)", reference, re.IGNORECASE):
+                    candidates.append(reference)
+        if not candidates:
+            raise TelegramPreviewError(
+                "Every enabled Telegram publication requires at least one attached image. "
+                "cover='auto' could not find a local image in the article or Telegram Markdown",
+                logical_path=DISTRIBUTION_FILENAME,
+                title="Telegram image is required",
+            )
+    elif isinstance(value, str) and value.strip():
+        candidates.append(value.strip())
+    else:
+        raise TelegramPreviewError(
+            "telegram cover must be 'auto' or a non-empty relative image path",
+            logical_path=DISTRIBUTION_FILENAME,
+            title="Invalid Telegram cover",
+        )
+
+    resolved_root = bundle_root.resolve()
+    for reference in candidates:
+        clean = reference.split("#", 1)[0].split("?", 1)[0]
+        relative = Path(clean)
+        if relative.is_absolute() or ".." in relative.parts:
+            continue
+        candidate = (
+            resolved_root / relative
+            if clean.startswith("assets/")
+            else resolved_root / "assets" / relative
+        ).resolve()
+        if candidate != resolved_root and resolved_root not in candidate.parents:
+            continue
+        if (
+            candidate.is_file()
+            and candidate.suffix.lower() in SUPPORTED_TELEGRAM_IMAGE_SUFFIXES
+        ):
+            return candidate
+
+    raise TelegramPreviewError(
+        "Every enabled Telegram publication requires a local PNG, JPEG, or WebP image "
+        "that can be attached to the Telegram post",
+        logical_path=DISTRIBUTION_FILENAME,
+        title="Telegram image is required",
+    )
+
+
 def _edition_from_config(
     bundle_root: Path,
     language: str,
     config: dict[str, Any],
+    *,
+    enforce_attachment: bool = True,
 ) -> TelegramEdition | None:
     enabled = config.get("enabled", True)
     if not isinstance(enabled, bool):
@@ -167,6 +244,14 @@ def _edition_from_config(
         raise TelegramPreviewError(
             f"telegram.{language}.presentation must be one of: {choices}",
             logical_path=DISTRIBUTION_FILENAME,
+        )
+
+    if enabled and enforce_attachment and presentation != "photo-caption":
+        raise TelegramPreviewError(
+            "Every enabled Telegram publication requires an attached image, so "
+            f"telegram.{language}.presentation must be 'photo-caption'",
+            logical_path=DISTRIBUTION_FILENAME,
+            title="Telegram image attachment is required",
         )
 
     source_path = _safe_source_path(
@@ -194,6 +279,9 @@ def _edition_from_config(
             f"Cannot read Telegram edition {source}: {exc}",
             logical_path=source,
         ) from exc
+
+    if enabled and enforce_attachment:
+        _telegram_cover_path(bundle_root, language, source_path, config)
 
     visible_text = markdown_to_visible_text(markdown)
     rendered_characters = len(visible_text)
@@ -275,6 +363,7 @@ def validate_bundle_telegram_editions(bundle_root: Path) -> list[TelegramEdition
                     "source": source,
                     "presentation": "link-preview",
                 },
+                enforce_attachment=False,
             )
             if edition is not None:
                 editions.append(edition)

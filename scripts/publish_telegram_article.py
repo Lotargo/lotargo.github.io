@@ -314,14 +314,18 @@ def load_article(root: Path, manifest_path: Path, site_url: str) -> TelegramArti
             f"<i>{html.escape(date)}</i>"
         )
         visible_characters = len(title) + len(description) + len(date) + 4
-        presentation = configured_presentation or "link-preview"
-        cover_path = (
-            resolve_configured_cover(root, slug, config, default_cover)
-            if presentation == "photo-caption"
-            else None
-        )
-        if presentation == "photo-caption" and cover_path is None:
-            fail("photo-caption presentation requires a Telegram cover")
+        presentation = configured_presentation or "photo-caption"
+        if presentation != "photo-caption":
+            fail(
+                "Every Telegram article publication requires at least one attached image; "
+                "presentation must be 'photo-caption'"
+            )
+        cover_path = resolve_configured_cover(root, slug, config, default_cover)
+        if cover_path is None:
+            fail(
+                "Every Telegram article publication requires at least one attached image "
+                "(local PNG, JPEG, or WebP cover)"
+            )
         return TelegramArticle(
             slug=slug,
             date=date,
@@ -345,14 +349,18 @@ def load_article(root: Path, manifest_path: Path, site_url: str) -> TelegramArti
 
     telegram_markdown = telegram_path.read_text(encoding="utf-8")
     visible_characters = len(markdown_to_visible_text(telegram_markdown))
-    presentation = configured_presentation or "link-preview"
-    cover_path = (
-        resolve_configured_cover(root, slug, config, default_cover)
-        if presentation == "photo-caption"
-        else None
-    )
-    if presentation == "photo-caption" and cover_path is None:
-        fail("photo-caption presentation requires a Telegram cover")
+    presentation = configured_presentation or "photo-caption"
+    if presentation != "photo-caption":
+        fail(
+            "Every Telegram article publication requires at least one attached image; "
+            "presentation must be 'photo-caption'"
+        )
+    cover_path = resolve_configured_cover(root, slug, config, default_cover)
+    if cover_path is None:
+        fail(
+            "Every Telegram article publication requires at least one attached image "
+            "(local PNG, JPEG, or WebP cover)"
+        )
 
     project_limit = (
         PROJECT_CAPTION_LIMIT
@@ -551,7 +559,7 @@ def publication_action(
     if existing.get("source_hash") == article.source_hash:
         return "skip"
     old_presentation = existing.get("presentation", "link-preview")
-    if old_presentation == "photo-caption" and article.presentation == "link-preview":
+    if old_presentation != article.presentation:
         return "replace"
     return "edit"
 

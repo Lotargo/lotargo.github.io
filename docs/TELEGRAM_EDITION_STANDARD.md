@@ -21,6 +21,36 @@ article-bundle/
 
 Legacy Article Bundles without `distribution.json` and without `content/telegram/*.md` remain valid.
 
+## Short article rule
+
+A Telegram edition must be a short self-contained article optimized for in-app reading.
+
+It must not be a copied blog lead and must not be reduced to a one-line announcement.
+
+Recommended composition:
+
+- strong opening with the central point immediately;
+- typically 3 to 6 short paragraphs;
+- one main idea per paragraph;
+- one or two concrete details that make the post useful without opening the website;
+- a natural transition to the full article.
+
+Recommended target: about 500 to 800 visible characters.
+
+The hard project limit remains 900 visible characters for `photo-caption`.
+
+Long architecture walkthroughs, exhaustive feature lists, tables, long code blocks, and repeated conclusions belong in the full website article.
+
+## Source and link rule
+
+Every externally derived or reasonably disputable factual claim in the Telegram edition must have a real source link.
+
+Prefer primary or official sources. Use descriptive Markdown link text. Never invent a citation, publication, URL, quote, statistic, version, or benchmark.
+
+If a source cannot be verified, remove the claim or make the uncertainty explicit.
+
+Keep only the sources needed by the short Telegram edition so the caption remains readable.
+
 ## Mandatory image rule
 
 Every new enabled Telegram article publication must attach at least one image.

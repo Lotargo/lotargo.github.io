@@ -25,6 +25,10 @@ from article_bundle import (
     open_bundle,
 )
 from render_article import RenderError, render_bundle
+from editorial_rules import (
+    EditorialRuleError,
+    validate_bundle_editorial_rules,
+)
 from telegram_preview import (
     TelegramPreviewError,
     validate_bundle_telegram_editions,
@@ -64,6 +68,7 @@ def validate_telegram_editions(bundle_root: Path) -> None:
 
 def prepare_bundle(bundle_root: Path, force: bool = False) -> Path:
     raw = read_raw_manifest(bundle_root)
+    validate_bundle_editorial_rules(bundle_root)
     html_value = raw.get("html", "article.html")
     if not isinstance(html_value, str) or not html_value:
         fail("html must be a relative path")
@@ -76,6 +81,8 @@ def prepare_bundle(bundle_root: Path, force: bool = False) -> Path:
 
 
 def render_command(args: argparse.Namespace) -> None:
+    read_raw_manifest(args.bundle_dir)
+    validate_bundle_editorial_rules(args.bundle_dir)
     output = render_bundle(args.bundle_dir, args.template)
     validate_telegram_editions(args.bundle_dir)
     print(f"Rendered article: {output}")
@@ -217,7 +224,7 @@ def main() -> int:
     try:
         args.func(args)
         return 0
-    except TelegramPreviewError as exc:
+    except (TelegramPreviewError, EditorialRuleError) as exc:
         print(exc.github_annotation(), file=sys.stderr)
         print(f"publish-article: {exc}", file=sys.stderr)
         return 2

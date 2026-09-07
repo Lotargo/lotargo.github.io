@@ -1,0 +1,3 @@
+.publishing/
+__pycache__/
+*.py[cod]

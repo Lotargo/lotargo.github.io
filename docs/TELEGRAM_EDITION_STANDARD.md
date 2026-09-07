@@ -21,6 +21,18 @@ article-bundle/
 
 Legacy Article Bundles without `distribution.json` and without `content/telegram/*.md` remain valid.
 
+## Mandatory image rule
+
+Every new enabled Telegram article publication must attach at least one image.
+
+- `presentation` must be `photo-caption`;
+- `cover` must resolve to a local PNG, JPEG, or WebP file;
+- `cover: "auto"` may reuse the first supported local image referenced by the article or Telegram Markdown;
+- `cover: null` and `cover: false` are rejected;
+- a missing or unsupported cover rejects the bundle before deployment or Telegram publication.
+
+This is a hard validation rule, not an editorial recommendation. `link-preview` remains recognized only for legacy compatibility and must not be used for a new enabled edition declared through `distribution.json`.
+
 ## `distribution.json`
 
 ```json
@@ -30,12 +42,14 @@ Legacy Article Bundles without `distribution.json` and without `content/telegram
     "ru": {
       "enabled": true,
       "source": "content/telegram/ru.md",
-      "presentation": "link-preview"
+      "presentation": "photo-caption",
+      "cover": "auto"
     },
     "en": {
       "enabled": false,
       "source": "content/telegram/en.md",
-      "presentation": "link-preview"
+      "presentation": "photo-caption",
+      "cover": "auto"
     }
   }
 }
@@ -43,10 +57,10 @@ Legacy Article Bundles without `distribution.json` and without `content/telegram
 
 Supported presentation modes:
 
-- `link-preview`: a normal Telegram text post with a website link and preview;
-- `photo-caption`: a short caption attached to an uploaded image.
+- `photo-caption`: the required mode for new enabled Telegram editions; a short caption attached to an uploaded image;
+- `link-preview`: legacy compatibility only.
 
-When `distribution.json` is absent, existing files at `content/telegram/ru.md` and `content/telegram/en.md` are validated as `link-preview` editions.
+When `distribution.json` is absent, existing legacy files at `content/telegram/ru.md` and `content/telegram/en.md` remain valid for compatibility. New publications must declare `distribution.json` and satisfy the mandatory image rule.
 
 ## Length limits
 
@@ -73,7 +87,7 @@ install
 import-staged
 ```
 
-An oversized Telegram edition is rejected before the Article Bundle is installed, committed, deployed, or sent to Telegram.
+An oversized Telegram edition or an enabled edition without a valid attached image is rejected before the Article Bundle is installed, committed, deployed, or sent to Telegram.
 
 GitHub Actions receives a file annotation and an actionable message similar to:
 
@@ -93,6 +107,6 @@ content/telegram/ru.md
 
 This makes the failure understandable to a person or another AI reviewing CI logs.
 
-## Current rollout
+## Enforcement
 
-The length guard and file contract are active. The current Telegram publisher still falls back to the article title and description until rendering and installation of the dedicated Telegram editions are connected in the next pipeline revision.
+The image requirement is enforced twice: during Article Bundle validation and again by the Telegram publisher. Calling the publisher directly therefore cannot bypass the rule.

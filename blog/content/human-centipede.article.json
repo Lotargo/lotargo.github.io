@@ -9,7 +9,8 @@
   },
   "sources": {
     "en": "content/en.md",
-    "ru": "content/ru.md"
+    "ru": "content/ru.md",
+    "tg-RU": "content/telegram/ru.md"
   },
   "assets": "assets",
   "post": {
@@ -39,5 +40,13 @@
       "ru": "Как хорошие разработчики и разумные корректировки всё равно приводят к плохому продукту."
     },
     "notify": true
+  },
+  "distribution": {
+    "telegram": {
+      "ru": {
+        "presentation": "photo-caption",
+        "cover": "assets/images/telegram-cover.jpg"
+      }
+    }
   }
 }

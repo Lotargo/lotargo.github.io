@@ -353,6 +353,38 @@ window.BLOG_POSTS = [
       "ru": "Как вайбкодинг и AI-агенты меняют роль разработчика: от ручного написания кода к постановке задач, оркестрации, проверке результата и ответственности за работающую систему."
     },
     "notify": false
+  },
+  {
+    "slug": "human-centipede",
+    "date": "2026-10-29",
+    "href": "./human-centipede.html",
+    "url": "./blog/posts/human-centipede.html",
+    "type": {
+      "en": "Development antipatterns",
+      "ru": "Антипаттерны разработки"
+    },
+    "title": {
+      "en": "The Human Centipede",
+      "ru": "Человеческая многоножка"
+    },
+    "shortTitle": {
+      "en": "The Human Centipede",
+      "ru": "Человеческая многоножка"
+    },
+    "description": {
+      "en": "A new pattern in modern development: changing requirements, repeated reinterpretation, AI agents, and responsibility for the result dissolving along the chain.",
+      "ru": "Новый паттерн современной разработки: меняющиеся требования, многократное переосмысление задач, AI-агенты и растворяющаяся по цепочке ответственность за результат."
+    },
+    "notificationId": "2026-10-29-human-centipede",
+    "notificationTitle": {
+      "en": "The Human Centipede",
+      "ru": "Человеческая многоножка"
+    },
+    "notificationText": {
+      "en": "How competent developers and reasonable changes can still produce a broken product.",
+      "ru": "Как хорошие разработчики и разумные корректировки всё равно приводят к плохому продукту."
+    },
+    "notify": true
   }
 
 ];

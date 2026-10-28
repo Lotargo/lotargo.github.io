@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="A new pattern in modern development: changing requirements, repeated reinterpretation, AI agents, and responsibility for the result dissolving along the chain." />
+  <meta name="theme-color" content="#000000" />
+  <title>The Human Centipede · Lotargo Blog</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem('lotargo-theme');
+        document.documentElement.dataset.theme = savedTheme || 'dark';
+      } catch (error) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    })();
+  </script>
+</head>
+<body data-title-en="The Human Centipede · Lotargo Blog" data-title-ru="Человеческая многоножка · Блог Lotargo">
+  <header class="site-header" data-js="header">
+    <a class="brand" href="../../" aria-label="Back to landing">
+      <span class="brand-mark" aria-hidden="true">LØ</span>
+      <span class="brand-text">Lotargo</span>
+    </a>
+    <div class="header-controls">
+      <nav class="nav" aria-label="Post navigation">
+        <a href="../../" data-i18n="blog-nav-home">Home</a>
+        <a href="../" data-i18n="nav-blog">Blog</a>
+        <a href="../../#projects" data-i18n="nav-projects">Projects</a>
+      </nav>
+      <button class="theme-toggle" type="button" data-js="theme-toggle" aria-label="Switch color theme">
+        <span data-js="theme-label">Theme</span>
+      </button>
+      <button class="lang-toggle" type="button" data-js="lang-toggle" aria-label="Switch language">
+        <span data-js="lang-label">EN</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top" class="post-shell">
+    <article class="post-article" data-generated-from-markdown="true" data-article-slug="human-centipede">
+      <div class="post-toolbar">
+        <a class="post-back" href="../" data-i18n="post-back-blog">Back to blog</a>
+        <div class="post-meta">
+          <span>2026-10-29</span>
+          <span data-lang-content="en">Development antipatterns</span>
+          <span data-lang-content="ru">Антипаттерны разработки</span>
+        </div>
+      </div>
+
+      <div data-lang-content="en">
+        <h1>The Human Centipede</h1>
+        <p class="post-lead"><em>A new pattern in modern development</em></p>
+
+        <p>Programming has architectural patterns: Facade, Adapter, Strategy, Observer. There are the SOLID principles, intended to make code easier to understand, more flexible, and easier to maintain.</p>
+
+        <p>But modern development has produced another pattern that, for some reason, never makes it into the textbooks.</p>
+
+        <p><strong>The human centipede.</strong></p>
+
+        <p>Unlike the others, this pattern starts neither with architecture nor even with code. It starts with defining the task.</p>
+
+        <p>Someone needs a particular result. An employer, a client, a team lead, or a senior engineer. They spell out the requirements, pass them to a developer, and the developer gets to work. Everything is perfectly normal.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="human-centipede-en-images"><img alt="A developer on a video call with an employer, product manager, team lead, analyst, and UX/UI designer discussing requirements for a request management system" height="941" src="../assets/human-centipede/images/task-discussion.avif" width="1672" data-full-src="../assets/human-centipede/images/task-discussion.avif" loading="lazy" decoding="async" data-caption-en="Defining the task: everyone still has the same product in mind. The images in this article are illustrative concepts with fictional interfaces."><figcaption data-lang-content="en">Defining the task: everyone still has the same product in mind. The images in this article are illustrative concepts with fictional interfaces.</figcaption></figure>
+        <p>The problems start later.</p>
+
+        <p>A couple of days later, new information arrives. A week later, the business logic changes. A few days after that, someone watches an interesting YouTube video and decides the product should now work differently.</p>
+
+        <p>The original task gradually turns into a completely different one, even though everyone officially keeps treating it as the same task with a few minor adjustments.</p>
+
+        <p>The developer receives the changes and passes them along. Today it might be another engineer, tomorrow a junior developer, and increasingly it is an AI agent: Codex, Claude Code, Cursor, or some other little creature.</p>
+
+        <p>The agent diligently follows instructions, adapts the existing code, adds conditions, workarounds, and new dependencies. Meanwhile, different models interpret the requirements differently, and sometimes confidently invent things nobody asked for.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="human-centipede-en-images"><img alt="A developer passes a requirements list and the existing architecture of a request management system to an AI agent" height="941" src="../assets/human-centipede/images/agent-handoff.avif" width="1672" data-full-src="../assets/human-centipede/images/agent-handoff.avif" loading="lazy" decoding="async" data-caption-en="The next link receives the requirements and a request to preserve the existing architecture."><figcaption data-lang-content="en">The next link receives the requirements and a request to preserve the existing architecture.</figcaption></figure>
+        <p>And this is where <strong>the human centipede</strong> takes shape.</p>
+
+        <p>The first participant shits into the second one's mouth. The second, trying to digest what they have received, shits into the third one's mouth. The third passes the result to the fourth.</p>
+
+        <p>Each successive participant is no longer working with the original task, but with the product of its repeated reprocessing.</p>
+
+        <p>And this does not necessarily have anything to do with incompetence. Every participant may be a good specialist. Every individual adjustment may seem reasonable.</p>
+
+        <p>But if you keep layering changed requirements over old decisions without revisiting the architecture or the task itself, the result becomes increasingly unpredictable.</p>
+
+        <p>AI only accelerates the process. Now you can not only generate code, but also accumulate technical debt at incredible speed, document it beautifully, and cover it with tests.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="human-centipede-en-images"><img alt="A developer faces sprawling code, a tangled dependency diagram, and failing tests after another round of requirement changes" height="941" src="../assets/human-centipede/images/requirements-fallout.avif" width="1672" data-full-src="../assets/human-centipede/images/requirements-fallout.avif" loading="lazy" decoding="async" data-caption-en="Each change looks reasonable on its own. Together, they no longer add up to a working system."><figcaption data-lang-content="en">Each change looks reasonable on its own. Together, they no longer add up to a working system.</figcaption></figure>
+        <p><strong>And the most interesting part is that the user ends up being the final link in the centipede.</strong></p>
+
+        <p>They are the one who gets the finished product. With all the consequences of changed requirements, misinterpretations, compromises, and hacks.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="human-centipede-en-images"><img alt="A user tries to work in a request management system with data loading, access permission, and save errors" height="941" src="../assets/human-centipede/images/user-facing-failure.avif" width="1672" data-full-src="../assets/human-centipede/images/user-facing-failure.avif" loading="lazy" decoding="async" data-caption-en="At the end of the chain, the user gets every accumulated compromise at once."><figcaption data-lang-content="en">At the end of the chain, the user gets every accumulated compromise at once.</figcaption></figure>
+        <p>Except the user has nobody left to shit into the mouth of.</p>
+
+        <p>If alternatives exist, they simply choose another product. If there are no alternatives, they can only put up with it, stop using it, or look for workarounds.</p>
+
+        <p>It makes for a remarkable architecture: every participant in the chain did their job, tasks were closed, commits were made, tests passed.</p>
+
+        <p>And what came out was shit.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="human-centipede-en-images"><img alt="A frustrated user throws a broken laptop into a dumpster" height="941" src="../assets/human-centipede/images/product-rejection.avif" width="1672" data-full-src="../assets/human-centipede/images/product-rejection.avif" loading="lazy" decoding="async" data-caption-en="Tasks closed. Commits made. The user rejects the result."><figcaption data-lang-content="en">Tasks closed. Commits made. The user rejects the result.</figcaption></figure>
+        <p><strong>The human centipede is an antipattern in which responsibility for the result dissolves into an endless chain of task handoffs and reinterpretations.</strong></p>
+
+        <p>And its greatest advantage: implementing it does not require a single bad developer.</p>
+
+        <p>All it takes is never stopping to reconsider what you are actually building.</p>
+      </div>
+
+      <div data-lang-content="ru">
+        <h1>Человеческая многоножка</h1>
+        <p class="post-lead"><em>Новый паттерн современной разработки</em></p>
+
+        <p>В программировании существуют архитектурные паттерны: Фасад, Адаптер, Стратегия, Наблюдатель. Есть принципы SOLID, призванные делать код понятнее, гибче и удобнее в сопровождении.</p>
+
+        <p>Но современная разработка породила ещё один паттерн, о котором почему-то не пишут в учебниках.</p>
+
+        <p><strong>Человеческая многоножка.</strong></p>
+
+        <p>В отличие от остальных, этот паттерн начинается не с архитектуры и даже не с кода. Он начинается с постановки задачи.</p>
+
+        <p>Есть человек, которому нужен определённый результат. Работодатель, заказчик, тимлид или старший инженер. Он формулирует требования, передаёт их разработчику, тот приступает к реализации. Всё совершенно нормально.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="human-centipede-ru-images"><img alt="Разработчик на видеовстрече с работодателем, продактом, тимлидом, аналитиком и UX/UI-дизайнером обсуждает требования к системе заявок" height="941" src="../assets/human-centipede/images/task-discussion.avif" width="1672" data-full-src="../assets/human-centipede/images/task-discussion.avif" loading="lazy" decoding="async" data-caption-ru="Постановка задачи: все пока представляют один и тот же продукт. Изображения в статье: иллюстративные концепты с условными интерфейсами."><figcaption data-lang-content="ru">Постановка задачи: все пока представляют один и тот же продукт. Изображения в статье: иллюстративные концепты с условными интерфейсами.</figcaption></figure>
+        <p>Проблемы начинаются позже.</p>
+
+        <p>Через пару дней появляются новые вводные. Через неделю меняется бизнес-логика. Ещё через несколько дней кто-то посмотрел интересный ролик на YouTube и решил, что теперь продукт должен работать иначе.</p>
+
+        <p>Изначальная задача постепенно превращается в совершенно другую, хотя формально её продолжают считать всё той же задачей с небольшими корректировками.</p>
+
+        <p>Разработчик получает изменения и передаёт их дальше. Сегодня это может быть другой инженер, завтра джуниор, а чаще уже AI-агент: Codex, Claude Code, Cursor или любая другая зверушка.</p>
+
+        <p>Агент добросовестно выполняет инструкции, адаптирует существующий код, добавляет условия, обходные решения, новые зависимости. При этом разные модели по-разному интерпретируют требования, а иногда уверенно додумывают то, чего никто не просил.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="human-centipede-ru-images"><img alt="Разработчик передаёт AI-агенту список требований и существующую архитектуру системы заявок" height="941" src="../assets/human-centipede/images/agent-handoff.avif" width="1672" data-full-src="../assets/human-centipede/images/agent-handoff.avif" loading="lazy" decoding="async" data-caption-ru="Следующее звено получает требования и просьбу сохранить существующую архитектуру."><figcaption data-lang-content="ru">Следующее звено получает требования и просьбу сохранить существующую архитектуру.</figcaption></figure>
+        <p>И вот здесь формируется <strong>человеческая многоножка</strong>.</p>
+
+        <p>Первый участник срёт в рот второму. Второй, пытаясь переварить полученное, срёт в рот третьему. Третий передаёт результат четвёртому.</p>
+
+        <p>Каждый следующий участник работает уже не с первоначальной задачей, а с продуктом её многократной переработки.</p>
+
+        <p>Причём дело совершенно не обязательно в некомпетентности. Каждый участник может быть хорошим специалистом. Каждая отдельная корректировка может выглядеть разумной.</p>
+
+        <p>Но если изменившиеся требования постоянно накладывать поверх старых решений, не пересматривая архитектуру и саму постановку задачи, результат становится всё менее предсказуемым.</p>
+
+        <p>AI лишь ускоряет этот процесс. Теперь можно не только генерировать код, но и с невероятной скоростью накапливать технический долг, красиво документировать его и покрывать тестами.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="human-centipede-ru-images"><img alt="Разработчик смотрит на разросшийся код, запутанную схему зависимостей и ошибки тестов после очередных изменений требований" height="941" src="../assets/human-centipede/images/requirements-fallout.avif" width="1672" data-full-src="../assets/human-centipede/images/requirements-fallout.avif" loading="lazy" decoding="async" data-caption-ru="Каждая правка по отдельности выглядит разумной. Вместе они уже не складываются в работающую систему."><figcaption data-lang-content="ru">Каждая правка по отдельности выглядит разумной. Вместе они уже не складываются в работающую систему.</figcaption></figure>
+        <p><strong>И самое интересное, что последним звеном многоножки оказывается пользователь.</strong></p>
+
+        <p>Именно ему достаётся конечный продукт. Со всеми последствиями изменённых требований, неверных интерпретаций, компромиссов и костылей.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="human-centipede-ru-images"><img alt="Пользователь пытается работать в системе заявок с ошибками загрузки, прав доступа и сохранения данных" height="941" src="../assets/human-centipede/images/user-facing-failure.avif" width="1672" data-full-src="../assets/human-centipede/images/user-facing-failure.avif" loading="lazy" decoding="async" data-caption-ru="В конце цепочки пользователь получает все накопленные компромиссы сразу."><figcaption data-lang-content="ru">В конце цепочки пользователь получает все накопленные компромиссы сразу.</figcaption></figure>
+        <p>Только пользователю уже некому срать в рот.</p>
+
+        <p>Если есть альтернативы, он просто выбирает другой продукт. Если альтернатив нет, ему остаётся терпеть, отказаться от использования или искать обходные пути.</p>
+
+        <p>Получается удивительная архитектура: каждый участник цепочки исправно выполнял свою работу, задачи закрывались, коммиты создавались, тесты проходили.</p>
+
+        <p>А на выходе получилось говно.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="human-centipede-ru-images"><img alt="Разочарованный пользователь выбрасывает сломанный ноутбук в мусорный контейнер" height="941" src="../assets/human-centipede/images/product-rejection.avif" width="1672" data-full-src="../assets/human-centipede/images/product-rejection.avif" loading="lazy" decoding="async" data-caption-ru="Задачи закрыты. Коммиты созданы. Пользователь отказывается от результата."><figcaption data-lang-content="ru">Задачи закрыты. Коммиты созданы. Пользователь отказывается от результата.</figcaption></figure>
+        <p><strong>Человеческая многоножка — это антипаттерн, при котором ответственность за результат растворяется в бесконечной цепочке передачи и переосмысления задач.</strong></p>
+
+        <p>И главное её достоинство: для реализации не требуется ни одного плохого разработчика.</p>
+
+        <p>Достаточно просто ни разу не остановиться и не пересмотреть то, что вы вообще строите.</p>
+      </div>
+
+      <nav class="post-pagination" aria-label="Post navigation" data-i18n-aria="post-pagination-aria">
+        <span class="post-page-link is-disabled" aria-disabled="true">
+          <span data-i18n="post-prev">Previous</span>
+          <strong data-i18n="post-prev-none">No earlier post</strong>
+        </span>
+        <span class="post-page-link is-disabled" aria-disabled="true">
+          <span data-i18n="post-next">Next</span>
+          <strong data-i18n="post-next-none">No later post</strong>
+        </span>
+      </nav>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <span>Oleg Boyko / Lotargo</span>
+    <span>Blog · AI systems · verification</span>
+  </footer>
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/blog-post.js"></script>
+</body>
+</html>

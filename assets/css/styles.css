@@ -915,6 +915,7 @@ html[data-theme="light"] .project-card:hover .project-visual::after {
 
 .post-list {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   border-top: 1px solid var(--line);
   border-left: 1px solid var(--line);
 }
@@ -1492,6 +1493,17 @@ a.post-page-link:focus-visible {
   .post-card h3,
   .post-article h1 {
     letter-spacing: -0.02em;
+  }
+
+  .post-card h3 {
+    font-size: clamp(26px, 7.6vw, 48px);
+    overflow-wrap: anywhere;
+    text-wrap: balance;
+  }
+
+  .post-article[data-article-slug="human-centipede"] h1 {
+    font-size: clamp(28px, 9vw, 48px);
+    text-wrap: balance;
   }
 
   .post-toolbar,

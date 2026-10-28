@@ -1,0 +1,67 @@
+{
+  "format_version": 1,
+  "article_slug": "human-centipede",
+  "asset_count": 5,
+  "assets": [
+    {
+      "file": "images/task-discussion.avif",
+      "width": 1672,
+      "height": 941,
+      "format": "avif",
+      "size_bytes": 230933,
+      "sha256": "048cbe34c4228a2bbd6f643934709e5d4e7d369e5a3381a117a604805ad9d66a",
+      "source_sha256": "c57c6c7bc0bd6cee4e04179c7d79a1f174505f187adc779bb9e160cd76ad558a",
+      "purpose": "Initial task definition with stakeholders",
+      "provenance": "User-supplied illustrative concept for this article. Original creator and generation tool not specified. Interfaces are illustrative, not documentary product screenshots.",
+      "conversion": "Original dimensions preserved; RGB AVIF, quality 88, 4:4:4 chroma, no crop."
+    },
+    {
+      "file": "images/agent-handoff.avif",
+      "width": 1672,
+      "height": 941,
+      "format": "avif",
+      "size_bytes": 169664,
+      "sha256": "fc4b3ad979dfb3da50403da07a88dda45c6008cbe20bcf78ffc3c5799eae5312",
+      "source_sha256": "5ba4db2c11de6d77784aa40341a92f6f6dff8acef95af3fe20850a0738164705",
+      "purpose": "Requirements passed to an AI coding agent",
+      "provenance": "User-supplied illustrative concept for this article. Original creator and generation tool not specified. Interfaces are illustrative, not documentary product screenshots.",
+      "conversion": "Original dimensions preserved; RGB AVIF, quality 88, 4:4:4 chroma, no crop."
+    },
+    {
+      "file": "images/requirements-fallout.avif",
+      "width": 1672,
+      "height": 941,
+      "format": "avif",
+      "size_bytes": 269023,
+      "sha256": "f617277b6daf29f4e920a63325ef194690f056e4779600b2bebfc910fae5797d",
+      "source_sha256": "bf31c7fb2348540e07478d7fe7ff231152dc871d99af3e234adb262063cb8c1b",
+      "purpose": "Accumulating changes and technical debt",
+      "provenance": "User-supplied illustrative concept for this article. Original creator and generation tool not specified. Interfaces are illustrative, not documentary product screenshots.",
+      "conversion": "Original dimensions preserved; RGB AVIF, quality 88, 4:4:4 chroma, no crop."
+    },
+    {
+      "file": "images/user-facing-failure.avif",
+      "width": 1672,
+      "height": 941,
+      "format": "avif",
+      "size_bytes": 218208,
+      "sha256": "32a680f2883314b19398b7d14a67101f695d4ffe57f905bb9497c19576a009bd",
+      "source_sha256": "c65e70be2b098a34057d5f390c244ade064b47408af02dea6b78ab832b39e2f4",
+      "purpose": "The user encounters the resulting failures",
+      "provenance": "User-supplied illustrative concept for this article. Original creator and generation tool not specified. Interfaces are illustrative, not documentary product screenshots.",
+      "conversion": "Original dimensions preserved; RGB AVIF, quality 88, 4:4:4 chroma, no crop."
+    },
+    {
+      "file": "images/product-rejection.avif",
+      "width": 1672,
+      "height": 941,
+      "format": "avif",
+      "size_bytes": 217395,
+      "sha256": "63667fdd9233100584ebf1fe5111b2268499676019bf95e4edbf8d47cf9121d2",
+      "source_sha256": "05f3644b3e5278e5fd1307449ba7454fe679a82a7239806a31d22876a713a68a",
+      "purpose": "The final product is rejected",
+      "provenance": "User-supplied illustrative concept for this article. Original creator and generation tool not specified. Interfaces are illustrative, not documentary product screenshots.",
+      "conversion": "Original dimensions preserved; RGB AVIF, quality 88, 4:4:4 chroma, no crop."
+    }
+  ]
+}

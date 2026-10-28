@@ -41,6 +41,9 @@ on:
 permissions:
   contents: write
 
+env:
+  PYTHONDONTWRITEBYTECODE: "1"
+
 concurrency:
   group: telegram-article-publishing
   cancel-in-progress: false

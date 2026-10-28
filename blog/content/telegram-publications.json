@@ -23,6 +23,17 @@
       "source_hash": "sha256:b14dd9f86c5046949005a36876c62e15178bcbec4be376eb2226e98d975b7170",
       "telegram_source": null
     },
+    "human-centipede": {
+      "article_url": "https://lotargo.github.io/blog/posts/human-centipede.html",
+      "channel_id": -1004375080506,
+      "channel_username": "lotargo_blog",
+      "last_action": "publish",
+      "message_id": 13,
+      "post_url": "https://t.me/lotargo_blog/13",
+      "presentation": "photo-caption",
+      "source_hash": "sha256:ff899e470b66cbd3d97cdcbca244d522e67d70f8057246293cfbdbe98724e7e0",
+      "telegram_source": "human-centipede.tg-RU.md"
+    },
     "telegram-blog-publishing": {
       "article_url": "https://lotargo.github.io/blog/posts/telegram-blog-publishing.html",
       "channel_id": -1004375080506,

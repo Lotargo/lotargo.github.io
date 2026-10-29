@@ -23,6 +23,17 @@
       "source_hash": "sha256:b14dd9f86c5046949005a36876c62e15178bcbec4be376eb2226e98d975b7170",
       "telegram_source": null
     },
+    "antigravity-hidden-models": {
+      "article_url": "https://lotargo.github.io/blog/posts/antigravity-hidden-models.html",
+      "channel_id": -1004375080506,
+      "channel_username": "lotargo_blog",
+      "last_action": "publish",
+      "message_id": 14,
+      "post_url": "https://t.me/lotargo_blog/14",
+      "presentation": "link-preview",
+      "source_hash": "sha256:3b5c475d01ae88fa98e2f6cd1e8d0252a7ed2fe16fb5a134f84a60158d158c4a",
+      "telegram_source": "antigravity-hidden-models.tg-RU.md"
+    },
     "human-centipede": {
       "article_url": "https://lotargo.github.io/blog/posts/human-centipede.html",
       "channel_id": -1004375080506,

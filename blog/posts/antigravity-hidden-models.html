@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Older Gemini models, Tab helpers and images: custom pipelines and the economics of Pro / Ultra in a short illustrated article." />
+  <meta name="theme-color" content="#000000" />
+  <title>Antigravity&#x27;s Hidden Models · Lotargo Blog</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <script>
+    (function () {
+      try {
+        var savedTheme = localStorage.getItem('lotargo-theme');
+        document.documentElement.dataset.theme = savedTheme || 'dark';
+      } catch (error) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    })();
+  </script>
+</head>
+<body data-title-en="Antigravity&#x27;s Hidden Models · Lotargo Blog" data-title-ru="Скрытые модели Antigravity · Блог Lotargo">
+  <header class="site-header" data-js="header">
+    <a class="brand" href="../../" aria-label="Back to landing">
+      <span class="brand-mark" aria-hidden="true">LØ</span>
+      <span class="brand-text">Lotargo</span>
+    </a>
+    <div class="header-controls">
+      <nav class="nav" aria-label="Post navigation">
+        <a href="../../" data-i18n="blog-nav-home">Home</a>
+        <a href="../" data-i18n="nav-blog">Blog</a>
+        <a href="../../#projects" data-i18n="nav-projects">Projects</a>
+      </nav>
+      <button class="theme-toggle" type="button" data-js="theme-toggle" aria-label="Switch color theme">
+        <span data-js="theme-label">Theme</span>
+      </button>
+      <button class="lang-toggle" type="button" data-js="lang-toggle" aria-label="Switch language">
+        <span data-js="lang-label">EN</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top" class="post-shell">
+    <article class="post-article" data-generated-from-markdown="true" data-article-slug="antigravity-hidden-models">
+      <div class="post-toolbar">
+        <a class="post-back" href="../" data-i18n="post-back-blog">Back to blog</a>
+        <div class="post-meta">
+          <span>2026-10-29</span>
+          <span data-lang-content="en">AI infrastructure</span>
+          <span data-lang-content="ru">AI-инфраструктура</span>
+        </div>
+      </div>
+
+      <div data-lang-content="en">
+        <h1>Antigravity&#x27;s Hidden Models</h1>
+        <p class="post-lead">The model picker in agy and the IDE shows only part of Antigravity's capabilities. Connecting to the native engine gave me a broader catalog: older Gemini models, Tab helpers and an image generator. These can become components of custom tools and pipelines under a Pro or Ultra subscription.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="antigravity-hidden-models-en-images"><img alt="An AI engine cutaway reveals text, image and completion modules behind a small model picker." src="../assets/antigravity-hidden-models/images/hidden-catalog-hero.avif" data-full-src="../assets/antigravity-hidden-models/images/hidden-catalog-hero.avif" loading="lazy" decoding="async" data-caption-en="A broader engine catalog sits behind the interface's model picker."><figcaption data-lang-content="en">A broader engine catalog sits behind the interface's model picker.</figcaption></figure>
+        <p>I built <a href="https://github.com/Lotargo/antigravity_engine_sdk">Antigravity Engine SDK for Python and Go</a> to work with that catalog. The repository includes setup instructions, examples and a testbench. The SDK connects to the installed engine without launching agy or the Antigravity interface. The server and account still determine model access.</p>
+
+        <h2 id="what-becomes-available">What becomes available</h2>
+
+        <ul>
+        <li><strong>Older Gemini models.</strong> Gemini 3 Flash and variants of Gemini 2.5 Flash continued to answer in the checks. I find them particularly interesting for text recognition, image understanding and data extraction. Age alone does not make a model useless.</li>
+        <li><strong>Tab models.</strong> Completion models could be called for ordinary text tasks. This opens experiments with compact classifiers and routers. Native edits and code-navigation targets also work in a custom editor.</li>
+        <li><strong>Images.</strong> The dedicated image tool produced a real 1024 × 1024 JPEG. Reference images can be passed through; the quality of particular editing operations still needs evaluation.</li>
+        </ul>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="antigravity-hidden-models-en-images"><img alt="The agy / IDE picker is compared with additional models and tools in the native engine." src="../assets/antigravity-hidden-models/images/selector-and-native-catalog.avif" data-full-src="../assets/antigravity-hidden-models/images/selector-and-native-catalog.avif" loading="lazy" decoding="async" data-caption-en="Examples of capabilities beyond the main model picker."><figcaption data-lang-content="en">Examples of capabilities beyond the main model picker.</figcaption></figure>
+        <p>Here, “hidden” means absent from the usual interface selection. A model removed from the picker may continue to work. If the server has disabled it, the SDK cannot change that.</p>
+
+        <h2 id="building-a-pipeline">Building a pipeline</h2>
+
+        <p>An application can distribute work across models rather than relying on one long conversation:</p>
+
+        <p><strong>Document → recognition → classification → field validation → storage.</strong></p>
+
+        <p>Or:</p>
+
+        <p><strong>Brief → image generation → result analysis → revised brief.</strong></p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="antigravity-hidden-models-en-images"><img alt="Recognition, classification and image generation connect into an application pipeline." src="../assets/antigravity-hidden-models/images/specialist-model-pipeline.avif" data-full-src="../assets/antigravity-hidden-models/images/specialist-model-pipeline.avif" loading="lazy" decoding="async" data-caption-en="A possible composition: each model handles one stage."><figcaption data-lang-content="en">A possible composition: each model handles one stage.</figcaption></figure>
+        <p>Application code validates answers, handles errors and sends ambiguous results to a person. A classifier might only need to select one of a few labels; required-field checks are better handled with ordinary code.</p>
+
+        <p>The individual components have been checked. End-to-end quality and Tab's suitability for a particular classification task still need evaluation on relevant data.</p>
+
+        <h2 id="why-subscription-economics-matter">Why subscription economics matter</h2>
+
+        <p>Pro costs about $20 a month. The broader model collection is what makes it interesting: OCR, text, completion and image tasks would otherwise call for a selection of separate services and APIs. <a href="https://one.google.com/about/plans">Google One pricing</a>.</p>
+
+        <p>In the experiments, calls to some older and helper models were not accompanied by a noticeable decrease in the displayed quota. <strong>The exact effect on limits could not be established.</strong> Different accounting for system calls remains a hypothesis, not a confirmed Google policy.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="antigravity-hidden-models-en-images"><img alt="One subscription connects to several models, while a question mark represents unknown quota consumption." src="../assets/antigravity-hidden-models/images/subscription-and-quota-observation.avif" data-full-src="../assets/antigravity-hidden-models/images/subscription-and-quota-observation.avif" loading="lazy" decoding="async" data-caption-en="One subscription, several capabilities. Exact quota consumption is unknown."><figcaption data-lang-content="en">One subscription, several capabilities. Exact quota consumption is unknown.</figcaption></figure>
+        <p>This does not promise unlimited access or measured savings of “$20 instead of hundreds.” The ability to compose several tools under one subscription is already an interesting property to explore.</p>
+
+        <p>Pro and Ultra affect models and limits. After a plan change, the SDK can refresh the catalog and verify access. We do not yet have a controlled comparison of the two plans' hidden catalogs. <a href="https://antigravity.google/docs/plans">Plans and quotas</a>.</p>
+
+        <h2 id="what-to-keep-in-mind">What to keep in mind</h2>
+
+        <p>Checks ran on Windows on October 19–23, 2026, using engine builds 2.23.1–2.25.0. Text calls, vision, image generation and editor commands were confirmed. Comparative OCR quality and exact subscription consumption remain open questions; details are retained in the <a href="../assets/antigravity-hidden-models/verification.txt">verification record</a>.</p>
+
+        <p>This is research into an internal protocol. Google treats third-party access through an Antigravity sign-in as a violation of its terms; a paid subscription does not remove that restriction. <a href="https://antigravity.google/docs/faq">Google FAQ</a>.</p>
+
+        <p>The illustrations were made with GPT Image and depict concepts.</p>
+      </div>
+
+      <div data-lang-content="ru">
+        <h1>Скрытые модели Antigravity</h1>
+        <p class="post-lead">Список моделей в agy и IDE показывает лишь часть возможностей Antigravity. Через нативный движок я получил доступ к более широкому каталогу: старым Gemini, служебным Tab-моделям и генератору изображений. Из них можно собирать собственные инструменты и пайплайны в рамках подписки Pro или Ultra.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="antigravity-hidden-models-ru-images"><img alt="За небольшим селектором открыт корпус AI-движка с модулями текста, изображений и автодополнения." src="../assets/antigravity-hidden-models/images/hidden-catalog-hero.avif" data-full-src="../assets/antigravity-hidden-models/images/hidden-catalog-hero.avif" loading="lazy" decoding="async" data-caption-ru="За списком моделей в интерфейсе находится более широкий каталог движка."><figcaption data-lang-content="ru">За списком моделей в интерфейсе находится более широкий каталог движка.</figcaption></figure>
+        <p>Для работы с этим каталогом я сделал <a href="https://github.com/Lotargo/antigravity_engine_sdk">Antigravity Engine SDK на Python и Go</a>. В репозитории есть установка, примеры и тестовый стенд. SDK подключается к установленному движку без запуска agy и интерфейса Antigravity. Доступ к моделям по-прежнему определяют сервер и аккаунт.</p>
+
+        <h2 id="_1">Какие возможности открываются</h2>
+
+        <ul>
+        <li><strong>Старые Gemini.</strong> В проверках продолжали отвечать Gemini 3 Flash и варианты Gemini 2.5 Flash. Для меня такие модели особенно интересны распознаванием текста, изображений и извлечением данных. Их возраст сам по себе не делает их бесполезными.</li>
+        <li><strong>Tab-модели.</strong> Модели автодополнения удалось вызвать для обычных текстовых заданий. Это позволяет исследовать их как компактные классификаторы и маршрутизаторы. Нативные правки и переходы по коду также работают в собственном редакторе.</li>
+        <li><strong>Изображения.</strong> Через отдельный image-инструмент получен настоящий JPEG 1024 × 1024. Референсы можно передавать; качество конкретных операций редактирования ещё требует проверки.</li>
+        </ul>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="antigravity-hidden-models-ru-images"><img alt="Список agy / IDE сопоставлен с дополнительными моделями и инструментами нативного движка." src="../assets/antigravity-hidden-models/images/selector-and-native-catalog.avif" data-full-src="../assets/antigravity-hidden-models/images/selector-and-native-catalog.avif" loading="lazy" decoding="async" data-caption-ru="Примеры возможностей за пределами основного селектора."><figcaption data-lang-content="ru">Примеры возможностей за пределами основного селектора.</figcaption></figure>
+        <p>Здесь «скрытые» означает отсутствующие в привычном выборе интерфейса. Модель, убранная из списка, может продолжать работать. Если её отключил сервер, SDK этого не изменит.</p>
+
+        <h2 id="_2">Как собрать пайплайн</h2>
+
+        <p>Вместо одного длинного диалога приложение может распределить работу между моделями:</p>
+
+        <p><strong>Документ → распознавание → классификация → проверка полей → сохранение.</strong></p>
+
+        <p>Или:</p>
+
+        <p><strong>Задание → генерация изображения → анализ результата → уточнение задания.</strong></p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="antigravity-hidden-models-ru-images"><img alt="Распознавание, классификация и генерация изображений соединены в пайплайн приложения." src="../assets/antigravity-hidden-models/images/specialist-model-pipeline.avif" data-full-src="../assets/antigravity-hidden-models/images/specialist-model-pipeline.avif" loading="lazy" decoding="async" data-caption-ru="Возможная композиция: каждая модель выполняет свой этап."><figcaption data-lang-content="ru">Возможная композиция: каждая модель выполняет свой этап.</figcaption></figure>
+        <p>Код приложения проверяет ответы, обрабатывает ошибки и отправляет спорные результаты человеку. Например, классификатору достаточно выбрать одну из нескольких меток, а проверку обязательных полей лучше выполнить обычным кодом.</p>
+
+        <p>Отдельные компоненты уже проверены. Качество полного пайплайна и пригодность Tab для конкретной классификации нужно оценивать на своих данных.</p>
+
+        <h2 id="_3">Почему важна экономика подписки</h2>
+
+        <p>Pro стоит около $20 в месяц. Интерес представляет весь набор доступных моделей: для OCR, текста, автодополнения и изображений иначе пришлось бы подбирать отдельные сервисы и API. <a href="https://one.google.com/about/plans">Цена Google One</a>.</p>
+
+        <p>В экспериментах вызовы некоторых старых и служебных моделей не сопровождались заметным уменьшением отображаемой квоты. <strong>Точное влияние на лимиты установить не удалось.</strong> Иной учёт системных вызовов остаётся гипотезой, а не подтверждённой политикой Google.</p>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="antigravity-hidden-models-ru-images"><img alt="Одна подписка соединена с несколькими моделями; неизвестный расход квоты обозначен вопросом." src="../assets/antigravity-hidden-models/images/subscription-and-quota-observation.avif" data-full-src="../assets/antigravity-hidden-models/images/subscription-and-quota-observation.avif" loading="lazy" decoding="async" data-caption-ru="Одна подписка, несколько возможностей. Точный расход квоты неизвестен."><figcaption data-lang-content="ru">Одна подписка, несколько возможностей. Точный расход квоты неизвестен.</figcaption></figure>
+        <p>Поэтому здесь нет обещания безлимита или измеренной экономии «$20 вместо сотен». Но сама возможность собирать несколько инструментов на одной подписке уже делает этот подход интересным.</p>
+
+        <p>Pro и Ultra влияют на модели и лимиты. После смены тарифа SDK позволяет перечитать каталог и проверить доступ. Точного сравнения скрытых каталогов этих тарифов у нас пока нет. <a href="https://antigravity.google/docs/plans">Тарифы и квоты</a>.</p>
+
+        <h2 id="_4">Что стоит знать</h2>
+
+        <p>Проверки проведены 19–23 октября 2026 года на Windows, движок 2.23.1–2.25.0. Подтверждены текстовые вызовы, vision, генерация изображений и редакторские команды. Сравнение качества OCR и точный расход подписки остаются открытыми; подробности сохранены в <a href="../assets/antigravity-hidden-models/verification.txt">записи проверки</a>.</p>
+
+        <p>Это исследование внутреннего протокола. Google считает сторонний доступ через вход Antigravity нарушением своих условий; платная подписка этого ограничения не снимает. <a href="https://antigravity.google/docs/faq">FAQ Google</a>.</p>
+
+        <p>Иллюстрации созданы через GPT Image и показывают концепты.</p>
+      </div>
+
+      <nav class="post-pagination" aria-label="Post navigation" data-i18n-aria="post-pagination-aria">
+        <span class="post-page-link is-disabled" aria-disabled="true">
+          <span data-i18n="post-prev">Previous</span>
+          <strong data-i18n="post-prev-none">No earlier post</strong>
+        </span>
+        <span class="post-page-link is-disabled" aria-disabled="true">
+          <span data-i18n="post-next">Next</span>
+          <strong data-i18n="post-next-none">No later post</strong>
+        </span>
+      </nav>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <span>Oleg Boyko / Lotargo</span>
+    <span>Blog · AI systems · verification</span>
+  </footer>
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/blog-post.js"></script>
+</body>
+</html>

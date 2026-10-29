@@ -385,6 +385,38 @@ window.BLOG_POSTS = [
       "ru": "Как хорошие разработчики и разумные корректировки всё равно приводят к плохому продукту."
     },
     "notify": true
+  },
+  {
+    "slug": "antigravity-hidden-models",
+    "date": "2026-10-29",
+    "href": "./antigravity-hidden-models.html",
+    "url": "./blog/posts/antigravity-hidden-models.html",
+    "type": {
+      "en": "AI infrastructure",
+      "ru": "AI-инфраструктура"
+    },
+    "title": {
+      "en": "Antigravity's Hidden Models",
+      "ru": "Скрытые модели Antigravity"
+    },
+    "shortTitle": {
+      "en": "Antigravity beyond the model picker",
+      "ru": "Antigravity за пределами селектора"
+    },
+    "description": {
+      "en": "Older Gemini models, Tab helpers and images: custom pipelines and the economics of Pro / Ultra in a short illustrated article.",
+      "ru": "Старые Gemini, Tab-модели и изображения: собственные пайплайны и экономика Pro / Ultra в короткой статье с иллюстрациями."
+    },
+    "notificationId": "2026-10-29-antigravity-hidden-models",
+    "notificationTitle": {
+      "en": "New article: Antigravity's hidden models",
+      "ru": "Новая статья: скрытые модели Antigravity"
+    },
+    "notificationText": {
+      "en": "Native model discovery, specialist pipelines and observations about Pro / Ultra quota accounting.",
+      "ru": "Нативный каталог моделей, специализированные пайплайны и наблюдения об учёте квот Pro / Ultra."
+    },
+    "notify": false
   }
 
 ];

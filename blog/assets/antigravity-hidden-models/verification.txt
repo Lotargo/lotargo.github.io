@@ -1,0 +1,44 @@
+# Antigravity: запись проверки / verification record
+
+Дата составления / Prepared: 2026-10-29.
+
+## Русский
+
+Это редакционная сводка сохранённых результатов, использованных в статье «Скрытые модели Antigravity». При подготовке статьи новые запросы к моделям не выполнялись.
+
+| Дата | Условия | Наблюдение | Граница вывода |
+| --- | --- | --- | --- |
+| 2026-10-19 | Windows, native 2.23.1, матрица текстового агента | gemini-3-flash вернула проверенный по схеме результат; выбранная и сообщённая движком модели совпали | Это текстовая проверка, не OCR-бенчмарк |
+| 2026-10-19 | Те же условия | gemini-2.5-flash, gemini-2.5-flash-lite и gemini-2.5-flash-thinking прошли текстовый контракт | Не устанавливает качество любых задач и будущую доступность |
+| 2026-10-19 | Тот же каталог | Некоторые ID вернули RETIRED; gemini-2.5-pro возвращала ошибку capacity 503 | Наличие в каталоге не равнозначно успешному вызову; временная capacity-ошибка не доказывает окончательное отключение |
+| 2026-10-21 | Windows, native 2.24.0, Go SDK 0.2.0, обычный текст без tools | tab_flash_lite_preview и tab_jump_flash_lite_preview ответили 391 на 17 × 23 | Короткие единичные пробы; не оценка качества классификации |
+| 2026-10-21 | Windows, native 2.24.0, выделенный SDK | Gemini 3.8 Flash правильно определила четыре цветных квадранта синтетического PNG | Контроль image input; не сравнительное OCR-исследование |
+| 2026-10-21 | Та же сборка, нативный image-инструмент | JPEG 1024 × 1024 с синей чашкой и жёлтым треугольником; в ответе указан gemini-3.1-flash-image | Генерация подтверждена, точность редактирования референсов не измерена |
+| 2026-10-21–23 | Windows, native 2.24.0 и 2.25.0, Python и Go SDK | Получены нативные diff и jump positions; встречались также filtered и неверные подсказки | Работоспособность протокола не гарантирует полезность каждой подсказки |
+
+Источники этой сводки: сохранённая матрица native model/reasoning от 19 октября; отчёт Tab preview от 21 октября; отчёт проверки выделения SDK от 21 октября; отчёты Python SDK 0.2.0 и native 2.25.0. Это пересказ выбранных наблюдений. Приватные ссылки, исходный код SDK, бинарники, журналы авторизации и данные аккаунта сюда не включены.
+
+Наблюдение о небольшом видимом изменении квоты относится к опыту автора. Контролируемого замера расхода подписки и подтверждения внутренней политики тарификации нет. Счётчики model-step usage не равны полному расходу аккаунта; в editor RPC токены не сообщались, а image-маршрут включал текстовый planner. Нулевой usage, безлимит и конкретная сумма экономии не установлены.
+
+Сравнение Pro и Ultra по скрытым моделям в этой серии не выполнялось. Перечень доступных моделей и права аккаунта могут изменяться. Все модели и размеры в таблице относятся к датам соответствующих проверок.
+
+## English
+
+This is an editorial summary of retained observations used in “Antigravity's Hidden Models.” Preparing the article did not involve new model requests.
+
+| Date | Conditions | Observation | Limit of the result |
+| --- | --- | --- | --- |
+| 2026-10-19 | Windows, native 2.23.1, text-agent matrix | gemini-3-flash returned a schema-validated result; selected and engine-reported model identities matched | A text check, not an OCR benchmark |
+| 2026-10-19 | Same conditions | gemini-2.5-flash, gemini-2.5-flash-lite and gemini-2.5-flash-thinking passed the text contract | Does not establish quality for arbitrary tasks or future availability |
+| 2026-10-19 | Same catalog | Some IDs returned RETIRED; gemini-2.5-pro returned capacity 503 | Catalog presence is not successful inference; a temporary capacity error does not prove permanent retirement |
+| 2026-10-21 | Windows, native 2.24.0, Go SDK 0.2.0, plain text without tools | tab_flash_lite_preview and tab_jump_flash_lite_preview returned 391 for 17 × 23 | Short individual probes; not classifier-quality evaluation |
+| 2026-10-21 | Windows, native 2.24.0, extracted SDK | Gemini 3.8 Flash correctly identified four colored quadrants in a synthetic PNG | Image-input control, not comparative OCR research |
+| 2026-10-21 | Same build, native image tool | A 1024 × 1024 JPEG of a blue cup with a yellow triangle; response identified gemini-3.1-flash-image | Generation is confirmed; reference-editing fidelity was not measured |
+| 2026-10-21–23 | Windows, native 2.24.0 and 2.25.0, Python and Go SDKs | Native diffs and jump positions were obtained; filtered and incorrect suggestions also occurred | Protocol functionality does not guarantee useful suggestions |
+
+The retained sources are the October 19 native model/reasoning matrix, October 21 Tab preview report, October 21 SDK extraction validation, and Python SDK 0.2.0 and native 2.25.0 validation reports. This page summarizes selected observations. It contains no private links, SDK source code, binaries, authorization logs or account data.
+
+The observation of little visible quota change is the author's experience. There is no controlled measurement of subscription consumption or confirmation of internal billing policy. Model-step usage counters are not total account consumption; editor RPCs did not report tokens, and the image route included a text planner. Zero consumption, unlimited access and a particular savings amount have not been established.
+
+No hidden-model Pro-versus-Ultra comparison was performed in this series. Model lists and account entitlements may change. Model identities and dimensions in the table apply to the respective check dates.
+

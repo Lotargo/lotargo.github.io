@@ -46,6 +46,21 @@ Supported presentation modes:
 - `link-preview`: a normal Telegram text post with a website link and preview;
 - `photo-caption`: a short caption attached to an uploaded image.
 
+For a longer text with one chosen illustration, use `link-preview` and set an explicit cover in the article manifest:
+
+```json
+"distribution": {
+  "telegram": {
+    "ru": {
+      "presentation": "link-preview",
+      "cover": "assets/originals/selector-and-native-catalog.png"
+    }
+  }
+}
+```
+
+The publisher uses the cover's public website URL as one large preview above the text, through Telegram's [LinkPreviewOptions](https://core.telegram.org/bots/api#linkpreviewoptions). The article button still opens the full article. The image must be deployed before sending; this is a link preview, not a multipart photo upload. Telegram fetches and renders the preview, so local validation does not confirm live rendering. Omit the explicit cover to keep the ordinary article preview.
+
 When `distribution.json` is absent, existing files at `content/telegram/ru.md` and `content/telegram/en.md` are validated as `link-preview` editions.
 
 ## Length limits

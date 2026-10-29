@@ -22,6 +22,7 @@ import urllib.request
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable
+from urllib.parse import quote
 
 from scripts import publish_telegram as legacy
 from scripts.telegram_preview import (
@@ -318,6 +319,7 @@ def load_article(root: Path, manifest_path: Path, site_url: str) -> TelegramArti
         cover_path = (
             resolve_configured_cover(root, slug, config, default_cover)
             if presentation == "photo-caption"
+            or config.get("cover") not in (None, False, "auto")
             else None
         )
         if presentation == "photo-caption" and cover_path is None:
@@ -349,6 +351,7 @@ def load_article(root: Path, manifest_path: Path, site_url: str) -> TelegramArti
     cover_path = (
         resolve_configured_cover(root, slug, config, default_cover)
         if presentation == "photo-caption"
+        or config.get("cover") not in (None, False, "auto")
         else None
     )
     if presentation == "photo-caption" and cover_path is None:
@@ -400,15 +403,25 @@ def build_keyboard(article_url: str) -> dict[str, Any]:
 
 
 def text_payload(chat_id: str, article: TelegramArticle) -> dict[str, Any]:
+    preview_url = article.article_url
+    if article.cover_path is not None:
+        assets_root = article.manifest_path.parent.parent / "assets" / article.slug
+        relative_cover = article.cover_path.resolve().relative_to(assets_root.resolve())
+        site_url = article.article_url.rsplit("/blog/posts/", 1)[0]
+        preview_url = (
+            f"{site_url}/blog/assets/{article.slug}/"
+            f"{quote(relative_cover.as_posix(), safe='/')}"
+        )
+
     return {
         "chat_id": chat_id,
         "text": article.message_html,
         "parse_mode": "HTML",
         "link_preview_options": {
             "is_disabled": False,
-            "url": article.article_url,
+            "url": preview_url,
             "prefer_large_media": True,
-            "show_above_text": False,
+            "show_above_text": article.cover_path is not None,
         },
         "reply_markup": build_keyboard(article.article_url),
     }

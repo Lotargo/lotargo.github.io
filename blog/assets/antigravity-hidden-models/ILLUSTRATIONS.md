@@ -58,4 +58,3 @@ EN: One subscription, several model routes. The exact quota impact of helper cal
 Знак вопроса на иллюстрации квот обозначает неизвестный учёт. Декоративная шкала не является измерением. Изображение не обещает безлимит, нулевой расход или экономию определённой суммы.
 
 Иллюстрации встроены в локальную двуязычную статью: [русский исходник](../../content/antigravity-hidden-models.ru.md), [английский исходник](../../content/antigravity-hidden-models.en.md), [страница](../../posts/antigravity-hidden-models.html). Сводка проверенных наблюдений находится в [verification.txt](verification.txt).
-

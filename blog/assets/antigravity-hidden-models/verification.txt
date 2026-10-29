@@ -41,4 +41,3 @@ The retained sources are the October 19 native model/reasoning matrix, October 2
 The observation of little visible quota change is the author's experience. There is no controlled measurement of subscription consumption or confirmation of internal billing policy. Model-step usage counters are not total account consumption; editor RPCs did not report tokens, and the image route included a text planner. Zero consumption, unlimited access and a particular savings amount have not been established.
 
 No hidden-model Pro-versus-Ultra comparison was performed in this series. Model lists and account entitlements may change. Model identities and dimensions in the table apply to the respective check dates.
-

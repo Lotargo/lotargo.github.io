@@ -417,6 +417,29 @@ window.BLOG_POSTS = [
       "ru": "Нативный каталог моделей, специализированные пайплайны и наблюдения об учёте квот Pro / Ultra."
     },
     "notify": false
+  },
+  {
+    "slug": "sonata-learning-report",
+    "date": "2026-10-30",
+    "href": "./sonata-learning-report.html",
+    "url": "./blog/posts/sonata-learning-report.html",
+    "type": {
+      "en": "Research report",
+      "ru": "Исследование"
+    },
+    "title": {
+      "ru": "Sonata: нейросетевой движок с нуля на Free Pascal и CUDA",
+      "en": "Sonata: A Neural Engine Built from Scratch in Free Pascal and CUDA"
+    },
+    "shortTitle": {
+      "ru": "Sonata: собственный движок и модели",
+      "en": "Sonata: our own engine and models"
+    },
+    "description": {
+      "ru": "Собственный код нейросетевого движка, слоёв и обучения на Free Pascal/CUDA; модели обучены с нуля. Происхождение реализации и весов, результаты и проверки.",
+      "en": "A neural engine, layers and training implemented from scratch in Free Pascal/CUDA, with self-trained models. Implementation and weight provenance, results and verification."
+    },
+    "notify": false
   }
 
 ];

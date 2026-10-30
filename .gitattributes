@@ -1,0 +1,2 @@
+# Preserve the exact bytes covered by this report's public SHA-256 manifest.
+blog/assets/sonata-learning-report/** -text whitespace=trailing-space,space-before-tab,cr-at-eol

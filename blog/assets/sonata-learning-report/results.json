@@ -1,0 +1,273 @@
+{
+  "date": "2026-10-30",
+  "status": "report-1.0",
+  "learning_run_date": "2026-10-16",
+  "scope": "Reported archived measurements, not a new training run. Names are held out from current task training, not the entire earlier language corpus.",
+  "sign_task": {
+    "parameters": 82,
+    "test_inputs": 512,
+    "seeds": [
+      17,
+      29,
+      43
+    ],
+    "mlp_accuracy_percent": [
+      100,
+      100,
+      100
+    ],
+    "linear_accuracy_percent": [
+      47.66,
+      41.8,
+      48.63
+    ],
+    "shuffled_accuracy_percent": [
+      50.78,
+      64.84,
+      55.08
+    ]
+  },
+  "mixed_length_recall": {
+    "parameters": 1561,
+    "train_delays": [
+      2,
+      4,
+      8,
+      16
+    ],
+    "updates": 1200,
+    "seeds": [
+      17,
+      29,
+      43
+    ],
+    "test_inputs_per_delay": 512,
+    "accuracy_percent": {
+      "24": [
+        100,
+        100,
+        100
+      ],
+      "32": [
+        100,
+        100,
+        100
+      ],
+      "64": [
+        52.54,
+        100,
+        66.6
+      ],
+      "128": [
+        25,
+        100,
+        25
+      ]
+    },
+    "fixed4_accuracy_range_percent": {
+      "24": [
+        25,
+        61.33
+      ],
+      "32": [
+        25,
+        49.41
+      ],
+      "64": [
+        25,
+        25
+      ],
+      "128": [
+        25,
+        25
+      ]
+    },
+    "mixed_input_tokens": 364800,
+    "fixed4_input_tokens": 230400,
+    "sequences_each": 38400
+  },
+  "cuda_recall": {
+    "parameters": 629385,
+    "seed": 17,
+    "train_max_delay": 512,
+    "letter_distractor_correct_per_64": {
+      "16": 64,
+      "64": 64,
+      "128": 64,
+      "256": 64,
+      "512": 64,
+      "1024": 64,
+      "2048": 64,
+      "4096": 64
+    },
+    "digit_distractor_correct_per_64": {
+      "128": 16,
+      "512": 16,
+      "1024": 16
+    }
+  },
+  "language": {
+    "parameters": 4504192,
+    "seed": 17,
+    "stages": [
+      "initial",
+      "language",
+      "dialogue",
+      "facts"
+    ],
+    "test_ppl": {
+      "language": [
+        2976.15,
+        10.24,
+        13.59,
+        16.39
+      ],
+      "tiny_responses": [
+        2896.79,
+        11.82,
+        13.71,
+        16.16
+      ],
+      "light_responses": [
+        2823.95,
+        118.6,
+        37.73,
+        122.95
+      ]
+    },
+    "test_supervised_tokens": {
+      "language": 20031,
+      "tiny_responses": 3710,
+      "light_responses": 2855
+    },
+    "stage_updates": {
+      "language": 4200,
+      "dialogue": 2100,
+      "facts": 4000
+    },
+    "native_stage_seconds": {
+      "language": 1055.872,
+      "dialogue": 550.44,
+      "facts": 1020.978
+    }
+  },
+  "facts": {
+    "train_records": 24000,
+    "validation_records": 600,
+    "training_names": 12,
+    "training_wordings": 3,
+    "test_requests": 319,
+    "counterfactual_pairs": 144,
+    "groups": [
+      {
+        "group": "familiar_format",
+        "total": 72,
+        "before_correct": 0,
+        "after_correct": 72,
+        "strict_pairs_correct": 36,
+        "strict_pairs_total": 36
+      },
+      {
+        "group": "long_context",
+        "total": 72,
+        "before_correct": 0,
+        "after_correct": 70,
+        "strict_pairs_correct": 34,
+        "strict_pairs_total": 36
+      },
+      {
+        "group": "absent_fact",
+        "total": 24,
+        "before_correct": 0,
+        "after_correct": 24
+      },
+      {
+        "group": "new_wording",
+        "total": 72,
+        "before_correct": 0,
+        "after_correct": 7
+      },
+      {
+        "group": "reserved_names_all_questions",
+        "total": 72,
+        "before_correct": 0,
+        "after_correct": 48
+      },
+      {
+        "group": "reserved_name_questions_only",
+        "subset_of": "reserved_names_all_questions",
+        "total": 24,
+        "before_correct": 0,
+        "after_correct": 0
+      }
+    ]
+  },
+  "dialogue_checks": {
+    "small_probe_logit_max_abs_error": 6.7e-07,
+    "small_probe_parameter_gradient_max_abs_error": 8.94e-07,
+    "small_probe_gradient_tensors": 30,
+    "small_probe_independent_ce_error": 1.16e-07,
+    "learned_logit_max_abs_error": 1.3828e-05,
+    "learned_argmax_matches": 64,
+    "learned_argmax_positions": 64,
+    "sanitizer_scope": "Small gradient probe only; not full training."
+  },
+  "runtime_appendix": {
+    "checkpoint": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4",
+    "date": "2026-10-27",
+    "gpu": "A100-SXM4-80GB",
+    "batch": 1,
+    "measurement": "One recorded run per configuration after warmups; decode only, excludes loading and prefill.",
+    "decode_tps": [
+      {
+        "context": 512,
+        "previous_native": 10.4,
+        "resident": 30.22,
+        "ratio": 2.9
+      },
+      {
+        "context": 2048,
+        "previous_native": 10.23,
+        "resident": 29.32,
+        "ratio": 2.87
+      },
+      {
+        "context": 8192,
+        "previous_native": 9.88,
+        "resident": 26.1,
+        "ratio": 2.64
+      }
+    ],
+    "prefill_8192_seconds": 56.936,
+    "canonical_f64_logit_nl2_max": 3.871e-15,
+    "f32_acceptance": "F1/F2/F4 remain open; F64 control is a separate profile.",
+    "external_vllm_rebenchmarked_at_b3": false
+  },
+  "implementation_provenance": {
+    "neural_execution": "Custom Sonata tensor engine, computation graph, backward rules, layers, optimizer, training and inference code in Free Pascal/CUDA.",
+    "ready_made_neural_framework_modules": "Not used in the reported from-scratch training path.",
+    "mathematical_basis": [
+      "Mamba",
+      "Adam",
+      "RMSNorm"
+    ],
+    "weight_origin": "Fresh initialization; language, dialogue and fact stages continue the same self-trained weight lineage. No imported pretrained neural weights in this lineage.",
+    "external_tools": [
+      "Free Pascal compiler",
+      "CUDA",
+      "cuBLAS for low-level matrix operations",
+      "tokenizers for fitting the experiment-specific BPE vocabulary",
+      "Python data preparation, orchestration and independent checks"
+    ],
+    "external_data": [
+      "selected TinyDialogues",
+      "LIGHT",
+      "synthetic experiment generators"
+    ],
+    "pretrained_nemotron": "Separate runtime appendix; NVIDIA weights are not used to initialize the small trained models.",
+    "research_basis": "Our own architecture research, informed by publications on automatic differentiation, Mamba/SSMs, normalization and optimization.",
+    "custom_recurrent_block": "Dense delta projection followed by sigmoid; distinct from the standard low-rank/softplus delta path in original Mamba v2.2.4.",
+    "hybrid_prototype": "Parallel recurrent, causal-attention and SwiGLU/MLP branches combined with configured weighted sums. Attention in this prototype is CPU reference execution.",
+    "reported_trained_profile": "Recurrent blocks only; the learning results do not measure joint training of the full hybrid prototype."
+  }
+}

@@ -1,0 +1,104 @@
+/* Reading and data roles for the Sonata research draft. Site fonts and themes are retained. */
+.post-article.research-article {
+  width: min(100%, 1080px);
+  padding: clamp(48px, 6vw, 88px) clamp(22px, 5vw, 72px);
+  --p-scale: 1;
+}
+
+.post-article.research-article h1 {
+  max-width: 30ch;
+  margin: 22px 0 28px;
+  font-size: clamp(30px, 4.2vw, 52px);
+  line-height: 1.16;
+  letter-spacing: -0.035em;
+  text-transform: none;
+  text-wrap: balance;
+}
+
+.post-article.research-article h2 {
+  margin: 58px 0 20px;
+  font-size: calc(26px * var(--p-scale));
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  text-wrap: balance;
+  scroll-margin-top: 106px;
+}
+
+.post-article.research-article h3 {
+  margin: 32px 0 14px;
+  font-size: calc(20px * var(--p-scale));
+  line-height: 1.4;
+  letter-spacing: -0.012em;
+  scroll-margin-top: 106px;
+}
+
+.post-article.research-article p,
+.post-article.research-article li {
+  max-width: 74ch;
+  color: var(--muted-2);
+  font-size: calc(17px * var(--p-scale));
+  line-height: 1.8;
+  text-wrap: pretty;
+}
+
+.post-article.research-article p { margin: 0 0 20px; }
+.post-article.research-article .post-lead { color: var(--fg); font-size: calc(19px * var(--p-scale)); }
+.post-article.research-article strong { color: var(--fg); }
+.post-article.research-article a { text-underline-offset: 0.2em; overflow-wrap: anywhere; }
+.post-article.research-article code { font-family: var(--mono); font-size: 0.88em; overflow-wrap: anywhere; }
+
+.research-status {
+  margin: 12px 0;
+  color: var(--muted-2);
+  font: 12px/1.6 var(--mono);
+  letter-spacing: 0.035em;
+}
+
+.post-article.research-article .toc {
+  margin: 32px 0 48px;
+  padding: 22px 0 22px 24px;
+  border-block: 1px solid var(--line);
+}
+
+.post-article.research-article .toc > ul { padding: 0; margin: 0; columns: 2; column-gap: 32px; list-style: none; }
+.post-article.research-article .toc li { margin: 0 0 8px; break-inside: avoid; font-size: 14px; line-height: 1.55; }
+.post-article.research-article .toc ul ul { margin-top: 8px; padding-left: 18px; }
+.post-article.research-article .toc a { color: var(--muted-2); text-decoration: none; }
+.post-article.research-article .toc a:hover { color: var(--fg); text-decoration: underline; }
+
+.post-article.research-article .table-caption { margin: 30px 0 12px; font-size: 14px; line-height: 1.65; }
+.research-table-scroll { width: 100%; overflow-x: auto; margin: 0 0 22px; overscroll-behavior-inline: contain; }
+.research-table-scroll:focus-visible { outline: 2px solid var(--fg); outline-offset: 5px; }
+.post-article.research-article table { width: 100%; min-width: 650px; border-collapse: collapse; font-variant-numeric: tabular-nums lining-nums; }
+.post-article.research-article th,
+.post-article.research-article td { padding: 13px 14px; text-align: left; vertical-align: top; border-bottom: 1px solid var(--line); color: var(--muted-2); font-size: 14px; line-height: 1.65; }
+.post-article.research-article th { border-block: 1px solid var(--line-strong); color: var(--fg); font-weight: 600; }
+.post-article.research-article td:first-child { min-width: 180px; }
+.post-article.research-article tr:last-child td { border-bottom-color: var(--line-strong); }
+.post-article.research-article table code { font-size: 12px; }
+.post-article.research-article .post-figure { margin: 30px 0 38px; }
+.post-article.research-article .post-figure img { display: block; width: 100%; height: auto; background: #fff; }
+.post-article.research-article .sonata-architecture { scroll-margin-top: 106px; }
+.post-article.research-article .sonata-architecture picture { display: block; }
+.post-article.research-article .post-figure figcaption { margin-top: 12px; color: var(--muted-2); font: 13px/1.7 var(--sans); }
+.post-article.research-article blockquote { margin: 26px 0; padding: 0 0 0 22px; border-left: 2px solid var(--line-strong); }
+.post-article.research-article blockquote p { font-size: 16px; }
+.post-article.research-article .post-pagination { margin-top: 64px; }
+
+@media (max-width: 640px) {
+  .post-article.research-article h2 { margin-top: 42px; font-size: 23px; }
+  .post-article.research-article .toc { padding-left: 0; }
+  .post-article.research-article .toc > ul { columns: 1; }
+  .post-article.research-article .post-toolbar { gap: 16px; align-items: flex-start; }
+  .post-article.research-article .post-meta { font-size: 11px; }
+}
+
+@media print {
+  .site-header, .site-footer, .post-toolbar, .post-pagination, .post-article.research-article .toc { display: none; }
+  .post-article.research-article { width: 100%; padding: 0; }
+  .research-table-scroll { overflow: visible; }
+  .post-article.research-article table { min-width: 0; }
+  .post-article.research-article h2, .post-article.research-article h3 { break-after: avoid; }
+  .post-article.research-article figure, .post-article.research-article tr { break-inside: avoid; }
+}

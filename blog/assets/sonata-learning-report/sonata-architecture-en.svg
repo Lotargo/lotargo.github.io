@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1130" width="1600" height="1130" role="img" aria-labelledby="title description" lang="en">
+  <title id="title">Sonata: custom engine and model profiles</title>
+  <desc id="description">A shared Sonata engine executes two separate profiles. The hybrid prototype combines recurrence, causal attention and SwiGLU/MLP with a weighted sum. Language, dialogue and fact results use another profile: BPE 2048, an embedding, six RMSNorm, recurrence and residual blocks, then final RMSNorm and a linear output head. This profile has no attention or separate MLP branch from the hybrid prototype.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#53665b" />
+    </marker>
+    <marker id="engine-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#78857c" />
+    </marker>
+    <marker id="green-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#276749" />
+    </marker>
+  </defs>
+  <style>
+text { font-family: Inter, 'Segoe UI', Arial, sans-serif; fill: #19271f; }
+.muted { fill: #4d6054; } .white { fill: #fff; } .soft-white { fill: #dbe6df; }
+.green { fill: #205e40; } .bold { font-weight: 650; }
+</style>
+  <rect width="1600" height="1130" fill="#fbfcf8" />
+  <text x="64" y="58" font-size="39" text-anchor="start" class="bold">Sonata: custom engine and model profiles</text>
+  <rect x="64" y="98" width="1472" height="168" rx="10" fill="#18271f" stroke="#18271f" stroke-width="2" />
+  <text x="92" y="143" font-size="33" text-anchor="start" class="white bold">Custom Sonata engine</text>
+  <text x="1508" y="143" font-size="24" text-anchor="end" class="soft-white">Free Pascal / CUDA</text>
+  <text x="92" y="194" font-size="25" text-anchor="start" class="soft-white">Tensors</text>
+  <text x="92" y="232" font-size="25" text-anchor="start" class="soft-white">and memory</text>
+  <text x="447" y="194" font-size="25" text-anchor="start" class="soft-white">Operation graph</text>
+  <text x="447" y="232" font-size="25" text-anchor="start" class="soft-white">and autograd</text>
+  <text x="802" y="194" font-size="25" text-anchor="start" class="soft-white">CPU / CUDA</text>
+  <text x="802" y="232" font-size="25" text-anchor="start" class="soft-white">operators</text>
+  <text x="1157" y="194" font-size="25" text-anchor="start" class="soft-white">Adam</text>
+  <text x="1157" y="232" font-size="25" text-anchor="start" class="soft-white">and training</text>
+  <path d="M 800 266 V 310 H 416 V 350" fill="none" stroke="#78857c" stroke-width="3" stroke-linejoin="round" marker-end="url(#engine-arrow)" stroke-dasharray="9 7" />
+  <path d="M 800 310 H 1184 V 350" fill="none" stroke="#78857c" stroke-width="3" stroke-linejoin="round" marker-end="url(#engine-arrow)" stroke-dasharray="9 7" />
+  <rect x="64" y="350" width="704" height="692" rx="10" fill="#f7f8f4" stroke="#7a897e" stroke-width="2" stroke-dasharray="9 7" />
+  <text x="92" y="396" font-size="31" text-anchor="start" class="bold">Hybrid prototype</text>
+  <text x="92" y="431" font-size="24" text-anchor="start" class="muted">Three parallel branches</text>
+  <rect x="92" y="596" width="84" height="80" rx="10" fill="#fff" stroke="#87988c" stroke-width="2" />
+  <text x="134.0" y="648.92" font-size="38" text-anchor="middle">x</text>
+  <path d="M 176 636 H 208" fill="none" stroke="#53665b" stroke-width="3" stroke-linejoin="round" />
+  <path d="M 208 516 V 756" fill="none" stroke="#53665b" stroke-width="3" stroke-linejoin="round" />
+  <path d="M 208 516 H 230" fill="none" stroke="#53665b" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)" />
+  <rect x="230" y="470" width="330" height="92" rx="10" fill="#fff" stroke="#87988c" stroke-width="2" />
+  <text x="248" y="506" font-size="25" text-anchor="start" class="bold">Recurrence R(x)</text>
+  <text x="248" y="542" font-size="22" text-anchor="start" class="muted">Mamba-inspired block</text>
+  <path d="M 208 636 H 230" fill="none" stroke="#53665b" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)" />
+  <rect x="230" y="590" width="330" height="92" rx="10" fill="#fff" stroke="#87988c" stroke-width="2" />
+  <text x="248" y="626" font-size="25" text-anchor="start" class="bold">Causal attention A(x)</text>
+  <text x="248" y="662" font-size="22" text-anchor="start" class="muted">CPU in this prototype</text>
+  <path d="M 208 756 H 230" fill="none" stroke="#53665b" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)" />
+  <rect x="230" y="710" width="330" height="92" rx="10" fill="#fff" stroke="#87988c" stroke-width="2" />
+  <text x="248" y="746" font-size="25" text-anchor="start" class="bold">SwiGLU / MLP F(x)</text>
+  <text x="248" y="782" font-size="22" text-anchor="start" class="muted">Feature transformation</text>
+  <path d="M 560 516 H 640 V 601" fill="none" stroke="#53665b" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)" />
+  <path d="M 560 636 H 605" fill="none" stroke="#53665b" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)" />
+  <path d="M 560 756 H 640 V 671" fill="none" stroke="#53665b" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)" />
+  <circle cx="640" cy="636" r="35" fill="#fff" stroke="#53665b" stroke-width="3" />
+  <text x="640" y="648" font-size="35" text-anchor="middle" class="bold">Σ</text>
+  <path d="M 675 636 H 732" fill="none" stroke="#53665b" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)" />
+  <text x="732" y="681" font-size="26" text-anchor="end">H(x)</text>
+  <text x="92" y="863" font-size="28" text-anchor="start" class="bold">H(x) = αR(x) + βA(x) + γF(x)</text>
+  <text x="92" y="920" font-size="24" text-anchor="start" class="muted">Coefficients are set by configuration.</text>
+  <text x="92" y="964" font-size="24" text-anchor="start" class="muted">Joint training is a separate experiment.</text>
+  <rect x="832" y="350" width="704" height="692" rx="10" fill="#edf5ef" stroke="#276749" stroke-width="3" />
+  <text x="860" y="396" font-size="31" text-anchor="start" class="green bold">Measured profile</text>
+  <text x="860" y="431" font-size="24" text-anchor="start" class="green">Language · Dialogue · Facts</text>
+  <text x="860" y="469" font-size="23" text-anchor="start">4,504,192 parameters · FP32 · Adam · seed 17</text>
+  <rect x="1020" y="492" width="328" height="54" rx="10" fill="#fff" stroke="#488766" stroke-width="2" />
+  <text x="1184.0" y="527.5" font-size="25" text-anchor="middle">BPE tokens · 2048</text>
+  <path d="M 1184 546 V 570" fill="none" stroke="#276749" stroke-width="3" stroke-linejoin="round" marker-end="url(#green-arrow)" />
+  <rect x="1020" y="570" width="328" height="54" rx="10" fill="#fff" stroke="#488766" stroke-width="2" />
+  <text x="1184.0" y="605.84" font-size="26" text-anchor="middle">Embedding</text>
+  <path d="M 1184 624 V 648" fill="none" stroke="#276749" stroke-width="3" stroke-linejoin="round" marker-end="url(#green-arrow)" />
+  <rect x="916" y="648" width="536" height="154" rx="10" fill="#fff" stroke="#488766" stroke-width="2" />
+  <text x="1184" y="685" font-size="25" text-anchor="middle" class="bold">6 sequential blocks</text>
+  <text x="1184" y="725" font-size="24" text-anchor="middle">RMSNorm → recurrent block</text>
+  <text x="1184" y="758" font-size="23" text-anchor="middle">+ residual</text>
+  <text x="1184" y="788" font-size="21" text-anchor="middle" class="muted">d_model 256 · d_state 32 · expand 2</text>
+  <path d="M 1184 802 V 826" fill="none" stroke="#276749" stroke-width="3" stroke-linejoin="round" marker-end="url(#green-arrow)" />
+  <rect x="948" y="826" width="472" height="54" rx="10" fill="#fff" stroke="#488766" stroke-width="2" />
+  <text x="1184.0" y="861.16" font-size="24" text-anchor="middle">Final RMSNorm → Linear LM head</text>
+  <path d="M 1184 880 V 904" fill="none" stroke="#276749" stroke-width="3" stroke-linejoin="round" marker-end="url(#green-arrow)" />
+  <rect x="1020" y="904" width="328" height="54" rx="10" fill="#fff" stroke="#488766" stroke-width="2" />
+  <text x="1184.0" y="939.5" font-size="25" text-anchor="middle">Logits → generation</text>
+  <text x="860" y="1007" font-size="22" text-anchor="start" class="green">No attention or separate MLP branch from the prototype.</text>
+  <text x="64" y="1094" font-size="23" text-anchor="start" class="muted">Dashed: uses the shared engine. Solid arrows: tensor flow.</text>
+</svg>

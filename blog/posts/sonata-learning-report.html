@@ -1,0 +1,1153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="A neural engine, layers and training implemented from scratch in Free Pascal/CUDA, with self-trained models. Implementation and weight provenance, results and verification." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://lotargo.github.io/blog/posts/sonata-learning-report.html" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Sonata: A Neural Engine Built from Scratch in Free Pascal and CUDA" />
+  <meta property="og:description" content="A neural engine, layers and training implemented from scratch in Free Pascal/CUDA, with self-trained models. Implementation and weight provenance, results and verification." />
+  <meta property="og:url" content="https://lotargo.github.io/blog/posts/sonata-learning-report.html" />
+  <meta property="og:image" content="https://lotargo.github.io/blog/assets/sonata-learning-report/architecture-preview.jpg" />
+  <meta property="og:image:width" content="1600" />
+  <meta property="og:image:height" content="1130" />
+  <meta property="article:published_time" content="2026-10-30" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Sonata: A Neural Engine Built from Scratch in Free Pascal and CUDA" />
+  <meta name="twitter:description" content="A neural engine, layers and training implemented from scratch in Free Pascal/CUDA, with self-trained models. Implementation and weight provenance, results and verification." />
+  <meta name="twitter:image" content="https://lotargo.github.io/blog/assets/sonata-learning-report/architecture-preview.jpg" />
+  <meta name="theme-color" content="#000000" />
+  <title>Sonata: A Neural Engine Built from Scratch in Free Pascal and CUDA · Lotargo Blog</title>
+  <link rel="icon" type="image/svg+xml" href="../../assets/img/favicon.svg" />
+  <link rel="stylesheet" href="../../assets/css/styles.css" />
+  <link rel="stylesheet" href="../../assets/css/sonata-research.css" />
+  <script>
+    (function () {
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem('lotargo-theme') || 'dark';
+        var requestedLanguage = new URLSearchParams(window.location.search).get('lang');
+        if (requestedLanguage === 'ru' || requestedLanguage === 'en') {
+          localStorage.setItem('lotargo-lang', requestedLanguage);
+          document.documentElement.lang = requestedLanguage;
+        }
+      } catch (error) {
+        document.documentElement.dataset.theme = 'dark';
+      }
+    })();
+  </script>
+</head>
+<body data-title-en="Sonata: A Neural Engine Built from Scratch in Free Pascal and CUDA · Lotargo Blog" data-title-ru="Sonata: нейросетевой движок с нуля на Free Pascal и CUDA · Блог Lotargo">
+  <header class="site-header" data-js="header">
+    <a class="brand" href="../../" aria-label="Lotargo">
+      <span class="brand-mark" aria-hidden="true">LØ</span>
+      <span class="brand-text">Lotargo</span>
+    </a>
+    <div class="header-controls">
+      <nav class="nav" aria-label="Post navigation">
+        <a href="../../" data-i18n="blog-nav-home">Home</a>
+        <a href="../" data-i18n="nav-blog">Blog</a>
+        <a href="../../#projects" data-i18n="nav-projects">Projects</a>
+      </nav>
+      <button class="theme-toggle" type="button" data-js="theme-toggle" aria-label="Switch color theme">
+        <span data-js="theme-label">Theme</span>
+      </button>
+      <button class="lang-toggle" type="button" data-js="lang-toggle" aria-label="Switch language">
+        <span data-js="lang-label">EN</span>
+      </button>
+    </div>
+  </header>
+  <main id="top" class="post-shell">
+    <article class="post-article research-article" data-generated-from-markdown="true" data-article-slug="sonata-learning-report">
+      <div class="post-toolbar">
+        <a class="post-back" href="../" data-i18n="post-back-blog">Back to blog</a>
+        <div class="post-meta"><time datetime="2026-10-30">2026-10-30</time></div>
+      </div>
+      <div class="research-status" role="note">
+        <span data-lang-content="en">Research report</span>
+        <span data-lang-content="ru">Исследование</span>
+      </div>
+      <div data-lang-content="en">
+        <h1>Sonata: A Neural Engine Built from Scratch in Free Pascal and CUDA</h1>
+        <p class="post-lead">Sonata is a neural engine being developed from scratch in Free Pascal and CUDA. The project implements tensors, a computation graph, automatic differentiation, neural layers, an optimizer and model execution. This article investigates training our own models on that engine from freshly initialized parameters, without importing pretrained neural weights.</p>
+
+        <p><strong>Abstract.</strong> We present a custom neural computation implementation and its experimental evaluation. The tensor engine, differentiation graph, forward and backward passes, layers and training are implemented in Sonata code; <strong>this path does not use ready-made PyTorch or TensorFlow neural modules or autograd</strong>. Sonata develops through our own research into a modular hybrid architecture: publications on automatic differentiation, Mamba/SSMs and other neural methods provide a research foundation and ideas for our own structures, parameterizations and combinations of computation. The reported learning results concern a specific Mamba-inspired Sonata profile. A six-layer, 4,504,192-parameter model learns English text from scratch. After task-specific fact training, performance changes from 0/72 to 72/72 on familiar-format contexts and from 0/72 to 70/72 on longer inputs. Transfer beyond task-training coverage is evaluated separately. Verification includes control models, paired fact changes, CPU/CUDA comparisons, independently recomputed metrics and fresh weight reloads.</p>
+
+        <div class="toc">
+        <ul>
+        <li><a href="#en-introduction">1. Introduction</a></li>
+        <li><a href="#en-models">2. Models and Implementation</a><ul>
+        <li><a href="#en-provenance">2.1. Implementation, Ideas and Weight Provenance</a></li>
+        <li><a href="#en-architecture">2.2. Custom Architecture and Hybrid Components</a></li>
+        <li><a href="#en-configurations">2.3. Trained Configurations</a></li>
+        </ul>
+        </li>
+        <li><a href="#en-protocol">3. Experimental Protocol</a><ul>
+        <li><a href="#en-splits">3.1. Splits and Checkpoint Selection</a></li>
+        <li><a href="#en-metrics">3.2. Metrics and Free Generation</a></li>
+        </ul>
+        </li>
+        <li><a href="#en-results">4. Results</a><ul>
+        <li><a href="#en-signs">4.1. Nonlinear Learning and Controls</a></li>
+        <li><a href="#en-recall">4.2. First-Symbol Recall and Length Transfer</a></li>
+        <li><a href="#en-language">4.3. Language Learning from Scratch</a></li>
+        <li><a href="#en-grounding">4.4. Facts in a Limited Training Domain</a></li>
+        </ul>
+        </li>
+        <li><a href="#en-verification">5. Execution Verification and Available Data</a></li>
+        <li><a href="#en-discussion">6. Discussion</a></li>
+        <li><a href="#en-references">7. References</a></li>
+        <li><a href="#en-runtime-appendix">Appendix A. Executing Pretrained Nemotron Weights</a></li>
+        </ul>
+        </div>
+
+        <h2 id="en-introduction">1. Introduction</h2>
+
+        <p>Sonata is being developed as a modular neural system with its own tensor operations, automatic differentiation, optimizers and CPU/CUDA execution. The motivation includes control over the computation path and investigation of its efficiency. Lower overhead relative to other stacks is a testable hypothesis; using Pascal alone does not establish a resource or speed advantage.</p>
+
+        <p>“From scratch” refers to two separate outcomes in this work: developing the computation implementation and obtaining weights through our own training. Layer classes, their composition into a model, gradient computation and parameter-update loops are written in the project. The 4.50M-parameter model starts language learning from freshly initialized parameters; dialogue and fact training continue its own saved weights. A downloaded neural network or a framework composition of imported trainable blocks is not the foundation of this experiment.</p>
+
+        <p>This report asks four questions: do the models learn the specified dependencies; how does the training regime affect transfer; what skills does a small language model acquire; and do the backends agree numerically? Tasks with unambiguous answers precede experiments with English text and a limited fact domain.</p>
+
+        <p>The learning experiments ran on 16 October 2026. A separate appendix covers execution of a pretrained NVIDIA checkpoint at the stage completed on 27 October. This report is dated 30 October 2026, version 1.0. Training our own models and executing external weights are treated separately.</p>
+
+        <h2 id="en-models">2. Models and Implementation</h2>
+
+        <h3 id="en-provenance">2.1. Implementation, Ideas and Weight Provenance</h3>
+
+        <p>The project combines our own research and development with the study of published work. Mamba [1], Adam [4], RMSNorm [5] and automatic differentiation methods [6] provide mathematical foundations and research context. Our own computation blocks, their composition and training in Sonata are developed on that basis. The network's constituent layers are implemented within the project and use its tensor engine and differentiation rules.</p>
+
+        <p class="table-caption" id="research-table-1"><strong>Table 1. Provenance of the trained system's components.</strong></p>
+<div class="research-table-scroll" role="region" tabindex="0" aria-labelledby="research-table-1"><table aria-labelledby="research-table-1">
+        <thead>
+        <tr>
+        <th scope="col">Component</th>
+        <th scope="col">Origin</th>
+        <th scope="col">What these experiments use</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td>Tensor engine and autograd</td>
+        <td>Custom Sonata implementation</td>
+        <td>Tensors, operation graph, backward rules and gradient accumulation</td>
+        </tr>
+        <tr>
+        <td>Neural layers and model</td>
+        <td>Custom Sonata implementation</td>
+        <td>Embedding, Linear, RMSNorm, Mamba blocks and their composition into a language model</td>
+        </tr>
+        <tr>
+        <td>Training and weight handling</td>
+        <td>Custom Sonata implementation</td>
+        <td>Adam, clipping, training loop, serialization, reload and generation</td>
+        </tr>
+        <tr>
+        <td>GPU computation</td>
+        <td>Sonata CUDA code and low-level cuBLAS</td>
+        <td>Custom kernels, including Mamba scan/backward; cuBLAS matrix operations</td>
+        </tr>
+        <tr>
+        <td>Neural weights</td>
+        <td>Learned in Sonata</td>
+        <td>Fresh initialization, followed by language, dialogue and fact stages</td>
+        </tr>
+        <tr>
+        <td>Training data</td>
+        <td>External corpora and experiment generators</td>
+        <td>Selected TinyDialogues/LIGHT data and synthetic tasks</td>
+        </tr>
+        <tr>
+        <td>Tokenizer preparation</td>
+        <td>External tokenizers library</td>
+        <td>An experiment-specific BPE vocabulary fitted only on training text</td>
+        </tr>
+        </tbody>
+        </table></div>
+
+        <p>Free Pascal, CUDA, cuBLAS and supporting Python libraries provide the development tools: a compiler, GPU access, basic linear algebra and data preparation. Sonata's own code defines the trained network, its computation graph and parameter-update rules. PyTorch and vLLM serve separate external reference checks in the Nemotron work described in Appendix A.</p>
+
+        <h3 id="en-architecture">2.2. Custom Architecture and Hybrid Components</h3>
+
+        <p>Sonata is an independently developed experimental modular architecture. Published work provides ideas; our design choices cover the computation graph, block parameterization, composition, differentiation rules and CPU/CUDA execution. The architecture evolves alongside our own experiments and verification.</p>
+
+        <p>The diagram shows a shared computation engine and two separate model profiles. The hybrid prototype combines three branches; the language, dialogue and fact experiments use a 4,504,192-parameter recurrent profile. Dashed connections indicate use of the engine, while solid arrows show tensor flow within each profile.</p>
+
+        <figure class="post-figure post-figure--editorial sonata-architecture" id="en-architecture-diagram" data-gallery="sonata-learning-report-en-images">
+<picture><source media="(max-width: 680px)" type="image/svg+xml" srcset="../assets/sonata-learning-report/sonata-architecture-en-mobile.svg" width="800" height="2140"><img alt="The shared Sonata engine supports two separate configurations: a recurrent, attention and MLP hybrid, and the measured six-block recurrent profile without attention or the separate MLP branch" src="../assets/sonata-learning-report/sonata-architecture-en.svg" data-full-src="../assets/sonata-learning-report/sonata-architecture-en.svg" loading="lazy" decoding="async" data-caption-en="Figure 1. Sonata's custom engine and model profiles. The green outline marks the configuration used for language, dialogue and fact results; other experiments use the configurations in Table 2. Narrow screens use a stacked diagram layout." width="1600" height="1130"></picture><figcaption data-lang-content="en">Figure 1. Sonata's custom engine and model profiles. The green outline marks the configuration used for language, dialogue and fact results; other experiments use the configurations in Table 2. Narrow screens use a stacked diagram layout.</figcaption></figure>
+        <p>Vector diagram: <a href="../assets/sonata-learning-report/sonata-architecture-en.svg">wide layout</a> · <a href="../assets/sonata-learning-report/sonata-architecture-en-mobile.svg">stacked layout</a>.</p>
+
+        <p>The Mamba-inspired block used in the trained profile is our own variation of a selective recurrent model. It uses a dense projection of the time-step parameter Δ followed by a sigmoid transformation. By comparison, the standard configuration of the pinned original Mamba implementation [7] uses a low-rank Δ projection and softplus. This is a concrete parameterization difference: sharing an SSM idea does not make the blocks identical or their weights interchangeable.</p>
+
+        <p>Hybridization concerns combining different information-processing mechanisms. The project includes an experimental block with three parallel branches: Mamba-inspired recurrence, causal attention and SwiGLU/MLP. Their outputs are combined as a weighted sum, <code>H(x) = αR(x) + βA(x) + γF(x)</code>, with coefficients set by configuration. Attention in this prototype has a CPU implementation. Expert routing and interaction between neural components and symbolic computation are also research directions.</p>
+
+        <p>The learning measurements in this article come from a recurrent-block profile without the attention and separate MLP branches of the hybrid prototype. Joint training of the full hybrid and measuring its contribution are separate experimental tasks. This distinguishes Sonata's broader architecture from the precisely defined configuration that produced the reported results.</p>
+
+        <h3 id="en-configurations">2.3. Trained Configurations</h3>
+
+        <p>In the sequence experiments, “Sonata Mamba” denotes the custom Mamba-inspired block described above. The language configuration consists of an embedding, six RMSNorm/Mamba/residual blocks, a final RMSNorm and a linear language-model head. This trained configuration has no attention. The ByteLevel BPE vocabulary contains 2,048 tokens.</p>
+
+        <p>Native Sonata performs the forward pass, backward pass and parameter updates. Python prepares data, launches binaries, checks exported values and plots metrics. Training uses FP32 and Adam; these results do not cover AMP or quantized training.</p>
+
+        <p class="table-caption" id="research-table-2"><strong>Table 2. Tested configurations and training budgets.</strong></p>
+<div class="research-table-scroll" role="region" tabindex="0" aria-labelledby="research-table-2"><table aria-labelledby="research-table-2">
+        <thead>
+        <tr>
+        <th scope="col">Task</th>
+        <th style="text-align: right;">Parameters</th>
+        <th style="text-align: right;">Adam updates</th>
+        <th scope="col">Initializations</th>
+        <th scope="col">Backend</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td>Same-sign classification, MLP</td>
+        <td style="text-align: right;">82</td>
+        <td style="text-align: right;">300</td>
+        <td>17 / 29 / 43</td>
+        <td>CPU</td>
+        </tr>
+        <tr>
+        <td>First-symbol recall, delay 4</td>
+        <td style="text-align: right;">1,561</td>
+        <td style="text-align: right;">600</td>
+        <td>17 / 29 / 43</td>
+        <td>CPU</td>
+        </tr>
+        <tr>
+        <td>First-symbol recall, mixed lengths</td>
+        <td style="text-align: right;">1,561</td>
+        <td style="text-align: right;">1,200</td>
+        <td>17 / 29 / 43</td>
+        <td>CPU</td>
+        </tr>
+        <tr>
+        <td>First-symbol recall, delays up to 512</td>
+        <td style="text-align: right;">629,385</td>
+        <td style="text-align: right;">1,200</td>
+        <td>17</td>
+        <td>CUDA</td>
+        </tr>
+        <tr>
+        <td>Language stage</td>
+        <td style="text-align: right;">4,504,192</td>
+        <td style="text-align: right;">4,200</td>
+        <td>17</td>
+        <td>CUDA</td>
+        </tr>
+        <tr>
+        <td>Dialogue stage</td>
+        <td style="text-align: right;">4,504,192</td>
+        <td style="text-align: right;">2,100 more</td>
+        <td>same weight lineage</td>
+        <td>CUDA</td>
+        </tr>
+        <tr>
+        <td>Contextual facts</td>
+        <td style="text-align: right;">4,504,192</td>
+        <td style="text-align: right;">4,000 more</td>
+        <td>same weight lineage</td>
+        <td>CUDA</td>
+        </tr>
+        </tbody>
+        </table></div>
+
+        <p>The MLP, small CPU Mamba and 629K-parameter CUDA model are separate configurations. The final three stages continue one weight lineage. Adam is reset between the language, dialogue and fact stages: these are weights-only continuations rather than full training-state resumes.</p>
+
+        <p>CPU experiments ran on an Intel Xeon at 2.20 GHz under Linux. CUDA training used an NVIDIA RTX PRO 6000 Blackwell Server Edition, FPC 3.2.2 and CUDA 13.0.88, with TF32 disabled. Saved weights were also checked on a Windows CPU. Native wall times, including periodic evaluation and saving, were 1,055.872 s for language, 550.440 s for dialogue and 1,020.978 s for facts. Provisioning, compilation and separate tests are excluded.</p>
+
+        <h2 id="en-protocol">3. Experimental Protocol</h2>
+
+        <h3 id="en-splits">3.1. Splits and Checkpoint Selection</h3>
+
+        <p>Training, validation and test sets follow task-specific separation rules. Coordinates do not overlap in the sign task. Recall tasks separate distractor combinations, with each combination represented by all four target digits.</p>
+
+        <p>The language corpus uses selected TinyDialogues conversations [2] and LIGHT dialogues [3]. BPE is trained only on training text. Both sides of a LIGHT episode stay in the same split, as do identical normalized location descriptions. This is not exhaustive semantic deduplication of similar phrases.</p>
+
+        <p>Checkpoints are selected by validation cross-entropy. Test results do not select weights, budgets or stopping points. No further training followed inspection of the corresponding tests in these experiments. Repeated initializations share test inputs: evaluating three models on 512 inputs does not create 1,536 independent examples.</p>
+
+        <h3 id="en-metrics">3.2. Metrics and Free Generation</h3>
+
+        <p>Cross-entropy is averaged over supervised positions, excluding padding. Perplexity is defined as <code>PPL = exp(CE)</code>. Language evaluation supplies the correct preceding tokens, so PPL measures teacher-forced token prediction rather than free-answer accuracy.</p>
+
+        <p>Free generation is evaluated separately. The model receives its previously selected tokens, chooses from the full vocabulary and stops at EOS or a specified boundary. The fact experiment uses greedy decoding with at most 32 new tokens, without external retrieval, candidate reranking or a gold answer prefix.</p>
+
+        <p>The <code>slot_correct</code> metric requires the target value and excludes other values of the same type from the test vocabulary. Full normalized response match is computed separately. A strict pair requires both requests with a changed target fact to receive their respective correct, different answers. These metrics apply to the specified task rather than the complete semantics of arbitrary conversation.</p>
+
+        <h2 id="en-results">4. Results</h2>
+
+        <h3 id="en-signs">4.1. Nonlinear Learning and Controls</h3>
+
+        <p>The MLP <code>Linear(2,16) → ReLU → Linear(16,2)</code> learned whether two numbers have the same sign. Train/validation/test contained 256/128/512 inputs. Each of three initializations reached 512/512 correct test answers, up from 52.54–65.82% before training.</p>
+
+        <p>Controls used a linear network and the same MLP with training labels shuffled once, with the same budget. The table reports accuracy after validation-based checkpoint selection.</p>
+
+        <p class="table-caption" id="research-table-3"><strong>Table 3. Sign-task controls on a shared 512-input test set.</strong></p>
+<div class="research-table-scroll" role="region" tabindex="0" aria-labelledby="research-table-3"><table aria-labelledby="research-table-3">
+        <thead>
+        <tr>
+        <th scope="col">Variant</th>
+        <th style="text-align: right;">Seed 17</th>
+        <th style="text-align: right;">Seed 29</th>
+        <th style="text-align: right;">Seed 43</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td>MLP, correct training labels</td>
+        <td style="text-align: right;">100%</td>
+        <td style="text-align: right;">100%</td>
+        <td style="text-align: right;">100%</td>
+        </tr>
+        <tr>
+        <td>Linear network</td>
+        <td style="text-align: right;">47.66%</td>
+        <td style="text-align: right;">41.80%</td>
+        <td style="text-align: right;">48.63%</td>
+        </tr>
+        <tr>
+        <td>MLP, shuffled training labels</td>
+        <td style="text-align: right;">50.78%</td>
+        <td style="text-align: right;">64.84%</td>
+        <td style="text-align: right;">55.08%</td>
+        </tr>
+        </tbody>
+        </table></div>
+
+        <p>For shuffled labels at seed 29, the initial checkpoint was selected because validation CE did not improve. A separate grid extending beyond the training range yielded 88/100, with near-zero errors. A direct program solves the sign rule; this experiment checks whether the network learns the dependency.</p>
+
+        <h3 id="en-recall">4.2. First-Symbol Recall and Length Transfer</h3>
+
+        <p>The sequence task maps an input such as <code>3abcd?</code> to its first digit. After training at delay 4, a one-layer, 1,561-parameter Mamba solved 512/512 new inputs for each of three initializations. Replacing the first symbol with <code>?</code> reduced accuracy to 25%, as expected when identical corrupted inputs correspond to four equally likely answers.</p>
+
+        <p>Fresh models were then compared using matched initial seeds and 1,200 updates: training only at delay 4 versus training at delays 2/4/8/16. Delays 24–128 did not participate in checkpoint selection.</p>
+
+        <p class="table-caption" id="research-table-4"><strong>Table 4. CPU Mamba transfer beyond training lengths; 512 inputs per delay.</strong></p>
+<div class="research-table-scroll" role="region" tabindex="0" aria-labelledby="research-table-4"><table aria-labelledby="research-table-4">
+        <thead>
+        <tr>
+        <th style="text-align: right;">Delay</th>
+        <th style="text-align: right;">Fixed delay 4, range across three seeds</th>
+        <th style="text-align: right;">Mixed, seed 17</th>
+        <th style="text-align: right;">Mixed, seed 29</th>
+        <th style="text-align: right;">Mixed, seed 43</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td style="text-align: right;">24</td>
+        <td style="text-align: right;">25.00–61.33%</td>
+        <td style="text-align: right;">100%</td>
+        <td style="text-align: right;">100%</td>
+        <td style="text-align: right;">100%</td>
+        </tr>
+        <tr>
+        <td style="text-align: right;">32</td>
+        <td style="text-align: right;">25.00–49.41%</td>
+        <td style="text-align: right;">100%</td>
+        <td style="text-align: right;">100%</td>
+        <td style="text-align: right;">100%</td>
+        </tr>
+        <tr>
+        <td style="text-align: right;">64</td>
+        <td style="text-align: right;">25%</td>
+        <td style="text-align: right;">52.54%</td>
+        <td style="text-align: right;">100%</td>
+        <td style="text-align: right;">66.60%</td>
+        </tr>
+        <tr>
+        <td style="text-align: right;">128</td>
+        <td style="text-align: right;">25%</td>
+        <td style="text-align: right;">25%</td>
+        <td style="text-align: right;">100%</td>
+        <td style="text-align: right;">25%</td>
+        </tr>
+        </tbody>
+        </table></div>
+
+        <p>Both new regimes processed 38,400 sequences. Mixed-length training processed 364,800 input tokens versus 230,400, an increase of 58.33%. The comparison matches updates and sequences, but not tokens, compute or data diversity. It measures the changed regime without isolating a single causal factor.</p>
+
+        <p>A four-layer, 629,385-parameter CUDA Mamba trained at delays 4/16/64/128/256/512. It achieved 64/64 at each tested delay: 16/64/128/256/512/1024/2048/4096. Adding competing digits to the distractors yielded 16/64 at delays 128/512/1024. This is one seed and synthetic single-symbol recall; long-document language understanding was not measured.</p>
+
+        <h3 id="en-language">4.3. Language Learning from Scratch</h3>
+
+        <p>The six-layer Mamba first learned language on TinyDialogues, then dialogue responses on a LIGHT/TinyDialogues mixture. The following evaluations use the same held-out files for all four checkpoints.</p>
+
+        <p class="table-caption" id="research-table-5"><strong>Table 5. Teacher-forced perplexity on fixed language tests; lower is better.</strong></p>
+<div class="research-table-scroll" role="region" tabindex="0" aria-labelledby="research-table-5"><table aria-labelledby="research-table-5">
+        <thead>
+        <tr>
+        <th scope="col">Test</th>
+        <th style="text-align: right;">Initial</th>
+        <th style="text-align: right;">After language</th>
+        <th style="text-align: right;">After dialogue</th>
+        <th style="text-align: right;">After facts</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td>TinyDialogues language, 20,031 tokens</td>
+        <td style="text-align: right;">2976.15</td>
+        <td style="text-align: right;">10.24</td>
+        <td style="text-align: right;">13.59</td>
+        <td style="text-align: right;">16.39</td>
+        </tr>
+        <tr>
+        <td>TinyDialogues responses, 3,710 tokens</td>
+        <td style="text-align: right;">2896.79</td>
+        <td style="text-align: right;">11.82</td>
+        <td style="text-align: right;">13.71</td>
+        <td style="text-align: right;">16.16</td>
+        </tr>
+        <tr>
+        <td>LIGHT responses, 2,855 tokens</td>
+        <td style="text-align: right;">2823.95</td>
+        <td style="text-align: right;">118.60</td>
+        <td style="text-align: right;">37.73</td>
+        <td style="text-align: right;">122.95</td>
+        </tr>
+        </tbody>
+        </table></div>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="sonata-learning-report-en-images"><img alt="Two cross-entropy plots showing language learning and subsequent dialogue-response training" src="../assets/sonata-learning-report/language-learning.png" data-full-src="../assets/sonata-learning-report/language-learning.png" loading="lazy" decoding="async" data-caption-en="Figure 2. Recorded language and dialogue learning curves. CE is measured over supervised tokens; the stages use different tasks and masks."><figcaption data-lang-content="en">Figure 2. Recorded language and dialogue learning curves. CE is measured over supervised tokens; the stages use different tasks and masks.</figcaption></figure>
+        <p>All responses to 31 selected prompts were separately retained: seven manual probes and 24 prompts from separate test dialogues. After both the language and dialogue stages, all 31 greedy responses ended with EOS. This establishes the termination behavior; meaning is assessed from the responses themselves. One literal response after the dialogue stage is:</p>
+
+        <blockquote>
+        <p>Well, plants need water to grow, and plants need water to grow. They need water to grow big and strong.</p>
+        </blockquote>
+
+        <p>The response is coherent but repetitive. Key and dog-name probes revealed weak use of supplied facts, motivating a separate task-training experiment.</p>
+
+        <h3 id="en-grounding">4.4. Facts in a Limited Training Domain</h3>
+
+        <p>The fact curriculum contains 24,000 training and 600 validation examples: a dog's name among a cat's name, a character's role among a neighbor's role, and the requested key among another key. It uses 12 training names, three wording variants and up to three distracting dialogue pairs. Some examples omit the requested fact and target <code>I do not know.</code>. Fact batches account for 90% of updates; the remaining 10% rehearse selected earlier TinyDialogues responses.</p>
+
+        <p>The frozen test has 319 requests: four groups of 72, 24 absent-fact requests and seven previous manual probes. The four fact groups include 144 counterfactual pairs, making observations dependent. New full contexts do not guarantee that every tuple of values is new.</p>
+
+        <p class="table-caption" id="research-table-6"><strong>Table 6. Free generation before and after task-specific fact training.</strong></p>
+<div class="research-table-scroll" role="region" tabindex="0" aria-labelledby="research-table-6"><table aria-labelledby="research-table-6">
+        <thead>
+        <tr>
+        <th scope="col">Test</th>
+        <th style="text-align: right;">Before</th>
+        <th style="text-align: right;">After</th>
+        <th scope="col">Scope</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td>New contexts, familiar values and wording</td>
+        <td style="text-align: right;">0/72</td>
+        <td style="text-align: right;">72/72</td>
+        <td>Learning within the domain</td>
+        </tr>
+        <tr>
+        <td>Longer contexts, up to 277 BPE tokens</td>
+        <td style="text-align: right;">0/72</td>
+        <td style="text-align: right;">70/72</td>
+        <td>Length transfer; training prompts have 80–179 tokens</td>
+        </tr>
+        <tr>
+        <td>Requested fact absent</td>
+        <td style="text-align: right;">0/24</td>
+        <td style="text-align: right;">24/24</td>
+        <td>Answering “I do not know”</td>
+        </tr>
+        <tr>
+        <td>New wording</td>
+        <td style="text-align: right;">0/72</td>
+        <td style="text-align: right;">7/72</td>
+        <td>Transfer beyond three training variants</td>
+        </tr>
+        <tr>
+        <td>All questions in contexts with reserved names</td>
+        <td style="text-align: right;">0/72</td>
+        <td style="text-align: right;">48/72</td>
+        <td>Familiar roles and colors alongside other names</td>
+        </tr>
+        <tr>
+        <td>Reserved-name questions only; subset of the preceding row</td>
+        <td style="text-align: right;">0/24</td>
+        <td style="text-align: right;">0/24</td>
+        <td>Reproducing a name outside task-training coverage</td>
+        </tr>
+        </tbody>
+        </table></div>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="sonata-learning-report-en-images"><img alt="Fact-learning curve and frozen test results: 72/72 familiar-format contexts, 70/72 longer inputs and weak transfer to new wording" src="../assets/sonata-learning-report/contextual-facts.png" data-full-src="../assets/sonata-learning-report/contextual-facts.png" loading="lazy" decoding="async" data-caption-en="Figure 3. Fact training and frozen tests. Reserved names in the plot denotes the full 48/72 group; questions specifically asking for the reserved name yield 0/24."><figcaption data-lang-content="en">Figure 3. Fact training and frozen tests. Reserved names in the plot denotes the full 48/72 group; questions specifically asking for the reserved name yield 0/24.</figcaption></figure>
+        <p>Both members of 36/36 familiar-format changed-fact pairs were answered correctly, as were 34/36 longer-context pairs. This establishes answer dependence on the target fact within the tested format.</p>
+
+        <p>Pip, Nell, Zed, Tess, Otto and Milo are excluded from the current training/validation sets and 4,096 rehearsal records. Earlier language learning and BPE training were not split by these names. “Reserved name” therefore describes the current task-training holdout, not a demonstrated first encounter with the spelling.</p>
+
+        <h2 id="en-verification">5. Execution Verification and Available Data</h2>
+
+        <p>Behavioral evaluation is supplemented by numerical checks. A small model supports comparison of all parameter gradients; the larger trained model supports sampled logit and generation comparisons. These scopes remain part of the interpretation.</p>
+
+        <p class="table-caption" id="research-table-7"><strong>Table 7. Verification before and after the language experiment.</strong></p>
+<div class="research-table-scroll" role="region" tabindex="0" aria-labelledby="research-table-7"><table aria-labelledby="research-table-7">
+        <thead>
+        <tr>
+        <th scope="col">Object</th>
+        <th scope="col">Method</th>
+        <th scope="col">Result and scope</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td>Small two-layer Mamba</td>
+        <td>Matched CPU/CUDA weights and inputs</td>
+        <td>Maximum logit difference 6.70 × 10⁻⁷; gradient difference 8.94 × 10⁻⁷ across 30 tensors</td>
+        </tr>
+        <tr>
+        <td>CE metric</td>
+        <td>Independent recomputation from logits</td>
+        <td>Difference up to 1.16 × 10⁻⁷ in the small probe</td>
+        </tr>
+        <tr>
+        <td>Causality and generation</td>
+        <td>Future-token changes; autoregressive steps versus full forward</td>
+        <td>Causality checked; eight tested argmax tokens agreed</td>
+        </tr>
+        <tr>
+        <td>Trained dialogue Mamba</td>
+        <td>CPU/CUDA on two 32-token prefixes</td>
+        <td>Maximum logit difference 1.3828 × 10⁻⁵; argmax agreed at 64 positions</td>
+        </tr>
+        <tr>
+        <td>Serialization and Windows inference</td>
+        <td>Fresh process and Linux-weight reload</td>
+        <td>CUDA CSV was byte-identical; Windows matched 64 argmax positions and selected real responses</td>
+        </tr>
+        <tr>
+        <td>Memory verification</td>
+        <td>Compute-sanitizer on the small gradient probe</td>
+        <td>Zero errors; large training was outside sanitizer</td>
+        </tr>
+        </tbody>
+        </table></div>
+
+        <p>Before the heavy CUDA experiment, 159 gradient ABI cases and 18,575 checked-optimizer assertions passed. A 256³ GEMM was compared with NumPy float64, giving a maximum absolute error of 1.40524409 × 10⁻⁶. These are specific numerical probes rather than exhaustive coverage of all sizes and models.</p>
+
+        <p>The fact scorer was checked with correct, incorrect and distractor-containing control answers. All 24,600 native corpus records were checked for text/token agreement, masks, padding and EOS; rebuilding 11 corpus files was byte-identical. Before/after responses were scored using the same current decoder.</p>
+
+        <p>This version includes <a href="../assets/sonata-learning-report/results.json">summary data</a>, <a href="../assets/sonata-learning-report/language-metrics.csv">language-stage metrics</a>, <a href="../assets/sonata-learning-report/dialogue-metrics.csv">dialogue-stage metrics</a>, <a href="../assets/sonata-learning-report/grounding-metrics.csv">fact-training metrics</a> and <a href="../assets/sonata-learning-report/artifact-checksums.json">checksums of the supplied files</a>. In the raw CSV files, <code>train_batch</code> accuracy and supervised_tokens fields are zero placeholders, not measurements; loss and separate validation rows are used as recorded.</p>
+
+        <p>Sonata's source code is currently in a private repository. This version provides the protocol, tables, figures and metric files for external examination. Saved models were checked by reloading their weights in fresh processes; Adam and RNG state were not saved with them. The language pilot uses a decoder that recomputes the growing full prefix. A streaming cache, full training-state recovery and long memory testing require separate validation.</p>
+
+        <h2 id="en-discussion">6. Discussion</h2>
+
+        <p>The results show a progression from a simple nonlinear dependency to sequences, English text and contextual facts. Linear-network, shuffled-label and erased-symbol controls help relate behavior to the specified task. The length comparison shows that changing the training regime can substantially affect transfer.</p>
+
+        <p>With minimal fact-domain coverage, the familiar format was learned. Weak transfer to other names and wording motivates a further question: how does broader data diversity change performance while preserving a separate test? This experiment does not isolate the effects of corpus coverage, model capacity or training choices. Assigning one established cause would be premature.</p>
+
+        <p>Specialization also changed earlier language metrics: LIGHT PPL increased from 37.73 to 122.95 after fact training. LIGHT was not included in that stage's rehearsal data. Measuring a new skill should be accompanied by checks of previously acquired behavior.</p>
+
+        <p>CPU experiments use three initializations; the larger GPU experiments use one. Models trained from scratch have not yet been compared with an external architecture at matched data and compute budgets. The scope of this work is therefore learning and behavior in specific configurations, together with the stated execution-verification coverage.</p>
+
+        <h2 id="en-references">7. References</h2>
+
+        <ol>
+        <li>Gu A., Dao T. <a href="https://arxiv.org/abs/2312.00752">Mamba: Linear-Time Sequence Modeling with Selective State Spaces</a>. Original Mamba research.</li>
+        <li>Feng S. Y., Goodman N. D., Frank M. C. <a href="https://aclanthology.org/2024.emnlp-main.1231/">Is Child-Directed Speech Effective Training Data for Language Models?</a>. EMNLP 2024. <a href="https://github.com/styfeng/TinyDialogues">TinyDialogues code and data</a>.</li>
+        <li>Urbanek J. et al. <a href="https://arxiv.org/abs/1903.03094">Learning to Speak and Act in a Fantasy Text Adventure Game</a>. <a href="https://parl.ai/projects/light/">LIGHT project</a>.</li>
+        <li>Kingma D. P., Ba J. <a href="https://arxiv.org/abs/1412.6980">Adam: A Method for Stochastic Optimization</a>. The optimization method implemented in Sonata's training path.</li>
+        <li>Zhang B., Sennrich R. <a href="https://arxiv.org/abs/1910.07467">Root Mean Square Layer Normalization</a>. The RMSNorm method.</li>
+        <li>Baydin A. G., Pearlmutter B. A., Radul A. A., Siskind J. M. <a href="https://jmlr.org/papers/v18/17-468.html">Automatic Differentiation in Machine Learning: a Survey</a>. JMLR, 2018. Mathematical and implementation background on automatic differentiation.</li>
+        <li>Gu A., Dao T. <a href="https://github.com/state-spaces/mamba/blob/v2.2.4/mamba_ssm/modules/mamba_simple.py">Original Mamba implementation, version v2.2.4</a>. Used for the specific parameterization comparison.</li>
+        <li>Sonata experiments: numerical summaries are supplied in results.json and file checksums in artifact-checksums.json. Archived figures retain the recorded measurements.</li>
+        </ol>
+
+        <h2 id="en-runtime-appendix">Appendix A. Executing Pretrained Nemotron Weights</h2>
+
+        <p>A separate line of work executes the <code>NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4</code> checkpoint in Sonata, using NVIDIA's pretrained weights. The latest B3 stage ran 67 requests through all 52 layers, passing 20/20 application checks and six cache-reusing continuations. Intermediate model tensors and states remain on GPU; CPU execution is a separate complete backend.</p>
+
+        <p class="table-caption" id="research-table-8"><strong>Table A1. Native decode on one A100 80 GB, batch 1.</strong></p>
+<div class="research-table-scroll" role="region" tabindex="0" aria-labelledby="research-table-8"><table aria-labelledby="research-table-8">
+        <thead>
+        <tr>
+        <th style="text-align: right;">Context</th>
+        <th style="text-align: right;">Previous native path, tokens/s</th>
+        <th style="text-align: right;">GPU-resident, tokens/s</th>
+        <th style="text-align: right;">Ratio</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td style="text-align: right;">512</td>
+        <td style="text-align: right;">10.40</td>
+        <td style="text-align: right;">30.22</td>
+        <td style="text-align: right;">2.90×</td>
+        </tr>
+        <tr>
+        <td style="text-align: right;">2048</td>
+        <td style="text-align: right;">10.23</td>
+        <td style="text-align: right;">29.32</td>
+        <td style="text-align: right;">2.87×</td>
+        </tr>
+        <tr>
+        <td style="text-align: right;">8192</td>
+        <td style="text-align: right;">9.88</td>
+        <td style="text-align: right;">26.10</td>
+        <td style="text-align: right;">2.64×</td>
+        </tr>
+        </tbody>
+        </table></div>
+
+        <p>There is one measured run per configuration after warmups. Throughput covers decode, excluding weight loading and prefill. At context 8192, prefill takes 56.936 s. Both paths use the same checkpoint, F32 storage and F64 attention; the gain combines residency and kernel changes. This comparison does not isolate the implementation language or CPU/GPU transport alone.</p>
+
+        <p>At the preceding stage, native execution and pinned vLLM both achieved 20/20 application results; generated IDs agreed on 21/21 quality/dialogue/repeat prompts. The external runtime is a behavioral witness, while Sonata's mathematical contract comes from the checkpoint and R_emu reference. vLLM was not rebenchmarked at B3; the preceding external measurements belong to a different GPU session and execution configuration.</p>
+
+        <p>A separate canonical F64 profile passes two full-depth R_emu diagnostic cases with logit normalized L2 up to 3.871 × 10⁻¹⁵. The original F32 profile still fails F1/F2/F4, leaving broader numerical acceptance open. These results concern execution of a pretrained model and do not compare the quality of our from-scratch Mamba with Nemotron.</p>
+      </div>
+      <div data-lang-content="ru">
+        <h1>Sonata: нейросетевой движок с нуля на Free Pascal и CUDA</h1>
+        <p class="post-lead">Sonata представляет собой нейросетевой движок, разрабатываемый с нуля на Free Pascal и CUDA: в проекте реализованы тензоры, вычислительный граф, автоматическое дифференцирование, нейросетевые слои, оптимизатор и исполнение модели. В статье исследуется обучение собственных моделей на этом движке из начальной инициализации, без загрузки чужих предобученных нейросетевых весов.</p>
+
+        <p><strong>Аннотация.</strong> Представлена собственная реализация нейросетевого вычислительного пути и её экспериментальная проверка. Тензорное ядро, граф дифференцирования, прямой и обратный проходы, слои и обучение реализованы в коде Sonata; <strong>готовые нейросетевые модули и autograd PyTorch или TensorFlow в этом пути не используются</strong>. Sonata развивается в ходе собственных исследований модульной гибридной архитектуры: публикации по автоматическому дифференцированию, Mamba/SSM и другим нейросетевым методам служат исследовательской базой и источниками идей для собственных структур, параметризаций и способов сочетания вычислений. Представленные результаты обучения относятся к отдельному Mamba-подобному профилю Sonata. Шестислойная модель на 4 504 192 параметрах обучается английскому тексту с нуля. После целевого обучения фактам результат в знакомом формате изменяется с 0/72 до 72/72, а на более длинных входах с 0/72 до 70/72. Перенос за пределы покрытия целевого обучения исследуется отдельно. Проверки включают контрольные модели, парные изменения фактов, сопоставление CPU/CUDA, независимый пересчёт метрик и повторную загрузку весов.</p>
+
+        <div class="toc">
+        <ul>
+        <li><a href="#ru-introduction">1. Введение</a></li>
+        <li><a href="#ru-models">2. Модели и реализация</a><ul>
+        <li><a href="#ru-provenance">2.1. Происхождение реализации, идей и весов</a></li>
+        <li><a href="#ru-architecture">2.2. Собственная архитектура и гибридные компоненты</a></li>
+        <li><a href="#ru-configurations">2.3. Обучаемые конфигурации</a></li>
+        </ul>
+        </li>
+        <li><a href="#ru-protocol">3. Экспериментальный протокол</a><ul>
+        <li><a href="#ru-splits">3.1. Разбиения и выбор весов</a></li>
+        <li><a href="#ru-metrics">3.2. Метрики и свободная генерация</a></li>
+        </ul>
+        </li>
+        <li><a href="#ru-results">4. Результаты</a><ul>
+        <li><a href="#ru-signs">4.1. Нелинейная зависимость и контрольные варианты</a></li>
+        <li><a href="#ru-recall">4.2. Первый символ и перенос по длине</a></li>
+        <li><a href="#ru-language">4.3. Языковое обучение с нуля</a></li>
+        <li><a href="#ru-grounding">4.4. Факты из ограниченного учебного домена</a></li>
+        </ul>
+        </li>
+        <li><a href="#ru-verification">5. Проверка исполнения и доступные данные</a></li>
+        <li><a href="#ru-discussion">6. Обсуждение</a></li>
+        <li><a href="#ru-references">7. Литература</a></li>
+        <li><a href="#ru-runtime-appendix">Приложение A. Исполнение готовых весов Nemotron</a></li>
+        </ul>
+        </div>
+
+        <h2 id="ru-introduction">1. Введение</h2>
+
+        <p>Sonata разрабатывается как модульная нейросетевая система с собственными тензорными операциями, автоматическим дифференцированием, оптимизаторами и исполнением на CPU/CUDA. Мотивация такого подхода включает контроль вычислительного пути и исследование его эффективности. Снижение накладных расходов относительно других стеков является проверяемой гипотезой; само использование Pascal не устанавливает преимущество по ресурсам или скорости.</p>
+
+        <p>Термин «с нуля» в этой работе относится к двум самостоятельным результатам: разработке вычислительной реализации и получению весов через собственное обучение. Классы слоёв, их соединение в модель, вычисление градиентов и цикл обновления параметров написаны в проекте. Модель на 4,50 млн параметров начинает языковой этап с начальной инициализации; диалоговый и фактический этапы продолжают её собственные сохранённые веса. Готовая скачанная нейросеть или конструктор из импортированных обучаемых блоков здесь не выступают основой эксперимента.</p>
+
+        <p>Настоящий отчёт отвечает на четыре вопроса: осваивают ли модели поставленные зависимости; как изменение учебного режима влияет на перенос; какие навыки приобретает небольшая языковая модель; согласованы ли вычисления разных backend. Сначала используются задачи с однозначным ответом, затем английский текст и ограниченный домен фактов.</p>
+
+        <p>Эксперименты обучения проведены 16 октября 2026 года. Отдельное приложение описывает этап исполнения готового checkpoint NVIDIA от 27 октября. Срез отчёта: 30 октября 2026 года, версия 1.0. Обучение собственных моделей и исполнение внешних весов рассматриваются раздельно.</p>
+
+        <h2 id="ru-models">2. Модели и реализация</h2>
+
+        <h3 id="ru-provenance">2.1. Происхождение реализации, идей и весов</h3>
+
+        <p>Проект сочетает собственные исследования и разработку с изучением опубликованных работ. Mamba [1], Adam [4], RMSNorm [5] и методы автоматического дифференцирования [6] дают математическую основу и исследовательский контекст. На этой базе разрабатываются собственные вычислительные блоки, способы их соединения и обучение в Sonata. Составные слои сети реализованы в самом проекте и работают через его тензорный движок и правила дифференцирования.</p>
+
+        <p class="table-caption" id="research-table-9"><strong>Таблица 1. Происхождение компонентов обучаемой системы.</strong></p>
+<div class="research-table-scroll" role="region" tabindex="0" aria-labelledby="research-table-9"><table aria-labelledby="research-table-9">
+        <thead>
+        <tr>
+        <th scope="col">Компонент</th>
+        <th scope="col">Происхождение</th>
+        <th scope="col">Что используется в этих опытах</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td>Тензорное ядро и autograd</td>
+        <td>Собственная реализация Sonata</td>
+        <td>Тензоры, граф операций, правила backward и накопление градиентов</td>
+        </tr>
+        <tr>
+        <td>Нейросетевые слои и модель</td>
+        <td>Собственная реализация Sonata</td>
+        <td>Embedding, Linear, RMSNorm, Mamba-блоки и их соединение в языковую модель</td>
+        </tr>
+        <tr>
+        <td>Обучение и работа с весами</td>
+        <td>Собственная реализация Sonata</td>
+        <td>Adam, clipping, цикл обучения, сохранение, загрузка и генерация</td>
+        </tr>
+        <tr>
+        <td>Вычисления на GPU</td>
+        <td>CUDA-код Sonata и низкоуровневая библиотека cuBLAS</td>
+        <td>Собственные ядра, включая Mamba scan/backward; матричные операции cuBLAS</td>
+        </tr>
+        <tr>
+        <td>Нейросетевые веса</td>
+        <td>Получены обучением в Sonata</td>
+        <td>Начальная инициализация, затем языковой, диалоговый и фактический этапы</td>
+        </tr>
+        <tr>
+        <td>Учебные данные</td>
+        <td>Внешние корпуса и генераторы опытов</td>
+        <td>Выбранные TinyDialogues/LIGHT и синтетические задачи</td>
+        </tr>
+        <tr>
+        <td>Подготовка токенизатора</td>
+        <td>Внешняя библиотека tokenizers</td>
+        <td>Собственный для этого опыта BPE-словарь, обученный только на train-текстах</td>
+        </tr>
+        </tbody>
+        </table></div>
+
+        <p>Free Pascal, CUDA, cuBLAS и вспомогательные Python-библиотеки составляют инструментальную основу разработки. Они предоставляют компилятор, доступ к GPU, базовую линейную алгебру и подготовку данных. Устройство обучаемой сети, её вычислительный граф и правила обновления параметров определяет собственный код Sonata. PyTorch и vLLM используются в отдельных внешних эталонных проверках линии Nemotron, описанной в приложении A.</p>
+
+        <h3 id="ru-architecture">2.2. Собственная архитектура и гибридные компоненты</h3>
+
+        <p>Sonata представляет собой самостоятельную экспериментальную модульную архитектуру. Опубликованные работы служат источниками идей; собственные проектные решения охватывают устройство вычислительного графа, параметризацию блоков, их сочетание, правила дифференцирования и исполнение на CPU/CUDA. Архитектура развивается вместе с собственными экспериментами и проверками.</p>
+
+        <p>На схеме показаны общее вычислительное ядро и два отдельных модельных контура. Гибридный прототип объединяет три ветви; для языкового, диалогового и фактического опытов использовался рекуррентный профиль на 4 504 192 параметрах. Пунктир обозначает использование ядра, сплошные стрелки показывают поток тензоров внутри каждого контура.</p>
+
+        <figure class="post-figure post-figure--editorial sonata-architecture" id="ru-architecture-diagram" data-gallery="sonata-learning-report-ru-images">
+<picture><source media="(max-width: 680px)" type="image/svg+xml" srcset="../assets/sonata-learning-report/sonata-architecture-ru-mobile.svg" width="800" height="2140"><img alt="Общее ядро Sonata связано с двумя отдельными конфигурациями: гибридом из рекуррентной ветви, attention и MLP и измеренным профилем с шестью рекуррентными блоками без attention и отдельной MLP-ветви" src="../assets/sonata-learning-report/sonata-architecture-ru.svg" data-full-src="../assets/sonata-learning-report/sonata-architecture-ru.svg" loading="lazy" decoding="async" data-caption-ru="Рисунок 1. Собственное ядро и модельные профили Sonata. Зелёным контуром отмечена конфигурация языковых, диалоговых и фактических результатов; остальные опыты используют конфигурации из таблицы 2. На узком экране схема перестраивается вертикально." width="1600" height="1130"></picture><figcaption data-lang-content="ru">Рисунок 1. Собственное ядро и модельные профили Sonata. Зелёным контуром отмечена конфигурация языковых, диалоговых и фактических результатов; остальные опыты используют конфигурации из таблицы 2. На узком экране схема перестраивается вертикально.</figcaption></figure>
+        <p>Векторная схема: <a href="../assets/sonata-learning-report/sonata-architecture-ru.svg">широкая версия</a> · <a href="../assets/sonata-learning-report/sonata-architecture-ru-mobile.svg">вертикальная версия</a>.</p>
+
+        <p>Mamba-подобный блок, использованный в обучаемом профиле, является собственной вариацией селективной рекуррентной модели. В нём применяется плотная проекция параметра временного шага Δ и его сигмоидальное преобразование. Для сравнения, стандартная конфигурация закреплённой авторской реализации Mamba [7] использует низкоранговую проекцию Δ и softplus. Это конкретное различие в параметризации; сходство общей SSM-идеи не означает тождество блоков или взаимозаменяемость весов.</p>
+
+        <p>Гибридность реализуется на уровне сочетания разных механизмов обработки информации. В проекте существует экспериментальный блок с тремя параллельными ветвями: Mamba-подобной рекуррентной, causal attention и SwiGLU/MLP. Их выходы объединяются взвешенной суммой: <code>H(x) = αR(x) + βA(x) + γF(x)</code>, где коэффициенты задаются конфигурацией. Attention в этом прототипе имеет CPU-реализацию. Также исследуются экспертная маршрутизация и взаимодействие нейросетевых компонентов с символическими вычислениями.</p>
+
+        <p>Численные результаты обучения в этой статье получены для профиля на рекуррентных блоках, без ветвей attention и отдельной MLP из гибридного прототипа. Совместное обучение полного гибрида и оценка его вклада составляют отдельную экспериментальную задачу. Таким образом, здесь описываются и более широкая архитектура Sonata, и точно определённая конфигурация, на которой получены приведённые результаты.</p>
+
+        <h3 id="ru-configurations">2.3. Обучаемые конфигурации</h3>
+
+        <p>В последовательностных опытах обозначение «Mamba Sonata» относится к собственному Mamba-подобному блоку, описанному выше. Языковая конфигурация состоит из embedding, шести блоков RMSNorm/Mamba/residual, final RMSNorm и линейной выходной головы. Attention в этой обучаемой конфигурации отсутствует. Словарь ByteLevel BPE содержит 2048 токенов.</p>
+
+        <p>Forward, backward и обновления весов выполняются в native Sonata. Python подготавливает данные, запускает бинарные файлы, проверяет экспортированные числа и строит графики. Обучение использует FP32 и Adam; AMP и квантование обучения в эти результаты не входят.</p>
+
+        <p class="table-caption" id="research-table-10"><strong>Таблица 2. Проверенные конфигурации и бюджеты обучения.</strong></p>
+<div class="research-table-scroll" role="region" tabindex="0" aria-labelledby="research-table-10"><table aria-labelledby="research-table-10">
+        <thead>
+        <tr>
+        <th scope="col">Задача</th>
+        <th style="text-align: right;">Параметры</th>
+        <th style="text-align: right;">Обновления Adam</th>
+        <th scope="col">Инициализации</th>
+        <th scope="col">Среда</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td>Одинаковый знак двух чисел, MLP</td>
+        <td style="text-align: right;">82</td>
+        <td style="text-align: right;">300</td>
+        <td>17 / 29 / 43</td>
+        <td>CPU</td>
+        </tr>
+        <tr>
+        <td>Первый символ, задержка 4</td>
+        <td style="text-align: right;">1 561</td>
+        <td style="text-align: right;">600</td>
+        <td>17 / 29 / 43</td>
+        <td>CPU</td>
+        </tr>
+        <tr>
+        <td>Первый символ, смешанные длины</td>
+        <td style="text-align: right;">1 561</td>
+        <td style="text-align: right;">1 200</td>
+        <td>17 / 29 / 43</td>
+        <td>CPU</td>
+        </tr>
+        <tr>
+        <td>Первый символ, задержки до 512</td>
+        <td style="text-align: right;">629 385</td>
+        <td style="text-align: right;">1 200</td>
+        <td>17</td>
+        <td>CUDA</td>
+        </tr>
+        <tr>
+        <td>Языковой этап</td>
+        <td style="text-align: right;">4 504 192</td>
+        <td style="text-align: right;">4 200</td>
+        <td>17</td>
+        <td>CUDA</td>
+        </tr>
+        <tr>
+        <td>Диалоговый этап</td>
+        <td style="text-align: right;">4 504 192</td>
+        <td style="text-align: right;">ещё 2 100</td>
+        <td>та же линия весов</td>
+        <td>CUDA</td>
+        </tr>
+        <tr>
+        <td>Факты из контекста</td>
+        <td style="text-align: right;">4 504 192</td>
+        <td style="text-align: right;">ещё 4 000</td>
+        <td>та же линия весов</td>
+        <td>CUDA</td>
+        </tr>
+        </tbody>
+        </table></div>
+
+        <p>MLP, малая CPU Mamba и CUDA-модель на 629 тысяч параметров являются отдельными конфигурациями. Три последних этапа продолжают одну линию весов. При переходе между языковым, диалоговым и фактическим этапами Adam создаётся заново; это продолжение обучения из весов, а не восстановление полного состояния обучения.</p>
+
+        <p>CPU-опыты выполнялись на Intel Xeon 2,20 GHz в Linux. Для обучения CUDA использовалась NVIDIA RTX PRO 6000 Blackwell Server Edition, FPC 3.2.2 и CUDA 13.0.88; TF32 был отключён. Сохранённые веса дополнительно проверялись на CPU в Windows. Наблюдаемое время включает native-обучение, периодические оценки и сохранение: 1055,872 с для языка, 550,440 с для диалога и 1020,978 с для фактов. Подготовка среды, сборка и отдельные тесты сюда не входят.</p>
+
+        <h2 id="ru-protocol">3. Экспериментальный протокол</h2>
+
+        <h3 id="ru-splits">3.1. Разбиения и выбор весов</h3>
+
+        <p>Обучающие, проверочные и тестовые наборы разделены по правилам конкретного опыта. В задаче знаков координаты не пересекаются. В задачах первого символа разделяются комбинации отвлекателей, причём каждая комбинация представлена со всеми четырьмя целевыми цифрами.</p>
+
+        <p>Языковой корпус использует выбранные разговоры TinyDialogues [2] и диалоги LIGHT [3]. BPE обучен только на train-текстах. У LIGHT обе стороны эпизода остаются в одном разбиении; одинаковые нормализованные описания мест также группируются внутри одного разбиения. Это не полная семантическая дедупликация похожих фраз.</p>
+
+        <p>Checkpoint выбирается по validation cross-entropy. Тест не выбирает веса, бюджет или момент остановки. После просмотра соответствующих тестов дополнительное обучение в этих опытах не выполнялось. Повторные инициализации используют общие тестовые входы: три модели на 512 входах не превращают набор в 1536 независимых примеров.</p>
+
+        <h3 id="ru-metrics">3.2. Метрики и свободная генерация</h3>
+
+        <p>Cross-entropy усредняется по позициям с активной маской; padding исключён. Perplexity определяется как <code>PPL = exp(CE)</code>. В языковых оценках предыдущие токены берутся из правильного текста, поэтому PPL измеряет предсказание токенов в режиме teacher forcing, а не точность свободных ответов.</p>
+
+        <p>Свободная генерация исследуется отдельно: модель получает свои ранее выбранные токены, выбирает из полного словаря и останавливается на EOS или заданной границе. Для опыта фактов используются greedy-генерация и максимум 32 новых токена, без внешнего поиска, ранжирования кандидатов или правильного префикса ответа.</p>
+
+        <p>Метрика <code>slot_correct</code> требует наличия нужного значения и отсутствия других значений того же типа из словаря теста. Полное нормализованное совпадение ответа считается отдельно. Строгая пара засчитывается, когда оба запроса с изменённым целевым фактом получили свои правильные, различающиеся ответы. Эти метрики ограничены поставленной задачей и не оценивают всю семантику произвольного разговора.</p>
+
+        <h2 id="ru-results">4. Результаты</h2>
+
+        <h3 id="ru-signs">4.1. Нелинейная зависимость и контрольные варианты</h3>
+
+        <p>MLP <code>Linear(2,16) → ReLU → Linear(16,2)</code> училась определять, одинаковы ли знаки двух чисел. Train/validation/test содержали 256/128/512 входов. После обучения каждая из трёх инициализаций дала 512/512 правильных ответов; исходная точность составляла 52,54–65,82%.</p>
+
+        <p>Для контроля при одинаковом бюджете использовались линейная сеть и та же MLP с однократно перемешанными учебными ответами. В таблице указана точность после выбора весов по validation.</p>
+
+        <p class="table-caption" id="research-table-11"><strong>Таблица 3. Контроли задачи знаков, один общий test из 512 входов.</strong></p>
+<div class="research-table-scroll" role="region" tabindex="0" aria-labelledby="research-table-11"><table aria-labelledby="research-table-11">
+        <thead>
+        <tr>
+        <th scope="col">Вариант</th>
+        <th style="text-align: right;">Seed 17</th>
+        <th style="text-align: right;">Seed 29</th>
+        <th style="text-align: right;">Seed 43</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td>MLP, правильные учебные ответы</td>
+        <td style="text-align: right;">100%</td>
+        <td style="text-align: right;">100%</td>
+        <td style="text-align: right;">100%</td>
+        </tr>
+        <tr>
+        <td>Линейная сеть</td>
+        <td style="text-align: right;">47,66%</td>
+        <td style="text-align: right;">41,80%</td>
+        <td style="text-align: right;">48,63%</td>
+        </tr>
+        <tr>
+        <td>MLP, перемешанные учебные ответы</td>
+        <td style="text-align: right;">50,78%</td>
+        <td style="text-align: right;">64,84%</td>
+        <td style="text-align: right;">55,08%</td>
+        </tr>
+        </tbody>
+        </table></div>
+
+        <p>У варианта с перемешанными ответами и seed 29 выбран исходный checkpoint: улучшения validation CE не найдено. Отдельная сетка за пределами учебного диапазона дала 88/100 с ошибками около нуля. Обычная программа решает правило знаков напрямую; эксперимент проверяет обучение сети на этой зависимости.</p>
+
+        <h3 id="ru-recall">4.2. Первый символ и перенос по длине</h3>
+
+        <p>В последовательностной задаче вход имеет вид <code>3abcd?</code>, а ответом должна быть первая цифра. Однослойная Mamba на 1561 параметре после обучения задержке 4 решила 512/512 новых входов у каждой из трёх инициализаций. Замена первого символа на <code>?</code> снизила результат до 25%, ожидаемых для четырёх равновероятных ответов при одинаковом повреждённом входе.</p>
+
+        <p>Затем сравнили свежие модели с одинаковыми начальными seeds и 1200 обновлениями: обучение только задержке 4 и обучение задержкам 2/4/8/16. Длины 24–128 не участвовали в выборе весов.</p>
+
+        <p class="table-caption" id="research-table-12"><strong>Таблица 4. Перенос CPU Mamba на длины вне обучения; по 512 входов на длину.</strong></p>
+<div class="research-table-scroll" role="region" tabindex="0" aria-labelledby="research-table-12"><table aria-labelledby="research-table-12">
+        <thead>
+        <tr>
+        <th style="text-align: right;">Задержка</th>
+        <th style="text-align: right;">Только длина 4, диапазон трёх seeds</th>
+        <th style="text-align: right;">Смесь, seed 17</th>
+        <th style="text-align: right;">Смесь, seed 29</th>
+        <th style="text-align: right;">Смесь, seed 43</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td style="text-align: right;">24</td>
+        <td style="text-align: right;">25,00–61,33%</td>
+        <td style="text-align: right;">100%</td>
+        <td style="text-align: right;">100%</td>
+        <td style="text-align: right;">100%</td>
+        </tr>
+        <tr>
+        <td style="text-align: right;">32</td>
+        <td style="text-align: right;">25,00–49,41%</td>
+        <td style="text-align: right;">100%</td>
+        <td style="text-align: right;">100%</td>
+        <td style="text-align: right;">100%</td>
+        </tr>
+        <tr>
+        <td style="text-align: right;">64</td>
+        <td style="text-align: right;">25%</td>
+        <td style="text-align: right;">52,54%</td>
+        <td style="text-align: right;">100%</td>
+        <td style="text-align: right;">66,60%</td>
+        </tr>
+        <tr>
+        <td style="text-align: right;">128</td>
+        <td style="text-align: right;">25%</td>
+        <td style="text-align: right;">25%</td>
+        <td style="text-align: right;">100%</td>
+        <td style="text-align: right;">25%</td>
+        </tr>
+        </tbody>
+        </table></div>
+
+        <p>Оба новых режима обработали 38 400 последовательностей. Смесь длин при этом содержит 364 800 входных токенов против 230 400, на 58,33% больше. Сравнение выравнивает обновления и последовательности, но не количество токенов, compute или разнообразие данных. Оно показывает результат изменённого учебного режима без изоляции одного причинного фактора.</p>
+
+        <p>Четырёхслойная CUDA Mamba на 629 385 параметрах обучалась задержкам 4/16/64/128/256/512. На каждой проверенной длине 16/64/128/256/512/1024/2048/4096 она дала 64/64. При добавлении других цифр среди помех результат составил 16/64 на задержках 128/512/1024. Это один seed и синтетическое воспроизведение одного символа; языковое понимание длинного текста здесь не измерялось.</p>
+
+        <h3 id="ru-language">4.3. Языковое обучение с нуля</h3>
+
+        <p>Шестислойная Mamba обучалась сначала языку на TinyDialogues, затем ответам в диалогах на смеси LIGHT и TinyDialogues. Измерения ниже выполнены на одних и тех же отложенных файлах для всех четырёх версий весов.</p>
+
+        <p class="table-caption" id="research-table-13"><strong>Таблица 5. Teacher-forced perplexity на фиксированных языковых тестах; меньше лучше.</strong></p>
+<div class="research-table-scroll" role="region" tabindex="0" aria-labelledby="research-table-13"><table aria-labelledby="research-table-13">
+        <thead>
+        <tr>
+        <th scope="col">Тест</th>
+        <th style="text-align: right;">До обучения</th>
+        <th style="text-align: right;">После языка</th>
+        <th style="text-align: right;">После диалогов</th>
+        <th style="text-align: right;">После фактов</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td>Язык TinyDialogues, 20 031 токен</td>
+        <td style="text-align: right;">2976,15</td>
+        <td style="text-align: right;">10,24</td>
+        <td style="text-align: right;">13,59</td>
+        <td style="text-align: right;">16,39</td>
+        </tr>
+        <tr>
+        <td>Ответы TinyDialogues, 3 710 токенов</td>
+        <td style="text-align: right;">2896,79</td>
+        <td style="text-align: right;">11,82</td>
+        <td style="text-align: right;">13,71</td>
+        <td style="text-align: right;">16,16</td>
+        </tr>
+        <tr>
+        <td>Ответы LIGHT, 2 855 токенов</td>
+        <td style="text-align: right;">2823,95</td>
+        <td style="text-align: right;">118,60</td>
+        <td style="text-align: right;">37,73</td>
+        <td style="text-align: right;">122,95</td>
+        </tr>
+        </tbody>
+        </table></div>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="sonata-learning-report-ru-images"><img alt="Два графика cross-entropy: языковое обучение и последующее обучение ответам в диалогах" src="../assets/sonata-learning-report/language-learning.png" data-full-src="../assets/sonata-learning-report/language-learning.png" loading="lazy" decoding="async" data-caption-ru="Рисунок 2. Реальные кривые языкового и диалогового этапов. CE считается по активным токенам; задачи и маски этапов различаются."><figcaption data-lang-content="ru">Рисунок 2. Реальные кривые языкового и диалогового этапов. CE считается по активным токенам; задачи и маски этапов различаются.</figcaption></figure>
+        <p>Отдельно сохранены все ответы на 31 выбранный запрос: семь ручных проверок и 24 запроса из отдельных test-диалогов. После языкового и диалогового этапов все 31 greedy-ответа завершились EOS. Это свидетельство освоения формата завершения; смысл проверяется по самим репликам. Один из буквальных ответов после диалогового этапа:</p>
+
+        <blockquote>
+        <p>Well, plants need water to grow, and plants need water to grow. They need water to grow big and strong.</p>
+        </blockquote>
+
+        <p>Фраза показывает связный текст с повтором. Запросы о ключах и имени собаки выявили слабое использование заданных фактов и стали мотивацией отдельного учебного опыта.</p>
+
+        <h3 id="ru-grounding">4.4. Факты из ограниченного учебного домена</h3>
+
+        <p>Для извлечения фактов подготовлены 24 000 train- и 600 validation-примеров: имя собаки среди имени кошки, роль персонажа среди роли соседа и нужный ключ среди другого ключа. Используются 12 учебных имён, три формулировки и до трёх пар отвлекающих реплик. В части примеров нужный факт отсутствует, а целевой ответ равен <code>I do not know.</code>. 90% обновлений используют фактическую задачу, 10% повторяют выбранные прежние TinyDialogues-ответы.</p>
+
+        <p>Замороженный тест содержит 319 запросов: четыре группы по 72, 24 запроса без нужного факта и семь прежних ручных запросов. В четырёх фактических группах присутствуют 144 контрфактические пары, поэтому эти наблюдения зависимы. Новые полные контексты не гарантируют новизну каждого кортежа значений.</p>
+
+        <p class="table-caption" id="research-table-14"><strong>Таблица 6. Свободная генерация до и после целевого обучения фактам.</strong></p>
+<div class="research-table-scroll" role="region" tabindex="0" aria-labelledby="research-table-14"><table aria-labelledby="research-table-14">
+        <thead>
+        <tr>
+        <th scope="col">Проверка</th>
+        <th style="text-align: right;">До</th>
+        <th style="text-align: right;">После</th>
+        <th scope="col">Область проверки</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td>Новые контексты, знакомые значения и формулировки</td>
+        <td style="text-align: right;">0/72</td>
+        <td style="text-align: right;">72/72</td>
+        <td>Освоение задачи внутри домена</td>
+        </tr>
+        <tr>
+        <td>Контекст длиннее учебного максимума, до 277 BPE-токенов</td>
+        <td style="text-align: right;">0/72</td>
+        <td style="text-align: right;">70/72</td>
+        <td>Перенос по длине; train 80–179 токенов</td>
+        </tr>
+        <tr>
+        <td>Нужного факта нет</td>
+        <td style="text-align: right;">0/24</td>
+        <td style="text-align: right;">24/24</td>
+        <td>Ответ «не знаю»</td>
+        </tr>
+        <tr>
+        <td>Новая формулировка</td>
+        <td style="text-align: right;">0/72</td>
+        <td style="text-align: right;">7/72</td>
+        <td>Перенос за пределы трёх учебных вариантов</td>
+        </tr>
+        <tr>
+        <td>Все вопросы в контекстах с отложенными именами</td>
+        <td style="text-align: right;">0/72</td>
+        <td style="text-align: right;">48/72</td>
+        <td>Известные роли и цвета на фоне других имён</td>
+        </tr>
+        <tr>
+        <td>Только вопросы об отложенном имени; подвыборка предыдущей строки</td>
+        <td style="text-align: right;">0/24</td>
+        <td style="text-align: right;">0/24</td>
+        <td>Воспроизведение имени вне целевого покрытия</td>
+        </tr>
+        </tbody>
+        </table></div>
+
+        <figure class="post-figure post-figure--editorial" data-gallery="sonata-learning-report-ru-images"><img alt="Кривая обучения фактам и результаты по группам: 72/72 знакомых контекста, 70/72 длинных и слабый перенос на новые формулировки" src="../assets/sonata-learning-report/contextual-facts.png" data-full-src="../assets/sonata-learning-report/contextual-facts.png" loading="lazy" decoding="async" data-caption-ru="Рисунок 3. Обучение фактам и замороженные тесты. Reserved names на графике означает всю группу 48/72; непосредственно вопросы о новом имени дают 0/24."><figcaption data-lang-content="ru">Рисунок 3. Обучение фактам и замороженные тесты. Reserved names на графике означает всю группу 48/72; непосредственно вопросы о новом имени дают 0/24.</figcaption></figure>
+        <p>В знакомом формате решены обе части 36/36 пар с изменённым фактом; на длинных входах 34/36. Это наблюдаемая зависимость ответа от целевого факта в проверенном формате.</p>
+
+        <p>Имена Pip, Nell, Zed, Tess, Otto и Milo исключены из текущих train/validation и 4096 повторяемых TinyDialogues-записей. Предыдущее языковое обучение и сам BPE по этим именам не разделялись. Следовательно, «отложенное имя» здесь означает ограничение текущего целевого обучения, а не доказанное первое знакомство модели с его написанием.</p>
+
+        <h2 id="ru-verification">5. Проверка исполнения и доступные данные</h2>
+
+        <p>Поведенческая оценка дополнена численной проверкой. Малая модель используется для сравнения всех параметрических градиентов, обученная большая для выборочного сопоставления logits и генерации. Границы этих проверок сохраняются при интерпретации результата.</p>
+
+        <p class="table-caption" id="research-table-15"><strong>Таблица 7. Проверки перед языковым опытом и после него.</strong></p>
+<div class="research-table-scroll" role="region" tabindex="0" aria-labelledby="research-table-15"><table aria-labelledby="research-table-15">
+        <thead>
+        <tr>
+        <th scope="col">Объект</th>
+        <th scope="col">Метод</th>
+        <th scope="col">Результат и охват</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td>Малая двухслойная Mamba</td>
+        <td>Одинаковые веса и входы CPU/CUDA</td>
+        <td>Максимальное отличие logits 6,70 × 10⁻⁷; градиентов 8,94 × 10⁻⁷ по 30 тензорам</td>
+        </tr>
+        <tr>
+        <td>Метрика CE</td>
+        <td>Независимый пересчёт по logits</td>
+        <td>Отличие до 1,16 × 10⁻⁷ в малой пробе</td>
+        </tr>
+        <tr>
+        <td>Причинность и генерация</td>
+        <td>Изменение будущего; авторегрессивные шаги и полный forward</td>
+        <td>Причинность проверена; совпали восемь проверенных argmax-токенов</td>
+        </tr>
+        <tr>
+        <td>Обученная диалоговая Mamba</td>
+        <td>CPU/CUDA на двух 32-токенных префиксах</td>
+        <td>Максимальное отличие logits 1,3828 × 10⁻⁵; совпали argmax на 64 позициях</td>
+        </tr>
+        <tr>
+        <td>Сохранение и Windows inference</td>
+        <td>Свежий процесс и загрузка Linux-весов</td>
+        <td>CUDA CSV совпал побайтно; в Windows совпали 64 argmax и выбранные реальные реплики</td>
+        </tr>
+        <tr>
+        <td>Проверка памяти</td>
+        <td>Compute-sanitizer на малой gradient-пробе</td>
+        <td>Ноль ошибок; большой training под sanitizer не выполнялся</td>
+        </tr>
+        </tbody>
+        </table></div>
+
+        <p>До тяжёлого CUDA-опыта отдельно прошли 159 gradient ABI cases и 18 575 утверждений checked optimizer. GEMM размером 256³ сравнивался с NumPy float64: максимальная абсолютная ошибка составила 1,40524409 × 10⁻⁶. Это конкретные численные пробы, а не исчерпывающая проверка всех размеров и моделей.</p>
+
+        <p>У оценщика фактов проверены правильные, неправильные и содержащие отвлекатель контрольные ответы. Все 24 600 native-записей корпуса проверены на соответствие текста токенам, маскам, padding и EOS; повторное построение 11 файлов корпуса совпало побайтно. Ответы до и после оценивались одним текущим декодером.</p>
+
+        <p>К этой версии приложены <a href="../assets/sonata-learning-report/results.json">сводные численные данные</a>, <a href="../assets/sonata-learning-report/language-metrics.csv">метрики языкового этапа</a>, <a href="../assets/sonata-learning-report/dialogue-metrics.csv">диалогового этапа</a>, <a href="../assets/sonata-learning-report/grounding-metrics.csv">обучения фактам</a> и <a href="../assets/sonata-learning-report/artifact-checksums.json">контрольные суммы приложенных файлов</a>. В сырых CSV строки <code>train_batch</code> содержат нулевые placeholders в полях accuracy и supervised_tokens: эти поля не являются измерениями; loss и отдельные validation-строки используются по назначению.</p>
+
+        <p>Исходный код Sonata пока находится в закрытом репозитории. Для внешнего изучения в этой версии предоставлены протокол, таблицы, графики и файлы метрик. Для сохранённых моделей проверялась загрузка весов в свежем процессе; состояние Adam и RNG вместе с ними не сохранялось. В языковом пилоте используется декодер с пересчётом растущего полного префикса. Потоковый кэш, полное восстановление обучения и длительные испытания памяти требуют отдельных проверок.</p>
+
+        <h2 id="ru-discussion">6. Обсуждение</h2>
+
+        <p>Результаты показывают последовательный переход от простой нелинейной зависимости к обработке последовательностей, английскому тексту и использованию фактов. Контроли с линейной сетью, перемешанными ответами и удалением нужного символа помогают проверить связь результата с поставленной задачей. Сравнение учебных длин показывает, что изменение режима может существенно менять перенос.</p>
+
+        <p>При минимальном покрытии фактического домена освоен знакомый формат. Слабый перенос на другие имена и формулировки задаёт следующий исследовательский вопрос: как результат меняется при расширении разнообразия данных с сохранением отдельного теста. Из текущего опыта нельзя выделить самостоятельный вклад покрытия корпуса, ёмкости модели или настройки обучения. Назначать одну из этих причин установленной было бы преждевременно.</p>
+
+        <p>Специализация также изменила прежние языковые показатели: после обучения фактам LIGHT PPL выросла с 37,73 до 122,95. LIGHT не входил в повторяемые данные этого этапа. Проверка сохранения прежних навыков должна сопровождать измерение нового навыка.</p>
+
+        <p>CPU-опыты повторены с тремя инициализациями; большие GPU-опыты используют одну. Внешняя архитектура при равных данных и compute-бюджете с обученными с нуля моделями Sonata пока не сравнивалась. Поэтому область вывода этой работы: обучаемость и поведение конкретных конфигураций, вместе с проверенным охватом исполнения.</p>
+
+        <h2 id="ru-references">7. Литература</h2>
+
+        <ol>
+        <li>Gu A., Dao T. <a href="https://arxiv.org/abs/2312.00752">Mamba: Linear-Time Sequence Modeling with Selective State Spaces</a>. Исходная работа о Mamba.</li>
+        <li>Feng S. Y., Goodman N. D., Frank M. C. <a href="https://aclanthology.org/2024.emnlp-main.1231/">Is Child-Directed Speech Effective Training Data for Language Models?</a>. EMNLP 2024. <a href="https://github.com/styfeng/TinyDialogues">Код и данные TinyDialogues</a>.</li>
+        <li>Urbanek J. et al. <a href="https://arxiv.org/abs/1903.03094">Learning to Speak and Act in a Fantasy Text Adventure Game</a>. <a href="https://parl.ai/projects/light/">Проект LIGHT</a>.</li>
+        <li>Kingma D. P., Ba J. <a href="https://arxiv.org/abs/1412.6980">Adam: A Method for Stochastic Optimization</a>. Метод оптимизации, реализованный в обучаемом пути Sonata.</li>
+        <li>Zhang B., Sennrich R. <a href="https://arxiv.org/abs/1910.07467">Root Mean Square Layer Normalization</a>. Метод RMSNorm.</li>
+        <li>Baydin A. G., Pearlmutter B. A., Radul A. A., Siskind J. M. <a href="https://jmlr.org/papers/v18/17-468.html">Automatic Differentiation in Machine Learning: a Survey</a>. JMLR, 2018. Обзор математических и программных методов автоматического дифференцирования.</li>
+        <li>Gu A., Dao T. <a href="https://github.com/state-spaces/mamba/blob/v2.2.4/mamba_ssm/modules/mamba_simple.py">Авторская реализация Mamba, версия v2.2.4</a>. Используется для предметного сопоставления параметризаций.</li>
+        <li>Эксперименты Sonata: сводка чисел доступна в приложенном results.json, контрольные суммы файлов в artifact-checksums.json. Архивные графики сохранены без изменения измерений.</li>
+        </ol>
+
+        <h2 id="ru-runtime-appendix">Приложение A. Исполнение готовых весов Nemotron</h2>
+
+        <p>Отдельная линия исследует исполнение checkpoint <code>NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4</code> в движке Sonata. Здесь используются готовые веса NVIDIA. Последний этап B3 провёл 67 запросов через все 52 слоя; 20/20 прикладных проверок и шесть продолжений с повторным использованием кэша прошли. Промежуточные модельные тензоры и состояния остаются на GPU, CPU backend существует отдельно.</p>
+
+        <p class="table-caption" id="research-table-16"><strong>Таблица A1. Native decode на одном A100 80 GB, batch 1.</strong></p>
+<div class="research-table-scroll" role="region" tabindex="0" aria-labelledby="research-table-16"><table aria-labelledby="research-table-16">
+        <thead>
+        <tr>
+        <th style="text-align: right;">Контекст</th>
+        <th style="text-align: right;">Прежний native-путь, токенов/с</th>
+        <th style="text-align: right;">GPU-resident, токенов/с</th>
+        <th style="text-align: right;">Отношение</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        <td style="text-align: right;">512</td>
+        <td style="text-align: right;">10,40</td>
+        <td style="text-align: right;">30,22</td>
+        <td style="text-align: right;">2,90×</td>
+        </tr>
+        <tr>
+        <td style="text-align: right;">2048</td>
+        <td style="text-align: right;">10,23</td>
+        <td style="text-align: right;">29,32</td>
+        <td style="text-align: right;">2,87×</td>
+        </tr>
+        <tr>
+        <td style="text-align: right;">8192</td>
+        <td style="text-align: right;">9,88</td>
+        <td style="text-align: right;">26,10</td>
+        <td style="text-align: right;">2,64×</td>
+        </tr>
+        </tbody>
+        </table></div>
+
+        <p>По одному измеренному прогону на конфигурацию после прогревов; скорость относится к decode, без загрузки весов и prefill. На контексте 8192 prefill занимает 56,936 с. Оба пути используют одинаковый checkpoint, F32 storage и F64 attention; выигрыш объединяет размещение данных и изменения kernels. Из этого сравнения нельзя изолировать эффект языка реализации или одной только передачи CPU/GPU.</p>
+
+        <p>На предыдущем этапе native и pinned vLLM получили 20/20 прикладных результатов; generated IDs совпали на 21/21 quality/dialogue/repeat запросе. Внешний runtime является поведенческим свидетелем, математический контракт Sonata определяется checkpoint и эталоном R_emu. Новый benchmark vLLM на этапе B3 не выполнялся, а внешние замеры предыдущего этапа относятся к другой GPU-сессии и конфигурации исполнения.</p>
+
+        <p>Отдельный canonical F64-профиль проходит два полных диагностических случая R_emu с normalized L2 logits до 3,871 × 10⁻¹⁵. Исходный F32-профиль по-прежнему не проходит F1/F2/F4: более широкая численная приёмка остаётся открытой. Эти результаты относятся к исполнению готовой модели и не являются сравнением качества собственной обученной с нуля Mamba с Nemotron.</p>
+      </div>
+      <nav class="post-pagination" aria-label="Post navigation" data-i18n-aria="post-pagination-aria">
+        <span class="post-page-link is-disabled" aria-disabled="true">
+          <span data-i18n="post-prev">Previous</span>
+          <strong data-i18n="post-prev-none">No earlier post</strong>
+        </span>
+        <span class="post-page-link is-disabled" aria-disabled="true">
+          <span data-i18n="post-next">Next</span>
+          <strong data-i18n="post-next-none">No later post</strong>
+        </span>
+      </nav>
+    </article>
+  </main>
+  <footer class="site-footer"><span>Lotargo</span><span>Research · Models · Verification</span></footer>
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/blog-post.js"></script>
+</body>
+</html>

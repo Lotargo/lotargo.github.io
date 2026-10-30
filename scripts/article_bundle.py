@@ -34,7 +34,7 @@ MAX_FILE_SIZE = 95 * 1024 * 1024
 MAX_TOTAL_SIZE = 500 * 1024 * 1024
 ALLOWED_ASSET_SUFFIXES = {
     ".avif", ".webp", ".png", ".jpg", ".jpeg", ".gif", ".svg",
-    ".mp4", ".webm", ".mp3", ".ogg", ".wav", ".json", ".txt",
+    ".mp4", ".webm", ".mp3", ".ogg", ".wav", ".json", ".txt", ".csv",
 }
 
 

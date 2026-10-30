@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 2140" width="800" height="2140" role="img" aria-labelledby="title description" lang="ru">
+  <title id="title">Sonata: собственное ядро и модельные профили</title>
+  <desc id="description">Общее ядро Sonata исполняет два отдельных контура. Гибридный прототип объединяет рекуррентную ветвь, causal attention и SwiGLU/MLP взвешенной суммой. Для языковых, диалоговых и фактических результатов использовался другой профиль: BPE 2048, embedding, шесть блоков RMSNorm, рекуррентного вычисления и residual, затем final RMSNorm и линейная выходная голова. В этом профиле нет attention или отдельной MLP-ветви гибрида.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#53665b" />
+    </marker>
+    <marker id="engine-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#78857c" />
+    </marker>
+    <marker id="green-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#276749" />
+    </marker>
+  </defs>
+  <style>
+text { font-family: Inter, 'Segoe UI', Arial, sans-serif; fill: #19271f; }
+.muted { fill: #4d6054; } .white { fill: #fff; } .soft-white { fill: #dbe6df; }
+.green { fill: #205e40; } .bold { font-weight: 650; }
+</style>
+  <rect width="800" height="2140" fill="#fbfcf8" />
+  <text x="32" y="51" font-size="35" text-anchor="start" class="bold">Sonata: ядро и профили</text>
+  <rect x="32" y="88" width="736" height="300" rx="10" fill="#18271f" stroke="#18271f" stroke-width="2" />
+  <text x="56" y="140" font-size="36" text-anchor="start" class="white bold">Собственное ядро Sonata</text>
+  <text x="56" y="202" font-size="32" text-anchor="start" class="soft-white">Тензоры</text>
+  <text x="56" y="246" font-size="32" text-anchor="start" class="soft-white">и память</text>
+  <text x="408" y="202" font-size="32" text-anchor="start" class="soft-white">Граф операций</text>
+  <text x="408" y="246" font-size="32" text-anchor="start" class="soft-white">и autograd</text>
+  <text x="56" y="302" font-size="32" text-anchor="start" class="soft-white">CPU / CUDA</text>
+  <text x="56" y="346" font-size="32" text-anchor="start" class="soft-white">операторы</text>
+  <text x="408" y="302" font-size="32" text-anchor="start" class="soft-white">Adam</text>
+  <text x="408" y="346" font-size="32" text-anchor="start" class="soft-white">и обучение</text>
+  <path d="M 400 388 V 420 H 18 V 1210" fill="none" stroke="#78857c" stroke-width="3" stroke-linejoin="round" stroke-dasharray="9 7" />
+  <path d="M 18 486 H 32" fill="none" stroke="#78857c" stroke-width="3" stroke-linejoin="round" marker-end="url(#engine-arrow)" stroke-dasharray="9 7" />
+  <path d="M 18 1210 H 32" fill="none" stroke="#78857c" stroke-width="3" stroke-linejoin="round" marker-end="url(#engine-arrow)" stroke-dasharray="9 7" />
+  <rect x="32" y="448" width="736" height="668" rx="10" fill="#f7f8f4" stroke="#7a897e" stroke-width="2" stroke-dasharray="9 7" />
+  <text x="56" y="501" font-size="36" text-anchor="start" class="bold">Гибридный прототип</text>
+  <text x="56" y="543" font-size="31" text-anchor="start" class="muted">Три параллельные ветви</text>
+  <rect x="56" y="724" width="104" height="64" rx="10" fill="#fff" stroke="#87988c" stroke-width="2" />
+  <text x="108.0" y="769.26" font-size="39" text-anchor="middle">x</text>
+  <path d="M 160 756 H 190" fill="none" stroke="#53665b" stroke-width="3" stroke-linejoin="round" />
+  <path d="M 190 625 V 889" fill="none" stroke="#53665b" stroke-width="3" stroke-linejoin="round" />
+  <path d="M 190 625 H 220" fill="none" stroke="#53665b" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)" />
+  <rect x="220" y="578" width="400" height="94" rx="10" fill="#fff" stroke="#87988c" stroke-width="2" />
+  <text x="238" y="614" font-size="33" text-anchor="start" class="bold">Рекуррентная R(x)</text>
+  <text x="238" y="650" font-size="29" text-anchor="start" class="muted">Mamba-подобный блок</text>
+  <path d="M 190 757 H 220" fill="none" stroke="#53665b" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)" />
+  <rect x="220" y="710" width="400" height="94" rx="10" fill="#fff" stroke="#87988c" stroke-width="2" />
+  <text x="238" y="746" font-size="33" text-anchor="start" class="bold">Causal attention A(x)</text>
+  <text x="238" y="782" font-size="29" text-anchor="start" class="muted">CPU в этом прототипе</text>
+  <path d="M 190 889 H 220" fill="none" stroke="#53665b" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)" />
+  <rect x="220" y="842" width="400" height="94" rx="10" fill="#fff" stroke="#87988c" stroke-width="2" />
+  <text x="238" y="878" font-size="33" text-anchor="start" class="bold">SwiGLU / MLP F(x)</text>
+  <text x="238" y="914" font-size="29" text-anchor="start" class="muted">Преобразование признаков</text>
+  <path d="M 620 625 H 694 V 719" fill="none" stroke="#53665b" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)" />
+  <path d="M 620 757 H 656" fill="none" stroke="#53665b" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)" />
+  <path d="M 620 889 H 694 V 795" fill="none" stroke="#53665b" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)" />
+  <circle cx="694" cy="757" r="38" fill="#fff" stroke="#53665b" stroke-width="3" />
+  <text x="694" y="770" font-size="39" text-anchor="middle" class="bold">Σ</text>
+  <path d="M 732 757 H 744 V 944" fill="none" stroke="#53665b" stroke-width="3" stroke-linejoin="round" marker-end="url(#arrow)" />
+  <text x="744" y="986" font-size="29" text-anchor="end">H(x)</text>
+  <text x="56" y="992" font-size="33" text-anchor="start" class="bold">H(x) = αR(x) + βA(x) + γF(x)</text>
+  <text x="56" y="1043" font-size="28" text-anchor="start" class="muted">Коэффициенты задаются конфигурацией.</text>
+  <text x="56" y="1085" font-size="28" text-anchor="start" class="muted">Совместное обучение: отдельный опыт.</text>
+  <rect x="32" y="1172" width="736" height="832" rx="10" fill="#edf5ef" stroke="#276749" stroke-width="3" />
+  <text x="56" y="1228" font-size="36" text-anchor="start" class="green bold">Профиль результатов</text>
+  <text x="56" y="1269" font-size="31" text-anchor="start" class="green">Язык · Диалог · Факты</text>
+  <text x="56" y="1310" font-size="28" text-anchor="start">4 504 192 параметра · FP32 · Adam · seed 17</text>
+  <rect x="180" y="1344" width="440" height="60" rx="10" fill="#fff" stroke="#488766" stroke-width="2" />
+  <text x="400.0" y="1385.22" font-size="33" text-anchor="middle">Токены BPE · 2048</text>
+  <path d="M 400 1404 V 1430" fill="none" stroke="#276749" stroke-width="3" stroke-linejoin="round" marker-end="url(#green-arrow)" />
+  <rect x="180" y="1430" width="440" height="60" rx="10" fill="#fff" stroke="#488766" stroke-width="2" />
+  <text x="400.0" y="1471.56" font-size="34" text-anchor="middle">Embedding</text>
+  <path d="M 400 1490 V 1516" fill="none" stroke="#276749" stroke-width="3" stroke-linejoin="round" marker-end="url(#green-arrow)" />
+  <rect x="80" y="1516" width="640" height="180" rx="10" fill="#fff" stroke="#488766" stroke-width="2" />
+  <text x="400" y="1558" font-size="32" text-anchor="middle" class="bold">6 последовательных блоков</text>
+  <text x="400" y="1599" font-size="31" text-anchor="middle">RMSNorm → рекуррентный блок</text>
+  <text x="400" y="1640" font-size="31" text-anchor="middle">+ residual</text>
+  <text x="400" y="1680" font-size="28" text-anchor="middle" class="muted">d_model 256 · d_state 32 · expand 2</text>
+  <path d="M 400 1696 V 1722" fill="none" stroke="#276749" stroke-width="3" stroke-linejoin="round" marker-end="url(#green-arrow)" />
+  <rect x="160" y="1722" width="480" height="88" rx="10" fill="#fff" stroke="#488766" stroke-width="2" />
+  <text x="400" y="1754" font-size="30" text-anchor="middle">Final RMSNorm</text>
+  <text x="400" y="1798" font-size="30" text-anchor="middle">Linear LM head</text>
+  <path d="M 400 1810 V 1836" fill="none" stroke="#276749" stroke-width="3" stroke-linejoin="round" marker-end="url(#green-arrow)" />
+  <rect x="180" y="1836" width="440" height="60" rx="10" fill="#fff" stroke="#488766" stroke-width="2" />
+  <text x="400.0" y="1877.22" font-size="33" text-anchor="middle">Logits → генерация</text>
+  <text x="56" y="1940" font-size="31" text-anchor="start" class="green">Без attention и отдельной</text>
+  <text x="56" y="1980" font-size="31" text-anchor="start" class="green">MLP-ветви гибридного прототипа.</text>
+  <text x="32" y="2071" font-size="30" text-anchor="start" class="muted">Пунктир: общее ядро.</text>
+  <text x="32" y="2111" font-size="30" text-anchor="start" class="muted">Сплошные стрелки: поток тензоров.</text>
+</svg>

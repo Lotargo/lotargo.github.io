@@ -341,7 +341,7 @@ A bundle is rejected when:
 .avif .webp .png .jpg .jpeg .gif .svg
 .mp4 .webm
 .mp3 .ogg .wav
-.json .txt
+.json .txt .csv
 ```
 
 For significantly larger media, use external object storage and keep only posters or previews in the repository.

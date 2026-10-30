@@ -45,6 +45,17 @@
       "source_hash": "sha256:ff899e470b66cbd3d97cdcbca244d522e67d70f8057246293cfbdbe98724e7e0",
       "telegram_source": "human-centipede.tg-RU.md"
     },
+    "sonata-learning-report": {
+      "article_url": "https://lotargo.github.io/blog/posts/sonata-learning-report.html",
+      "channel_id": -1004375080506,
+      "channel_username": "lotargo_blog",
+      "last_action": "publish",
+      "message_id": 15,
+      "post_url": "https://t.me/lotargo_blog/15",
+      "presentation": "photo-caption",
+      "source_hash": "sha256:6b3e69db11045d82b15817a7fde3fca2f2fce78e7e0ee57ba1604efed5965fe5",
+      "telegram_source": "sonata-learning-report.tg-RU.md"
+    },
     "telegram-blog-publishing": {
       "article_url": "https://lotargo.github.io/blog/posts/telegram-blog-publishing.html",
       "channel_id": -1004375080506,
